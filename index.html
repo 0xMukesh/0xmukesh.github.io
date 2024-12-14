@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="0xmukesh" />
+    <meta name="description" content="/mukesh/portfolio" />
+    <title>0xmukesh</title>
+
+    <link rel="stylesheet" href="/styles.css" />
+
+    <style>
+      body {
+        text-align: center;
+      }
+
+      #socials a {
+        margin: 0 8px;
+        text-decoration: none;
+      }
+      #socials a img {
+        height: 32px;
+      }
+
+      #work-experience ul {
+        text-align: left;
+      }
+      #work-experience .work h3,
+      #work-experience .work h4 {
+        display: flex;
+        justify-content: space-between;
+      }
+      #work-experience .work details ul {
+        margin-top: 8px;
+        margin-left: 16px;
+      }
+
+      #skills > ul {
+        text-align: left;
+      }
+
+      #projects .project {
+        text-align: left;
+      }
+      #projects .project h3 {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+      }
+      #projects .project h3 img {
+        height: 14px;
+        margin-left: 12px;
+      }
+      #projects .project p {
+        margin-top: 8px;
+      }
+      #projects .project .project__source-code {
+        display: inline-block;
+        margin-top: 2px;
+      }
+
+      #blogs ul {
+        text-align: left;
+      }
+
+      span.separator-bar {
+        margin: 0 4px;
+      }
+
+      @media print {
+        #socials a {
+          display: inline-flex;
+          align-items: center;
+        }
+        #socials a img {
+          height: 16px;
+          margin-right: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="no-print">0xmukesh</h1>
+    <p class="no-print">
+      i code. i survive college. i love tinkering stuff.
+      <a href=""></a>
+    </p>
+
+    <h1 class="print-only">0xmukesh</h1>
+    <p>
+      <a href="mailto:0xmukesh@proton.me" class="print-only"
+        >0xmukesh@proton.me</a
+      >
+    </p>
+    <section id="socials">
+      <a href="https://github.com/0xmukesh" target="_blank">
+        <img src="/images/icons/github.svg" class="light-only" alt="GitHub" />
+        <img
+          src="/images/icons/github-dark.svg"
+          class="dark-only-inline"
+          alt="GitHub"
+        />
+        <span class="print-only">github.com/0xmukesh</span>
+      </a>
+
+      <a href="https://twitter.com/0xmukesh" target="_blank">
+        <img src="/images/icons/twitter.svg" alt="Twitter" />
+        <span class="print-only">twitter.com/0xmukesh</span>
+      </a>
+    </section>
+
+    <hr />
+
+    <section id="about">
+      <h2>about</h2>
+      hey there! i'm mukesh, a 17 y/o backend engineer and an undergraduate
+      student at
+      <a
+        href="https://en.wikipedia.org/wiki/National_Institute_of_Technology,_Warangal"
+        >NIT Warangal</a
+      >. i love miniamlism, linux and a bit of math. most of the time, i write
+      code in golang and typescript. previously built
+      <a href="https://x.com/candypayfun/">candypay</a>, now working on
+      <a href="https://x.com/havendotfan">haven</a>
+    </section>
+
+    <hr />
+
+    <section id="projects">
+      <h2>projects</h2>
+
+      <div class="project">
+        <h3>brtlang</h3>
+        <p>
+          a dynamically typed toy programming language whose syntax is inspired
+          from <i>internet slang</i>, made using golang
+          <br />
+          <a
+            class="project__source-code"
+            href="https://github.com/0xmukesh/brtlang"
+            target="_blank"
+            >source code</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3><code>@candypay/caramel</code></h3>
+        <p>
+          a proof-of-concept app that showcases the usage of
+          <a
+            href="https://docs.candypay.fun/checkout/introduction.html#checkout-by-candypay"
+            >candypay checkout</a
+          >
+          to monetize github packages
+          <br />
+          <a
+            class="project__source-code"
+            href="https://github.com/candypay/caramel"
+            target="_blank"
+            >source code</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3>candypay nft builder</h3>
+        <p>
+          a seamless nft creation/minting experience on solana, powered by
+          solana pay. won solana summercamp hackathon. currently discontinued
+          <br />
+          <a
+            class="project__source-code"
+            href="https://pitch.com/public/329fca8c-d130-4d23-b480-263be0cef3ef"
+            target="_blank"
+            >pitch deck</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3>askanon</h3>
+        <p>
+          ask questions, and get answers from people anonymously. built on
+          solana using blinks
+          <br />
+          <a
+            class="project__source-code"
+            href="https://askanon.fun"
+            target="_blank"
+            >website</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3>snipli</h3>
+        <p>
+          a command-line tool to quickly convert your local files into a github
+          gist. #4 product of the day on producthunt
+          <br />
+          <a
+            class="project__source-code"
+            href="https://github.com/0xMukesh/snipli"
+            target="_blank"
+            >source code</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3>rayli</h3>
+        <p>
+          a command-line tool to quickly generate beautiful screenshots of your
+          code right from the terminal. #3 product of the day on producthunt
+          <br />
+          <a
+            class="project__source-code"
+            href="https://github.com/avneesh0612/rayli"
+            target="_blank"
+            >source code</a
+          >
+        </p>
+      </div>
+
+      <div class="project">
+        <h3>faucetli</h3>
+        <p>
+          a command line tool to get tokens on testnets quickly! #5 product of
+          the day on producthunt
+          <br />
+          <a
+            class="project__source-code"
+            href="https://github.com/0xmukesh/faucetli"
+            target="_blank"
+            >source code</a
+          >
+        </p>
+      </div>
+    </section>
+
+    <hr />
+
+    <section id="blogs">
+      <h2>blogs</h2>
+
+      <ul>
+        <li>
+          <a href="https://hackmd.io/@0xMukesh/S1TAoQez2"
+            >Deep dive into NFT compression</a
+          >
+        </li>
+
+        <li>
+          <a href="https://hackmd.io/@0xMukesh/r1mwqUGDR" target="_blank"
+            >Exploring ZK compression</a
+          >
+        </li>
+      </ul>
+    </section>
+
+    <hr class="no-print" />
+
+    <footer class="no-print">
+      <a href="mailto:0xmukesh@proton.me">0xmukesh@proton.me</a>
+    </footer>
+
+    <!-- <script>
+      // open all details elements before opening print dialog to ensure that all content is printed
+      window.addEventListener("beforeprint", () => {
+        document
+          .querySelectorAll("details")
+          .forEach(($details) => $details.setAttribute("open", "open"));
+      });
+    </script>
+
+    <script src="/js/theme.js"></script> -->
+  </body>
+</html>
