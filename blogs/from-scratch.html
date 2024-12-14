@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>from scratch</title>
+    <meta
+      name="description"
+      content="things that i built from scratch, cause i love to do so"
+    />
+    <meta
+      name="keywords"
+      content="programming, go, golang, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+    <meta property="og:title" content="from-scratch" />
+    <meta
+      property="og:description"
+      content="things that i built from scratch, cause i love to do so"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://0xmukesh.github.io/blogs/from-scratch.html"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="from scratch" />
+    <meta
+      name="twitter:description"
+      content="things that i built from scratch, cause i love to do so"
+    />
+    <link
+      rel="canonical"
+      href="https://0xmukesh.github.io/blogs/from-scratch.html"
+    />
+
+    <link rel="stylesheet" href="/styles.css" />
+
+    <style>
+      #from-scratch-list > li > label > input {
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body class="blog">
+    <h1>from scratch</h1>
+
+    <p>
+      here is a list of things which i've built/planning to build from scratch
+    </p>
+
+    <ul id="from-scratch-list"></ul>
+
+    <footer style="text-align: center; margin-top: 32px">
+      <a href="/">0xmukesh</a>
+    </footer>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      const projects = [
+        {
+          title: "interpreter",
+          done: true,
+          github: "https://github.com/0xmukesh/brtlang",
+        },
+        {
+          title: "mini-git",
+          done: false,
+          github: "https://wyag.thb.lt",
+        },
+        {
+          title: "chess engine",
+          done: false,
+          github: "https://github.com/0xmukesh",
+        },
+        {
+          title: "database using b+ trees and with sql like query language",
+          done: false,
+          github: "https://build-your-own.org/database/",
+        },
+        {
+          title: "raytracer",
+          done: false,
+          github:
+            "https://raytracing.github.io/books/RayTracingInOneWeekend.html",
+        },
+        {
+          title: "mini-redis",
+          done: false,
+          github: "https://github.com/0xmukesh",
+        },
+        {
+          title: "dns server",
+          done: false,
+          github: "https://github.com/EmilHernvall/dnsguide",
+        },
+        {
+          title: "brainf*ck interpreter",
+          done: false,
+          github: "https://github.com/0xmukesh",
+        },
+        {
+          title: "nano-like text editor",
+          done: false,
+          github: "https://github.com/0xmukesh",
+        },
+      ];
+
+      const $list = document.getElementById("from-scratch-list");
+
+      projects.forEach((project) => {
+        const $li = document.createElement("li");
+
+        const $label = document.createElement("label");
+
+        const $input = document.createElement("input");
+        $input.type = "checkbox";
+        $input.checked = project.done;
+
+        $label.appendChild($input);
+
+        const $a = document.createElement("a");
+        $a.href = project.github || "#";
+        $a.target = "_blank";
+        $a.appendChild(document.createTextNode(project.title));
+        $label.appendChild($a);
+
+        $li.appendChild($label);
+        $list.appendChild($li);
+      });
+    </script>
+  </body>
+</html>
