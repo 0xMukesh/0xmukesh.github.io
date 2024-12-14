@@ -61,48 +61,52 @@
         {
           title: "interpreter",
           done: true,
-          github: "https://github.com/0xmukesh/brtlang",
+          link: "https://github.com/0xmukesh/brtlang",
         },
         {
           title: "mini-git",
           done: false,
-          github: "https://wyag.thb.lt",
+          link: "https://wyag.thb.lt",
         },
         {
           title: "chess engine",
           done: false,
-          github: "https://github.com/0xmukesh",
+          link: "https://github.com/0xmukesh",
         },
         {
           title: "database using b+ trees and with sql like query language",
           done: false,
-          github: "https://build-your-own.org/database/",
+          link: "https://build-your-own.org/database/",
         },
         {
           title: "raytracer",
           done: false,
-          github:
-            "https://raytracing.github.io/books/RayTracingInOneWeekend.html",
+          link: "https://raytracing.github.io/books/RayTracingInOneWeekend.html",
         },
         {
           title: "mini-redis",
           done: false,
-          github: "https://github.com/0xmukesh",
+          link: "https://github.com/0xmukesh",
         },
         {
           title: "dns server",
           done: false,
-          github: "https://github.com/EmilHernvall/dnsguide",
+          link: "https://github.com/EmilHernvall/dnsguide",
         },
         {
           title: "brainf*ck interpreter",
           done: false,
-          github: "https://github.com/0xmukesh",
+          link: "https://github.com/0xmukesh",
         },
         {
           title: "nano-like text editor",
           done: false,
-          github: "https://github.com/0xmukesh",
+          link: "https://github.com/0xmukesh",
+        },
+        {
+          title: "a toy rendering engine",
+          done: false,
+          link: "https://limpet.net/mbrubeck/2014/08/08/toy-layout-engine-1.html",
         },
       ];
 
@@ -120,7 +124,7 @@
         $label.appendChild($input);
 
         const $a = document.createElement("a");
-        $a.href = project.github || "#";
+        $a.href = project.link || "#";
         $a.target = "_blank";
         $a.appendChild(document.createTextNode(project.title));
         $label.appendChild($a);
