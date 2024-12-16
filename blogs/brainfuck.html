@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>writing a brainfuck interpreter</title>
+    <meta
+      name="description"
+      content="learn how brainfuck works by writing a brainfuck interpreter in golang"
+    />
+    <meta
+      name="keywords"
+      content="programming, go, golang, brainfuck, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+    <meta property="og:title" content="writing a brainfuck interpreter" />
+    <meta
+      property="og:description"
+      content="learn how brainfuck works by writing a brainfuck interpreter in golang"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://0xmukesh.github.io/blogs/brainfuck.html"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="writing a brainfuck interpreter" />
+    <meta
+      name="twitter:description"
+      content="learn how brainfuck works by writing a brainfuck interpreter in golang"
+    />
+    <link
+      rel="canonical"
+      href="https://0xmukesh.github.io/blogs/brainfuck.html"
+    />
+
+    <link rel="stylesheet" href="/styles.css" />
+
+    <style>
+      #from-scratch-list > li > label > input {
+        margin-right: 8px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+  <body class="blog">
+    <h1>writing a brainfuck interpreter</h1>
+    <p class="blog__byline">
+      by <a href="/">mukesh</a> on
+      <time datetime="2024-12-15">15th December 2024</time>
+    </p>
+
+    <p>
+      i recently built a toy programming language (<a
+        href="https://github.com/0xmukesh/brtlang"
+        target="_blank"
+        >brtlang</a
+      >), which got me more interested about interpreters and compilers. so i
+      thought of building a brainfuck interpreter (pretty obvious, didn't you
+      see it coming?).
+    </p>
+
+    <h2>brainfuck</h2>
+
+    <p>
+      brainfuck is an
+      <a
+        href="https://en.wikipedia.org/wiki/Esoteric_programming_language"
+        target="_blank"
+        >esoteric programming language</a
+      >
+      which is designed to be extremely minimalistic. the language consists of
+      only eight simple commands, a data pointer, and an instruction pointer.
+      even tho it has a very small set of keywords, it is a turning-complete
+      language.
+    </p>
+
+    <p>
+      a brainfuck program is initialized with an array of 30,000 1 byte memory
+      blocks (would be referring it as <code>tape</code>), in which each
+      cell/block is initialized to zero, an instruction pointer that loops over
+      the tape, and a data pointer that loops over the file contents.
+    </p>
+
+    <p>the available 8 keywords/operators in brainfuck are:</p>
+
+    <ol>
+      <li>
+        <code>&gt;</code> - move the instruction pointer to the block to the
+        right in tape
+      </li>
+      <li>
+        <code>&lt;</code> - move the instruction pointer to the block to the
+        left in tape
+      </li>
+      <li>
+        <code>+</code> - increases value stored at the block pointed by the
+        instruction pointer
+      </li>
+      <li>
+        <code>-</code> - decreases value stored at the block pointed by the
+        instruction pointer
+      </li>
+      <li><code>[</code> - loops until current block value is equal to 0</li>
+      <li>
+        <code>]</code> - if current block value is non-zero, it jumps back to
+        <code>[</code>. <code>[</code> and <code>]</code> combined form the loop
+      </li>
+      <li>
+        <code>,</code> - reads the character from <code>stdin</code> and stores
+        it at the current block
+      </li>
+      <li>
+        <code>.</code> - prints out current block value to <code>stdout</code>
+      </li>
+    </ol>
+
+    <p>
+      any character other than the above mentioned 8 keywords must be considered
+      as a comment, basically ignored by the interpreter
+    </p>
+
+    <h3>hello world in brainfuck</h3>
+
+    <code
+      >>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+.</code
+    >
+
+    <p>let's break it down.</p>
+
+    <ol>
+      <li><code>>++++++++[<+++++++++>-]<.</code></li>
+      <li><code>>++++[<+++++++>-]<+.</code></li>
+      <li><code>+++++++.</code></li>
+      <li><code>.</code></li>
+      <li><code>+++.</code></li>
+      <li><code>>>++++++[<+++++++>-]<++.</code></li>
+      <li><code>------------.</code></li>
+      <li><code>>++++++[<+++++++++>-]<+.</code></li>
+      <li><code><.</code></li>
+      <li><code>+++.</code></li>
+      <li><code>------.</code></li>
+      <li><code>--------.</code></li>
+      <li><code>>>>++++[<++++++++>-]<+.</code></li>
+    </ol>
+
+    <br />
+
+    <ol>
+      <li>
+        <code>>++++++++[<+++++++++>-]<.</code>
+
+        <p>
+          the instruction pointer moves one block to the right and increments
+          the value by 8
+        </p>
+        <p>>> current state of tape - [0,(8),...]</p>
+        (<code>()</code> indicates that the pointer is currently at that block)
+        <p>
+          the program then enters a loop. the instruction pointer moves one
+          block to the left and increments the value by 9
+        </p>
+        <p>>> current state of tape - [(9),8,...]</p>
+        <p>
+          the instruction pointer moves one block to the right and decrements
+          the value by 1. as the current block value is non-zero, it jumps back
+          to <code>[</code> and it continues until value of the second block
+          becomes zero, so 8 times. at the end of the loop, the value of first
+          block would be equal to 72
+        </p>
+        <p>>> current state of tape - [72,(0),...]</p>
+        <p>
+          the instruction pointer moves one block to the left and prints out
+          current block value
+        </p>
+        <p>>> current state of tape - [(72),0,...]</p>
+
+        <p>72 is ASCII code for letter <code>H</code></p>
+
+        <br />
+      </li>
+
+      <li>
+        <code>>++++[<+++++++>-]<+.</code>
+
+        <p>
+          the instruction pointer moves one block to the right and increments
+          the value by 4
+        </p>
+        <p>>> current state of tape - [72,(4),...]</p>
+        <p>
+          the program enters a loop. the instruction pointer moves one block to
+          the left and increments the value by 7
+        </p>
+        <p>>> current state of tape - [(80),4,...]</p>
+        <p>
+          the instruction pointer moves one block to the right and decrements
+          the value by 1. as the current block value is non-zero, it jumps back
+          to <code>[</code> and it continues until the value of the second block
+          becomes zero, so 4 times. at the end of the loop, the value of first
+          loop would be equal to 72 + (4*7) = 100
+        </p>
+        <p>>> current state of tape - [100,(0),...]</p>
+        <p>
+          the instruction pointer moves one block to the left and increments the
+          value by 1 and prints out current block's value
+        </p>
+        <p>>> current state of tape - [(101),0,...]</p>
+
+        <p>101 is ASCII code for letter <code>e</code></p>
+        <br />
+      </li>
+
+      <li>
+        <code>+++++++.</code>
+
+        <p>
+          the instruction pointer increments value of current block by 7 and
+          prints out current block's value
+        </p>
+        <p>>> current state of tape - [(108),0,...]</p>
+
+        <p>108 is ASCII code for letter <code>l</code></p>
+      </li>
+
+      <li>
+        <code>.</code>
+
+        <p>the instruction pointer prints out current block's value</p>
+        <p>>> curent state of tape - [(108),0,...]</p>
+
+        <p>108 is ascii code for letter <code>l</code></p>
+      </li>
+
+      <li>
+        <code>+++.</code>
+
+        <p>
+          the instruction pointer increments value of current block by 3 and
+          prints out current block's value
+        </p>
+        <p>>> current state of tape - [(111),0,...]</p>
+
+        <p>111 is ascii code for letter <code>o</code></p>
+      </li>
+
+      <li>
+        <code>>>++++++[<+++++++>-]<++.</code>
+
+        <p>
+          the instruction pointer moves two blocks to the right and increments
+          value of current block by 6
+        </p>
+        <p>>> current state of tape - [111,0,(6),...]</p>
+        <p>
+          the program enters a loop. the instruction pointer moves one block to
+          the left and increments value of current block by 7
+        </p>
+        <p>>> current state of tape - [111,(7),6,...]</p>
+        <p>
+          the instruction pointer moves one block to the right and decrements
+          value of current block by 1. as value of current block is non-zero,
+          the program jumps back to <code>[</code> and it continues until value
+          of third block is equal to zero, so 6 times
+        </p>
+        <p>>> current state of tape - [111,42,(0),...]</p>
+        <p>
+          the instruction pointer moves one block to the left, increments value
+          of current block by 2 and prints out the value
+        </p>
+        <p>>> current state of tape - [111,(44),0,...]</p>
+
+        <p>44 is ASCII code for <code>,</code></p>
+      </li>
+    </ol>
+
+    <p>so yea, you get it. let's now write the interpreter</p>
+
+    <h2>interpreter</h2>
+
+    <p>let's structure <code>Interpreter</code> structure</p>
+
+    <pre><code class="language-go">type Interpreter struct {
+    Tape  []byte
+    Ptr   int
+    Input []byte
+}</code></pre>
+
+    <ol>
+      <li>
+        <code>Tape</code> is 30,000 byte array which is initialized at the start
+        of the program
+      </li>
+      <li><code>Ptr</code> is current index of instruction pointer</li>
+      <li><code>Input</code> is the source code</li>
+    </ol>
+
+    <pre><code class="language-go">func (p *Interpreter) Run() {
+        bracketCounter := 0
+    
+        for i := 0; i < len(p.Input); i++ {
+            switch p.Input[i] {
+            case '>':
+                p.Ptr++
+            case '<':
+                p.Ptr--
+            case '+':
+                p.Tape[p.Ptr]++
+            case '-':
+                p.Tape[p.Ptr]--
+            case '.':
+                fmt.Print(string(p.Tape[p.Ptr]))
+            case ',':
+                var input string
+                if _, err := fmt.Scan(&input); err != nil {
+                    fmt.Println(InterpreterError("failed to read input", i))
+                    os.Exit(1)
+                }
+                runes := []rune(input)
+                if len(runes) > 1 {
+                    fmt.Println(InterpreterError(fmt.Sprintf("recieved %s. expected single character input", input), i))
+                    os.Exit(1)
+                }
+                p.Tape[p.Ptr] = byte(runes[0])
+            case '[':
+                if p.Tape[p.Ptr] == 0 {
+                    bracketCounter++
+    
+                    for p.Input[i] != ']' || bracketCounter != 0 {
+                        i++
+    
+                        if p.Input[i] == '[' {
+                            bracketCounter++
+                        } else if p.Input[i] == ']' {
+                            bracketCounter--
+                        }
+                    }
+                }
+            case ']':
+                if p.Tape[p.Ptr] != 0 {
+                    bracketCounter++
+    
+                    for p.Input[i] != '[' || bracketCounter != 0 {
+                        i--
+    
+                        if p.Input[i] == ']' {
+                            bracketCounter++
+                        } else if p.Input[i] == '[' {
+                            bracketCounter--
+                        }
+                    }
+                }
+            }
+        }
+    }</code></pre>
+
+    <p>
+      i've defined <code>Run</code> method on <code>Interpreter</code> struct
+      which is responsible for interpreting the source code.
+    </p>
+
+    <p>the code might look overwhelming at first, so let's break down.</p>
+
+    <p>
+      <code>Run</code> method loops the source code and checks value of each
+      character. <code>i</code> in the <code>for</code> loop acts like data
+      pointer, <code>p.Ptr</code> acts as instruction pointer and
+      <code>p.Tape[p.Ptr]</code> acts as current block
+    </p>
+
+    <ol>
+      <li>
+        if current character is <code>></code> then <code>p.Ptr</code> is
+        incremented by 1
+      </li>
+
+      <li>
+        if current character is <code><</code> then <code>p.Ptr</code> is
+        decremented by 1
+      </li>
+
+      <li>
+        if current character is <code>+</code> then value of current block
+        (<code>p.Tape[p.Ptr]</code>) is incremented by 1
+      </li>
+
+      <li>
+        if current character is <code>-</code> then value of current block
+        (<code>p.Tape[p.Ptr]</code>) is decremented by 1
+      </li>
+
+      <li>
+        if current character is <code>.</code> then string equivalent of current
+        block value (<code>string(p.Tape[p.Ptr])</code>) is printed out
+      </li>
+
+      <li>
+        <p>
+          if current character is <code>,</code> then the input is read from
+          <code>stdin</code>
+        </p>
+
+        <pre><code class="language-go">var input string
+if _, err := fmt.Scan(&input); err != nil {
+    fmt.Println(InterpreterError("failed to read input", i))
+    os.Exit(1)
+}</code></pre>
+
+        <p>
+          and checks whether the input is a
+          <i>multi-character</i> or not.
+        </p>
+
+        <pre><code class="language-go">runes := []rune(input)
+if len(runes) > 1 {
+    fmt.Println(InterpreterError(fmt.Sprintf("recieved %s. expected single character input", input), i))
+    os.Exit(1)
+}</code></pre>
+
+        <p>
+          <code>InterpreterError</code> is just an utility function which
+          appends an prefix to an error message
+        </p>
+
+        <pre><code class="language-go">func InterpreterError(msg string, idx int) string {
+    return fmt.Sprintf("an error occured at %d character: %s", idx, msg)
+}</code></pre>
+
+        <p>
+          if the input isn't a <i>multi-character</i> then ASCII code of the
+          first element is stored into the current block
+        </p>
+
+        <pre><code class="language-go">p.Tape[p.Ptr] = byte(runes[0])</code></pre>
+      </li>
+
+      <li>
+        <p>
+          if current character is <code>[</code> then it checks current block
+          value. if it is zero, then the loop is skipped until the matching
+          <code>]</code>. if no, then it executes the loop body by moving the
+          data pointer i.e. incrementing <code>i</code>
+        </p>
+
+        <p>
+          <code>bracketCounter</code> is used to track how many pairs of
+          brackets (<code>[</code> and <code>]</code>) the interpreter has
+          encountered
+        </p>
+
+        <pre><code class="language-go">if p.Tape[p.Ptr] == 0 {
+    bracketCounter++
+
+    for p.Input[i] != ']' || bracketCounter != 0 {
+        i++
+
+        if p.Input[i] == '[' {
+            bracketCounter++
+        } else if p.Input[i] == ']' {
+            bracketCounter--
+        }
+    }
+}</code></pre>
+      </li>
+
+      <li>
+        <p>
+          if current character is <code>]</code> then it checks current block
+          value. if it is zero, then the loop is exited. if no, then it jumps
+          back to matching <code>[</code> to execute the loop body until current
+          block value is equal to zero
+        </p>
+
+        <pre><code class="language-go">if p.Tape[p.Ptr] != 0 {
+    bracketCounter++
+
+    for p.Input[i] != '[' || bracketCounter != 0 {
+        i--
+
+        if p.Input[i] == ']' {
+            bracketCounter++
+        } else if p.Input[i] == '[' {
+            bracketCounter--
+        }
+    }
+}</code></pre>
+      </li>
+    </ol>
+
+    <p>
+      and that's how you implement a brainfuck interpreter in under 100 lines in
+      golang.
+    </p>
+
+    <a href="https://github.com/0xmukesh/brainfreeze" target="_blank"
+      >source code</a
+    >
+
+    <footer style="text-align: center; margin-top: 32px">
+      <a href="/">0xmukesh</a>
+    </footer>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
