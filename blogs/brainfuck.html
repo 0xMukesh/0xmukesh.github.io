@@ -91,21 +91,13 @@
 
     <ol>
       <li>
-        <code>&gt;</code> - move the instruction pointer to the block to the
-        right in tape
+        <code>&gt;</code> - move the instruction pointer to the next block
       </li>
       <li>
-        <code>&lt;</code> - move the instruction pointer to the block to the
-        left in tape
+        <code>&lt;</code> - move the instruction pointer to the previous block
       </li>
-      <li>
-        <code>+</code> - increases value stored at the block pointed by the
-        instruction pointer
-      </li>
-      <li>
-        <code>-</code> - decreases value stored at the block pointed by the
-        instruction pointer
-      </li>
+      <li><code>+</code> - increase the value of current block</li>
+      <li><code>-</code> - decrease the value of current block</li>
       <li><code>[</code> - loops until current block value is equal to 0</li>
       <li>
         <code>]</code> - if current block value is non-zero, it jumps back to
@@ -207,7 +199,7 @@
         </p>
         <p>>> current state of tape - [100,(0),...]</p>
         <p>
-          the instruction pointer moves one block to the left and increments the
+          the instruction pointer moves one block to the left, increments the
           value by 1 and prints out current block's value
         </p>
         <p>>> current state of tape - [(101),0,...]</p>
@@ -283,10 +275,10 @@
 
     <h2>interpreter</h2>
 
-    <p>let's structure <code>Interpreter</code> structure</p>
+    <p>let's structure interpreter</p>
 
     <pre><code class="language-go">type Interpreter struct {
-    Tape  []byte
+    Tape  [30000]uint8
     Ptr   int
     Input []byte
 }</code></pre>
@@ -299,6 +291,11 @@
       <li><code>Ptr</code> is current index of instruction pointer</li>
       <li><code>Input</code> is the source code</li>
     </ol>
+
+    <p>
+      <code>Tape</code> is of an array of type <code>uint8</code> to have
+      wrapping
+    </p>
 
     <pre><code class="language-go">func (p *Interpreter) Run() {
         bracketCounter := 0
