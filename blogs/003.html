@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>writing a mini path tracer: making a gradient</title>
+    <meta
+      name="description"
+      content="making a gradient using ray tracing in golang"
+    />
+    <meta
+      name="keywords"
+      content="programming, go, golang, ray tracing, computer graphics, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+    <meta
+      property="og:title"
+      content="writing a mini path tracer: making a gradient"
+    />
+    <meta
+      property="og:description"
+      content="making a gradient using ray tracing in golang"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://0xmukesh.github.io/blogs/003.html"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="writing a mini path tracer: making a gradient"
+    />
+    <meta
+      name="twitter:description"
+      content="making a gradient using ray tracing in golang"
+    />
+    <link rel="canonical" href="https://0xmukesh.github.io/blogs/003.html" />
+
+    <link rel="stylesheet" href="/styles.css" />
+
+    <style>
+      #from-scratch-list > li > label > input {
+        margin-right: 8px;
+      }
+    </style>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+  <body class="blog">
+    <h1>writing a mini path tracer: making a gradient</h1>
+    <p class="blog__byline">
+      by <a href="/">mukesh</a> on
+      <time datetime="2024-12-15">24th December 2024</time>
+    </p>
+
+    <p>
+      hey there! i have recently started reading
+      <a href="https://raytracing.github.io/books/RayTracingInOneWeekend.html"
+        >Ray Tracing in One Weekend</a
+      >
+      and have been trying to implement it in golang, so i thought of writing a
+      blog series on how to build a tiny path tracer in golang.
+    </p>
+
+    <h2>what is ray tracing?</h2>
+
+    <p>
+      if you're into video games then you probably might have heard this term
+      earlier in the context of graphics cards.
+    </p>
+
+    <p>
+      video games (i.e. real-time computer graphics) have long used
+      rasterization technique to display three-dimensional objects on a
+      two-dimensional screen, mainly due to the fact that it is very efficient.
+      with rasterization, objects on the screen are created from a mesh of
+      virtual triangles, or polygons, that create 3D models of objects.
+    </p>
+
+    <p>
+      ray tracing is another computer graphics technique, but it simulates how
+      light behaves in the real world to create <i>realistic</i> images. in the
+      real world, humans see objects because of the light from the source that
+      is been reflected by that object. in ray tracing, rays are sent from a
+      <i>camera</i>
+      to each pixel and see how the pixels (i.e. part of the objects) behave
+      with the light rays and accordingly, the color is decided for that pixel.
+      the reason for doing so is because not all light rays reach the camera and
+      wouldn't be responsible for rendering the image.
+    </p>
+
+    <p>
+      well, then why is the title of the blog "writing a <b>path</b> tracer" and
+      not "writing a <b>ray</b> tracer"? well, we would be using the path
+      tracing technique. path tracing is sorta like a form of ray tracing but it
+      traces multiple rays per pixel to a surface and then calculates how they
+      will be statistically scattered. path tracing creates
+      <i>very</i> realistic images
+    </p>
+
+    <blockquote>
+      Every beautiful light bounce costs a slice of your computer's brain power
+    </blockquote>
+
+    <h2>getting started</h2>
+
+    <p>
+      after the renderer statistically figures out color (and other correlating
+      quantities like brightness, and intensity), we need a way to view the
+      output. the simplest way to do so is to write the data to a file and
+      convert it to a .png.
+    </p>
+
+    <p>
+      <a href="https://netpbm.sourceforge.net/doc/ppm.html">PPM</a> file format
+      is the one which suits well in our usecase and is the easiest to work
+      with. each PPM file follows a structure which looks something like:
+    </p>
+
+    <pre><code>P3
+num_of_cols num_of_rows
+max_color
+...rgb_values</code></pre>
+
+    <p>ex:</p>
+
+    <pre><code>P3
+2 2
+255
+255 0 0 
+0 255 0 
+0 0 255 
+255 255 0</code></pre>
+
+    <p>
+      this renders a tiny image of 2x2 pixels with red, green, blue and yellow
+      squares accordingly.
+    </p>
+
+    <p>
+      as we're now a bit comfortable with the PPM file format, let's render a
+      simple gradient
+    </p>
+
+    <pre><code>package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    f, err := os.Create("test.ppm")
+    if err != nil {
+        panic(err.Error())
+    }
+
+    width := 256
+    height := 256
+
+    _, err = fmt.Fprintf(f, "P3\n%d %d\n255\n", width, height)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    for i := range width {
+        for j := range height {
+            r := float64(i) / float64(width-1)
+            g := float64(j) / float64(height-1)
+            b := 0.0
+
+            ir := int(255.99 * r)
+            ig := int(255.99 * g)
+            ib := int(255.99 * b)
+
+            _, err := fmt.Fprintf(f, "%d %d %d\n", ir, ig, ib)
+            if err != nil {
+                panic(err.Error())
+            }
+        }
+    }
+}</code></pre>
+
+    <p>
+      it might not be a straightforward task to understand what the above code
+      does, but let's break it down. generally, RGB values are internally
+      represented in the range of 0.0 to 1.0 and later scaled to the range from
+      0 to 255.
+    </p>
+
+    <p>
+      the reason for that is that 0-255 is an 8-bit value, so you can only store
+      256 different values whereas 0.0-1.0 are floating point values, which are
+      vastly higher in resolving powers. you might want the output of a render
+      to be in 8-8-8 bit RGB format. the calculations to get there you want to
+      do with far more accuracy than this.
+    </p>
+
+    <p>
+      and the reason for multiplying with 255.99 instead of 255 is to ensure
+      proper rounding and prevent potential off-by-one errors
+    </p>
+
+    <p>
+      on running the script, you get a gradient which varies from black (in the
+      top left corner) to yellow (in the bottom right corner) [<a
+        href="../images/003-1.png"
+        >image</a
+      >]
+    </p>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
