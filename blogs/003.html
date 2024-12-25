@@ -219,7 +219,10 @@ func main() {
 
     <p>
       on running the script, you get a gradient which varies from black (in the
-      top left corner) to yellow (in the bottom right corner)
+      top left corner) to yellow (in the bottom right corner). after running the
+      script, test.ppm file is created. if you're on a UNIX based machine, then
+      type <code>open test.ppm</code> in your terminal to directly view the
+      image or else use an online PPM viewer
     </p>
 
     <center><img src="../images/003/01.png" alt="gradient" /></center>
@@ -280,7 +283,9 @@ func main() {
       simple vector math.
     </p>
 
-    <p>r = (lower left corner) + (horizontal) * u + (vertical) * v - origin</p>
+    <blockquote>
+      r = (lower left corner) + (horizontal * u) + (vertical * v) - origin
+    </blockquote>
 
     <p>
       where horizontal = (vw, 0, 0), vertical = (0, vh, 0) and origin is the
@@ -292,6 +297,268 @@ func main() {
       <code>Vector</code> which will hold all the utility functions such as
       adding two vectors, subtracting two vectors, dot product and so on.
     </p>
+
+    <pre><code class="language-go">package main
+
+import (
+    "math"
+)
+
+type Vector struct {
+    X, Y, Z float64
+}
+
+func NewVector(x, y, z float64) Vector {
+    return Vector{
+        X: x,
+        Y: y,
+        Z: z,
+    }
+}
+
+func (v Vector) AddVector(u Vector) Vector {
+    return Vector{v.X + u.X, v.Y + u.Y, v.Z + u.Z}
+}
+
+func (v Vector) AddScalar(s float64) Vector {
+    return Vector{v.X + s, v.Y + s, v.Z + s}
+}
+
+func (v Vector) SubtractVector(u Vector) Vector {
+    return Vector{v.X - u.X, v.Y - u.Y, v.Z - u.Z}
+}
+
+func (v Vector) MultiplyComponents(u Vector) Vector {
+    return NewVector(v.X*u.X, v.Y*u.Y, v.Z*u.Z)
+}
+
+func (v Vector) MultiplyScalar(s float64) Vector {
+    return Vector{v.X * s, v.Y * s, v.Z * s}
+}
+
+func (v Vector) DivideScalar(s float64) Vector {
+    return v.MultiplyScalar(1 / s)
+}
+
+func (v Vector) DotProduct(u Vector) float64 {
+    return (v.X * u.X) + (v.Y * u.Y) + (v.Z * u.Z)
+}
+
+func (v Vector) Length() float64 {
+    return math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
+}
+
+func (v Vector) UnitVector() Vector {
+    return v.DivideScalar(v.Length())
+}
+
+</code></pre>
+
+    <p>let's brief through the code a bit</p>
+
+    <ol>
+      <li>
+        <p><code>AddVector</code> - adds two vectors</p>
+      </li>
+
+      <li>
+        <p>
+          <code>AddScalar</code> - adds a scalar to every component of the
+          vector
+        </p>
+      </li>
+
+      <li>
+        <p><code>SubtractVector</code> - subtracts two vectors</p>
+      </li>
+
+      <li>
+        <p>
+          <code>MultiplyComponents</code> - corresponding components of the two
+          vectors are multiplied and the resultant is also a vector
+        </p>
+      </li>
+
+      <li>
+        <p>
+          <code>MultiplyScalar</code> - a scalar is multiplied to every
+          component of the vector
+        </p>
+      </li>
+
+      <li>
+        <p>
+          <code>DivideScalar</code> - every component of the vector is divided
+          by a scalar
+        </p>
+      </li>
+
+      <li>
+        <p><code>DotProduct</code> - returns dot product of two vectors</p>
+      </li>
+
+      <li>
+        <p><code>Length</code> - returns length of a vector</p>
+      </li>
+
+      <li>
+        <p>
+          <code>UnitVector</code> - returns an unit vector in the direction of
+          that vector i.e. normalizes the vector
+        </p>
+      </li>
+    </ol>
+
+    <p>now let's actually implement the camera setup in code</p>
+
+    <pre
+      class="hljs"
+      style="white-space: pre-wrap"
+    ><code class="language-go">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    f, err := os.Create("test.ppm")
+    if err != nil {
+        panic(err.Error())
+    }
+
+    imageWidth := 256
+    imageHeight := 256
+
+    viewportHeight := 2.0
+    viewportWidth := 2.0
+    focalLength := 1.0
+
+    origin := NewVector(0, 0, 0)
+    horizontal := NewVector(viewportWidth, 0, 0)
+    vertical := NewVector(0, viewportHeight, 0)
+
+    lowerLeftCorner := origin.SubtractVector(horizontal.DivideScalar(2)).SubtractVector(vertical.DivideScalar(2)).SubtractVector(NewVector(0, 0, focalLength))
+
+    _, err = fmt.Fprintf(f, "P3\n%d %d\n255\n", imageWidth, imageHeight)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    for j := imageHeight - 1; j >= 0; j-- {
+        fmt.Printf("scanlines remaining: %d\n", j)
+
+        for i := 0; i < imageWidth; i++ {
+            u := float64(i) / float64(imageWidth-1)
+            v := float64(j) / float64(imageHeight-1)
+
+            vec := lowerLeftCorner.AddVector(horizontal.MultiplyScalar(u)).AddVector(vertical.MultiplyScalar(v)).SubtractVector(origin)
+
+            unitVec := vec.UnitVector()
+            t := 0.5 * (unitVec.Y + 1)
+
+            color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+
+            ir := int(255.99 * color.X)
+            ig := int(255.99 * color.Y)
+            ib := int(255.99 * color.Z)
+
+            _, err := fmt.Fprintf(f, "%d %d %d\n", ir, ig, ib)
+            if err != nil {
+                panic(err.Error())
+            }
+        }
+    }
+
+    fmt.Println("done")
+}
+</code></pre>
+
+    <p>
+      i've set the size of the image to be 256x256 pixels i.e. aspect ratio is
+      1:1 so aspect ratio of the viewport must also be 1:1. the size of the
+      viewport if 2x2 world units.
+    </p>
+
+    <p>
+      the focal length of the camera is set to be 1 unit and the camera origin
+      is at (0, 0, 0).
+    </p>
+
+    <p>
+      the lower left corner is calculated with the help of
+      <code>horizontal</code>, <code>vertical</code> and
+      <code>focal length</code> via the following formula
+    </p>
+
+    <blockquote>
+      lower left corner = origin - (horizontal/2) - (vertical/2) - (0, 0, focal
+      length)
+    </blockquote>
+
+    <p>
+      as origin of the viewport is at the lower left corner, <code>j</code> is
+      started from <code>imageHeight - 1</code> instead of <code>0</code>. if
+      you consider upper left corner to be as the origin for viewport then you
+      would start <code>j</code> from 0 and also take care about the differences
+      in direction of the axes of the viewport and axes of the camera.
+    </p>
+
+    <p>
+      <code>vec</code> is the current position of the pixel wih respect to
+      origin, and it is calculated via the previously mentioned formula
+    </p>
+
+    <p>
+      over here, we using a computer graphics techinque called linear blend or
+      liner interpolation or <i>lerp</i> between two values to create a gradient
+      between white and a shade of blue. the gradient from white to blue from
+      bottom to top i.e. it depends on y-coordinate of the current pixel's
+      location.
+    </p>
+
+    <blockquote>
+      blended value = (1 - t) * (start value) + t * (end value); 0.0 ≤ t ≤ 1.0
+    </blockquote>
+
+    <p>
+      as the gradient varies vertically, <code>t</code> is evaluated from
+      y-coordinate of current pixel
+    </p>
+
+    <blockquote>
+      t = 0.5 * (y - 1); y is y coordinate of an unit vector in the direction of
+      the vector i.e. -1.0 ≤ y ≤ 1.0
+    </blockquote>
+
+    <p>
+      <code>y</code> ranges from -1.0 to 1.0 but <code>t</code> must in between
+      0 and 1 so as to map <code>y</code> with the equivalent <code>t</code> in
+      the range of 0 to 1, it is subtracted by 1 and multiplied with 0.5.
+    </p>
+
+    <p>
+      and final blended value is represented in the form of a vector as (R, G,
+      B) which makes it a little simple. you can even have a separate struct
+      named <code>Color</code> for representing color as a vector but as of
+      right now, this works.
+    </p>
+
+    <p>on running the script, you get a beautiful gradient</p>
+
+    <center>
+      <img src="../images/003/03.png" alt="blue-white gradient" />
+    </center>
+
+    <p>
+      and that's how to write a simple camera setup and render a gradient. this
+      is the pretty much the basics of writing a path tracer.
+    </p>
+
+    <a
+      href="https://github.com/0xMukesh/path-tracer/tree/259313d3e8fd5c0ddbc4af76c1afb501b90e70cb"
+      >source code</a
+    >
 
     <script src="/js/blogs/add-top-nav.js"></script>
     <script>
