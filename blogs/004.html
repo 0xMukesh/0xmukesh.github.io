@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>writing a mini path tracer: working with spheres</title>
+    <meta name="description" content="working with spheres" />
+    <meta
+      name="keywords"
+      content="programming, go, golang, ray tracing, computer graphics, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+    <meta
+      property="og:title"
+      content="writing a mini path tracer: working with spheres"
+    />
+    <meta property="og:description" content="working with spheres" />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://0xmukesh.github.io/blogs/004.html"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="writing a mini path tracer: working with spheres"
+    />
+    <meta name="twitter:description" content="working with spheres" />
+    <link rel="canonical" href="https://0xmukesh.github.io/blogs/004.html" />
+
+    <link rel="stylesheet" href="/styles.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+
+  <body class="blog">
+    <h1>writing a mini path tracer: working with spheres</h1>
+    <p class="blog__byline">
+      by <a href="/">mukesh</a> on
+      <time datetime="2024-12-15">25th December 2024</time>
+    </p>
+
+    <p>
+      in the previous blog, we've setup a simple virtual camera and have
+      rendered a blue-white gradient. in this blog, we'd render a simple sphere
+      and learn about antialiasing.
+    </p>
+
+    <h2>some math related to spheres</h2>
+
+    <p>
+      we've to first figure out whether a certain ray <i>hits</i> a sphere or
+      not.
+    </p>
+
+    <p>
+      the equation for a sphere of radius <code>r</code> and centered at origin
+      can be mathematically represented as follows:
+    </p>
+
+    <blockquote>x^2 + y^2 + z^2 = r^2</blockquote>
+
+    <p>
+      and position of any arbitary point (a, b, c) with respect to the sphere
+      can be judged by comparing value of a^2 + b^2 + c^2 and r^2
+    </p>
+
+    <ol>
+      <li>
+        if a^2 + b^2 + c^2 = r^2, then it lies on the surface of the sphere
+      </li>
+
+      <li>if a^2 + b^2 + c^2 > r^2, then it lies outside the sphere</li>
+
+      <li>if a^2 + b^2 + c^2 < r^2, then it lies within the sphere</li>
+    </ol>
+
+    <p>
+      the equation for a sphere of radius <code>r</code> and centered at a point
+      (C<sub>x</sub>, C<sub>y</sub>, C<sub>z</sub>) is as follows
+    </p>
+
+    <blockquote>
+      (C<sub>x</sub> - x)^2 + (C<sub>y</sub> - y)^2 + (C<sub>z</sub> - z)^2 =
+      r^2
+    </blockquote>
+
+    the above equation can be also represented in the form of vectors as follows
+
+    <blockquote>
+      (C - P)⋅(C - P) = r^2; where C = (C<sub>x</sub>, C<sub>y</sub>,
+      C<sub>z</sub>) and P = (x, y, z)
+    </blockquote>
+
+    <p>
+      so to check if a ray <i>hits</i> the sphere, we've to find the value of
+      <code>t</code> which satisfies the following equation
+    </p>
+
+    <blockquote>
+      (C - P(t))⋅(C - P(t)) = r^2; where P(t) = Q + td, Q is origin of the ray
+      and d is the direction of the ray
+    </blockquote>
+
+    <p>
+      after doing some math magic, you realize that it is a quadratic equation
+      in <code>t</code>
+    </p>
+
+    <blockquote>
+      (d⋅d)t^2 - (2d⋅(C - Q))t + (C - Q)⋅(C - Q) - r^2 = 0
+    </blockquote>
+
+    <p>
+      and from algebra, a quadratic equation has real solutions only if its
+      discriminant is greater than or equal to 0
+    </p>
+
+    <blockquote>
+      D = b^2 - 4ac
+      <br />
+      D = (2d⋅(C - Q))^2 - 4(d⋅d)((C - Q)⋅(C - Q) - r^2)
+    </blockquote>
+
+    <p>
+      to render a red sphere, we've write logic within
+      <code>RayColor</code> function which would return red color if the
+      discriminant is greater than or equal to 0 else it would return the color
+      related to the background. so let's implement it in code.
+    </p>
+
+    <pre><code class="language-go">func (r Ray) HitSphere(center Vector, radius float64) bool {
+  cq := center.SubtractVector(r.Origin)
+  a := r.Direction.DotProduct(r.Direction)
+  b := 2 * r.Direction.DotProduct(cq)
+  c := cq.DotProduct(cq) - radius*radius
+  d := b*b - 4*a*c
+
+  return d >= 0
+}
+
+func RayColor(r Ray) Vector {
+  if r.HitSphere(NewVector(0, 0, -1), 0.5) {
+    return NewVector(1, 0, 0)
+  }
+
+  unitVec := r.Direction.UnitVector()
+  t := 0.5 * (unitVec.Y + 1)
+  color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+  return color
+}</code></pre>
+
+    <p>
+      on running the script, you must see a red sphere in center of the image
+    </p>
+
+    <center><img src="../images/004/01.png" alt="red sphere" /></center>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

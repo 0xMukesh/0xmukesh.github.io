@@ -39,19 +39,13 @@
 
     <link rel="stylesheet" href="/styles.css" />
 
-    <style>
-      #from-scratch-list > li > label > input {
-        margin-right: 8px;
-      }
-    </style>
-
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
   </head>
+
   <body class="blog">
     <h1>writing a mini path tracer: making a gradient</h1>
     <p class="blog__byline">
@@ -547,15 +541,59 @@ func main() {
       <img src="../images/003/03.png" alt="blue-white gradient" />
     </center>
 
+    <h2>rays</h2>
+
+    <p>
+      the program is pretty much done but let's do lil' refactoring. let's make
+      a new struct named <code>Ray</code> which would act like a ray, which
+      would be very much required in the next blog.
+    </p>
+
+    <pre><code class="language-go">package main
+
+type Ray struct {
+  Origin    Vector
+  Direction Vector
+}
+
+func NewRay(origin, direction Vector) Ray {
+  return Ray{
+    Origin:    origin,
+    Direction: direction,
+  }
+}
+
+func (r Ray) At(t float64) Vector {
+  return r.Origin.AddVector(r.Direction.MultiplyScalar(t))
+}</code></pre>
+
+    <p>every ray can be mathematically represented as follows</p>
+
+    <blockquote>P(t) = Q + td; where Q is origin and d is direction</blockquote>
+
+    <p>
+      let's make a function which takes in a ray as a parameter returns the
+      corresponding color for it based on its interactions with the pixels.
+    </p>
+
+    <pre><code class="language-go">func RayColor(r Ray) Vector {
+  unitVec := r.Direction.UnitVector()
+  t := 0.5 * (unitVec.Y + 1)
+  color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+  return color
+}</code></pre>
+
+    <p>and let's update <code>main.go</code> to support these recent changes</p>
+
+    <pre><code class="language-go">vec := lowerLeftCorner.AddVector(horizontal.MultiplyScalar(u)).AddVector(vertical.MultiplyScalar(v)).SubtractVector(origin)
+ray := NewRay(origin, vec)
+
+color := RayColor(ray)</code></pre>
+
     <p>
       and that's how to write a simple camera setup and render a gradient. this
       is the pretty much the basics of writing a path tracer.
     </p>
-
-    <a
-      href="https://github.com/0xMukesh/path-tracer/tree/259313d3e8fd5c0ddbc4af76c1afb501b90e70cb"
-      >source code</a
-    >
 
     <script src="/js/blogs/add-top-nav.js"></script>
     <script>
