@@ -9,6 +9,10 @@
   --bg-dark: black;
 }
 
+p {
+  font-size: 110%;
+}
+
 img {
   max-width: 70%;
   height: auto;
@@ -77,7 +81,7 @@ blockquote:before {
   margin-right: 0.25rem;
   vertical-align: bottom;
 }
-/* without this, subsequent <blockquote> elements were starting with only a single quote */
+
 blockquote:after {
   content: close-quote;
   visibility: hidden;
@@ -91,73 +95,10 @@ hr {
   display: none;
 }
 
-/* 🏎️ theme styles start */
-.theme-switcher {
-  width: 32px;
-  height: 32px;
-  position: fixed;
-  top: 8px;
-  right: 8px;
-  z-index: 50;
-  font-size: large;
-  background-color: var(--bg-light);
-  border: 1px solid var(--bg-dark);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-body.dark .theme-switcher {
-  background-color: var(--bg-dark);
-  border: 1px solid var(--bg-light);
-}
-
-.dark-only-inline,
-.dark-only-block,
-.dark-only-flex {
-  display: none;
-}
-
-body.dark {
-  background-color: black;
-  color: antiquewhite;
-}
-
-body.dark .dark-only-inline {
-  display: inline;
-}
-
-body.dark .dark-only-block {
-  display: block;
-}
-
-body.dark .dark-only-flex {
-  display: flex;
-}
-
-body.dark a {
-  color: lightblue;
-}
-
-body.dark code,
-body.dark .code-block {
-  background-color: darkslategrey;
-}
-
-body.dark blockquote {
-  background: darkslategrey;
-  border-left: 8px solid #303030;
-}
-
 .caption {
   font-size: 90%;
   font-style: italic;
 }
-
-/* hide the light-only elements */
-body.dark .light-only {
-  display: none;
-}
-/* 🏁 theme styles end */
 
 @media print {
   .print-only {

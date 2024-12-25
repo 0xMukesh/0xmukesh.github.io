@@ -95,7 +95,7 @@
       tracing technique. path tracing is sorta like a form of ray tracing but it
       traces multiple rays per pixel to a surface and then calculates how they
       will be statistically scattered. path tracing creates
-      <i>very</i> realistic images
+      <i>very</i> realistic images.
     </p>
 
     <blockquote>
@@ -139,7 +139,7 @@ max_color
 
     <p>
       as we're now a bit comfortable with the PPM file format, let's render a
-      simple gradient
+      simple gradient:
     </p>
 
     <pre><code>package main
@@ -196,8 +196,8 @@ func main() {
       the reason for that is that 0-255 is an 8-bit value, so you can only store
       256 different values whereas 0.0-1.0 are floating point values, which are
       vastly higher in resolving powers. you might want the output of a render
-      to be in 8-8-8 bit RGB format. the calculations to get there you want to
-      do with far more accuracy than this.
+      to be in 8-8-8 bit RGB format, but the calculations to get there you want
+      to do with far more accuracy than this.
     </p>
 
     <p>
@@ -216,7 +216,7 @@ func main() {
       top left corner) to yellow (in the bottom right corner). after running the
       script, test.ppm file is created. if you're on a UNIX based machine, then
       type <code>open test.ppm</code> in your terminal to directly view the
-      image or else use an online PPM viewer
+      image or else use an online PPM file viewer.
     </p>
 
     <center><img src="../images/003/01.png" alt="gradient" /></center>
@@ -235,14 +235,14 @@ func main() {
     <br />
 
     <p>
-      that's a simple representation of the camera setup. let's go through it a
-      bit deep
+      that's a simple representation of the camera setup. let's understand it a
+      bit better.
     </p>
 
     <p>
       by now, we all have a basic understanding of how ray tracing works - rays
-      are <i>shot</i> from the camera and interact with different pixels, and
-      accordingly, color is decided.
+      are <i>shot</i> from the camera and they interact with different pixels,
+      and accordingly, color is decided.
     </p>
 
     <p>
@@ -266,15 +266,23 @@ func main() {
       called focal length.
     </p>
 
-    <p>
+    <!-- <p>
       i have chose the lower left corner as origin of the viewport to keep
       direction of the axes of the viewport and axes of the camera in the same
       direction i.e. +y is vertically upwards and +x is pointing outwards
+    </p> -->
+
+    <p>
+      i've chose the lower left corner of the viewport to be origin of the
+      viewport to keep the viewport axes and camera axes to be in the same
+      direction i.e. +y is vertically upwards and +x is pointing outwards. in
+      the book, dr. shirley took upper left corner as the origin of the
+      viewport.
     </p>
 
     <p>
-      the location of any pixel in the viewport can be easily found via some
-      simple vector math.
+      the location of any pixel can be easily found with the help of some simple
+      vector math:
     </p>
 
     <blockquote>
@@ -518,7 +526,7 @@ func main() {
     </p>
 
     <blockquote>
-      t = 0.5 * (y - 1); y is y coordinate of an unit vector in the direction of
+      t = 0.5 * (y + 1); y is y coordinate of an unit vector in the direction of
       the vector i.e. -1.0 ≤ y ≤ 1.0
     </blockquote>
 
@@ -592,7 +600,7 @@ color := RayColor(ray)</code></pre>
 
     <p>
       and that's how to write a simple camera setup and render a gradient. this
-      is the pretty much the basics of writing a path tracer.
+      is pretty much the basics of writing a path tracer.
     </p>
 
     <script src="/js/blogs/add-top-nav.js"></script>
