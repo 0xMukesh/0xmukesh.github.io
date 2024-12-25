@@ -9,11 +9,18 @@
   --bg-dark: black;
 }
 
+img {
+  max-width: 70%;
+  height: auto;
+  display: block;
+}
+
 body {
   max-width: 788px;
   margin: 0 auto;
   padding: 24px;
   font-family: monospace;
+  background-color: #f4f1de;
 }
 
 h1,
@@ -139,6 +146,11 @@ body.dark .code-block {
 body.dark blockquote {
   background: darkslategrey;
   border-left: 8px solid #303030;
+}
+
+.caption {
+  font-size: 90%;
+  font-style: italic;
 }
 
 /* hide the light-only elements */

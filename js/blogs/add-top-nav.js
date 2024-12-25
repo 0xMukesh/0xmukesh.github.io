@@ -18,12 +18,12 @@ function addTopNav() {
 
   $aTags[2].href = window.location.href;
   $aTags[2].appendChild(
-    document.createTextNode(window.location.pathname.slice(window.location.pathname.lastIndexOf("/") + 1))
+    document.createTextNode(
+      window.location.pathname.slice(
+        window.location.pathname.lastIndexOf("/") + 1
+      )
+    )
   );
-
-  $aTags.forEach(($a) => {
-    console.log($a);
-  });
 
   $aTags.forEach(($a) => $nav.appendChild($a));
 

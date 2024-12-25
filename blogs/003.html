@@ -50,6 +50,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
   </head>
   <body class="blog">
     <h1>writing a mini path tracer: making a gradient</h1>
@@ -168,8 +169,10 @@ func main() {
         panic(err.Error())
     }
 
-    for i := range width {
-        for j := range height {
+    for j := range height {
+        fmt.Printf("scanlines remaining: %d\n", height-j)
+
+        for i := range width {
             r := float64(i) / float64(width-1)
             g := float64(j) / float64(height-1)
             b := 0.0
@@ -184,6 +187,8 @@ func main() {
             }
         }
     }
+
+    fmt.Println("done")
 }</code></pre>
 
     <p>
@@ -207,11 +212,85 @@ func main() {
     </p>
 
     <p>
+      the script also has a <i>progress indicator</i>, which is useful in later
+      on stages where it would take minutes to render a scene and it acts like
+      an indicator to know whether our script got stuck in an infinite loop.
+    </p>
+
+    <p>
       on running the script, you get a gradient which varies from black (in the
-      top left corner) to yellow (in the bottom right corner) [<a
-        href="../images/003-1.png"
-        >image</a
-      >]
+      top left corner) to yellow (in the bottom right corner)
+    </p>
+
+    <center><img src="../images/003/01.png" alt="gradient" /></center>
+
+    <h2>basic camera setup</h2>
+
+    <center>
+      <img src="../images/003/02.jpg" alt="" />
+      <br />
+      <footer class="caption">
+        im way too lazy to neatly draw the figure on
+        <a href="https://tldraw.com">tldraw</a>
+      </footer>
+    </center>
+
+    <br />
+
+    <p>
+      that's a simple representation of the camera setup. let's go through it a
+      bit deep
+    </p>
+
+    <p>
+      by now, we all have a basic understanding of how ray tracing works - rays
+      are <i>shot</i> from the camera and interact with different pixels, and
+      accordingly, color is decided.
+    </p>
+
+    <p>
+      in the above figure, <code>O</code> is the camera origin (i.e. where the
+      virtual camera is). <code>x</code>, <code>y</code> and <code>z</code> are
+      the axes of the camera and the rectangular screen behind is the viewport,
+      which is kinda like a rectangular "viewing window" through which you see
+      the scene from the camera point of view and <code>O<sub>v</sub></code> is
+      the center of the viewport and <code>L<sub>v</sub></code> is the lower
+      left corner of the the viewport.
+    </p>
+
+    <p>
+      <code>vw</code> and <code>vh</code> are the viewport width and viewport
+      height respectively. if the pixels are equally spaced then the viewport
+      will have the same aspect ratio as the image.
+    </p>
+
+    <p>
+      the distance between origin of the camera and center of the viewport is
+      called focal length.
+    </p>
+
+    <p>
+      i have chose the lower left corner as origin of the viewport to keep
+      direction of the axes of the viewport and axes of the camera in the same
+      direction i.e. +y is vertically upwards and +x is pointing outwards
+    </p>
+
+    <p>
+      the location of any pixel in the viewport can be easily found via some
+      simple vector math.
+    </p>
+
+    <p>r = (lower left corner) + (horizontal) * u + (vertical) * v - origin</p>
+
+    <p>
+      where horizontal = (vw, 0, 0), vertical = (0, vh, 0) and origin is the
+      camera origin
+    </p>
+
+    <p>
+      before starting to implement it in code, let's make a struct
+      <code>Vector</code> which will hold all the utility functions such as
+      adding two vectors, subtracting two vectors, dot product and so on.
     </p>
 
     <script src="/js/blogs/add-top-nav.js"></script>
