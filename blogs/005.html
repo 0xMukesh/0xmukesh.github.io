@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>generating sine waves using golang</title>
+    <meta name="description" content="generating sine waves using golang" />
+    <meta
+      name="keywords"
+      content="programming, go, golang, audio programming, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+  <body class="blog">
+    <h1>generating sine waves using golang</h1>
+    <p class="blog__byline">
+      by <a href="/">mukesh</a> on
+      <time datetime="2024-12-28">28th December 2024</time>
+    </p>
+
+    <p>
+      while scrolling through youtube, i came across this video on my feed by
+      <a href="https://www.youtube.com/@javidx9">javidx9</a> -
+      <a href="https://youtu.be/tgamhuQnOkM?si=QnRopBay40F54sAH"
+        >https://youtu.be/tgamhuQnOkM?si=QnRopBay40F54sAH</a
+      >
+      about building a sound synthesizer in c++, so i thought of giving audio
+      programming a shot. in this blog post, we'll cover few of the basic topics
+      and build a simple program which would generate a sine wave of a certain
+      frequency and save it to a <code>.wave</code> file, amplify and peform
+      stereopanning on a given <code>.wave</code> file.
+    </p>
+
+    <h2>what is sound?</h2>
+
+    <p>
+      sound is a phenomenon caused by vibration in particles that propagates as
+      a wave through a transmission medium such as air, water, or solids. most
+      of the sounds in the real world propagate in the form of a sine wave (or
+      combination of different sine waves).
+    </p>
+
+    <p>
+      for example, the note A above middle C on the piano propagates as a
+      (almost) pure sine wave with a frequency of 440Hz (<a
+        href="https://www.reddit.com/r/AskPhysics/comments/10tffnh/how_can_a_piano_key_have_only_one_frequency/"
+        >ref: how can a piano key only have one frequency?</a
+      >) and it can be mathematically represented as follows:
+    </p>
+
+    <blockquote>y = sin(880&pi;x)</blockquote>
+
+    <h2>what is audio?</h2>
+
+    <p>
+      sound is a mechanical wave energy, while audio is the electrical
+      representation of that sound wave.
+    </p>
+
+    <p>
+      a microphone converts the mechanical sound waves into analog signals which
+      is later passed through an analog-digital converter (ADC) which converts
+      these analog signals into digital signals, which would be understood by a
+      computer.
+    </p>
+
+    <p>
+      there are two important keywords in the context of digital audio -
+      <b>bit rate</b> and <b>sample frequency</b>
+    </p>
+
+    <p>
+      the analog signals hold information about various wave characteristics at
+      that particular instant such as the amplitude. sample frequency is the
+      number of times a
+      <i>snapshot</i> of these characteristics is taken and these snapshots are
+      later used to re-create the sound wave.
+    </p>
+
+    <p>
+      most of the audio which is delivered nowadays either uses 44.1 kHz or 48
+      kHz as the sample frequency. the frequency limit of humans range from 20
+      Hz to 22 kHz. nyquist rate is the minimum sampling rate needed to
+      accurately represent a signal and it is twice the highest frequency of the
+      signal.
+    </p>
+
+    <blockquote>44100 = 2 * 22000 + 100</blockquote>
+
+    <p>
+      why isn't it 44 kHz? well, an additional 100 Hz sorta acts like a
+      transition band or room for error, which prevents unwanted distortion in
+      the higher frequencies.
+    </p>
+
+    <p>
+      in the early days, digital audio was stored on modified video recorders
+      and 44.1 kHz worked perfectly with the video equipment at that time and it
+      became the industry standard.
+    </p>
+
+    <p>
+      bit depth is related to the precision of each <i>snapshot</i>. if the bit
+      depth is 16 then the maximum number which could be represented is +32767
+      (((2^16 - 1) - 1)/2) and the least is -32767. a snapshot could either have
+      +ve or -ve amplitude. so in simple words - the higher the bit depth, the
+      more clearly it is represented digitally, at the regions with really high
+      or really low frequencies.
+    </p>
+
+    <footer style="text-align: center; margin-top: 32px">
+      <a href="/">0xmukesh</a>
+    </footer>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
