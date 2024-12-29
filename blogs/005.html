@@ -229,24 +229,24 @@ func main() {
     </p>
 
     <pre><code class="language-go">startAmplitude := 1.0
-      endAmplitude := 1.0e-4
-      decayFactor := math.Pow(endAmplitude/startAmplitude, 1.0/float64(ns))
-      // ...
-      
-      for i := 0; i < ns; i++ {
-        sample := math.Sin(angle * freq * float64(i))
-        sample *= startAmplitude
-        startAmplitude *= decayFactor
-      
-        var buf [4]byte
-      
-        binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(sample)))
-      
-        if _, err := f.Write(buf[:]); err != nil {
-          panic(err.Error())
-        }
-      }
-      </code></pre>
+endAmplitude := 1.0e-4
+decayFactor := math.Pow(endAmplitude/startAmplitude, 1.0/float64(ns))
+// ...
+
+for i := 0; i < ns; i++ {
+  sample := math.Sin(angle * freq * float64(i))
+  sample *= startAmplitude
+  startAmplitude *= decayFactor
+
+  var buf [4]byte
+
+  binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(sample)))
+
+  if _, err := f.Write(buf[:]); err != nil {
+    panic(err.Error())
+  }
+}
+</code></pre>
 
     <p>
       on running the script, you should notice that the audio fades off that the
