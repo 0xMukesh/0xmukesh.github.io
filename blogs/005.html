@@ -256,6 +256,320 @@ for i := 0; i < ns; i++ {
       >
     </p>
 
+    <h2>understanding wave file format</h2>
+
+    <p>
+      we've generated the byte code that can produce some sound, let's save it
+      into a <code>wave</code> file, so it can be played by the media players
+      rather than using <code>ffplay</code>
+    </p>
+
+    <p>
+      waveform audio file format or wave in short stores audio data as samples,
+      along with some metadata such as number of audio channels (mono, stereo,
+      etc.). a wave file is usually encoded using
+      <a
+        href="https://www.sciencedirect.com/topics/engineering/pulse-code-modulation"
+        >pulse code modulation</a
+      >, it isn't required to know about PCM to understand this blog post.
+    </p>
+
+    <p>
+      a wave file follows a strict format and is majorly split into three
+      <i>blocks</i> of data.
+    </p>
+
+    <ol>
+      <li>header</li>
+      <li>fmt - holds the related metadata</li>
+      <li>raw data</li>
+    </ol>
+
+    <hr />
+
+    <p>
+      the structure of the header is as follows: (on the left side, byte offsets
+      are mentioned and on the right side, the corresponding stored data's
+      label)
+    </p>
+
+    <ol>
+      <li>
+        0 - 4 bytes - chunk id (must be equal to <code>RIFF</code>, written in
+        little-endian. if it was written in big-endian, then it would be have
+        been <code>RIFX</code>)
+      </li>
+
+      <li>4 - 8 bytes - chunk size</li>
+
+      <li>8 - 12 bytes - format (must be equal to <code>WAVE</code>)</li>
+    </ol>
+
+    <hr />
+
+    <p>the structure of the "fmt" block is as follows:</p>
+
+    <ol>
+      <li>12 - 16 - sub chunk 1 id (must be equal to <code>fmt </code>)</li>
+
+      <li>16 - 20 - sub chunk 1 size</li>
+
+      <li>
+        20 - 22 - audio format (equal to <code>1</code>, if it is encoded via
+        pulse code modulation)
+      </li>
+
+      <li>22 - 24 - number of audio channels (1 for mono, 2 for stereo)</li>
+
+      <li>24 - 28 - sample rate (i.e. sample frequency)</li>
+
+      <li>
+        28 - 32 - byte rate (byte rate = (sample rate) * (number of audio
+        channels) * (bits per sample) / 8)
+      </li>
+
+      <li>
+        32 - 34 - block align (block align = (number of audio channels) * (bits
+        per sample) / 8)
+      </li>
+
+      <li>34 - 36 - bits per sample (i.e. bit depth)</li>
+    </ol>
+
+    <hr />
+
+    <p>the structure of the data block is as follows:</p>
+
+    <ol>
+      <li>36 - 40 - sub chunk 2 id (must be equal to <code>data</code>)</li>
+
+      <li>40 - 44 - sub chunk 2 size</li>
+
+      <li>44 - ... - raw samples</li>
+    </ol>
+
+    <hr />
+
+    <p>
+      here is a better pictorial representation of the structure -
+      <a
+        href="https://web.archive.org/web/20141213140451/https://ccrma.stanford.edu/courses/422/projects/WaveFormat/"
+        >https://ccrma.stanford.edu/courses/422/projects/WaveFormat/</a
+      >. you can also visualize the format of a <code>wave</code> file by
+      playing around with it in a hex editor like
+      <a href="https://imhex.werwolv.net/">ImHex</a>
+    </p>
+
+    <h2>working with wave files</h2>
+
+    <p>let's first structure the format in code.</p>
+
+    <pre><code class="language-go">package types
+
+type Sample float64
+
+type WaveHeader struct {
+  ChunkId   []byte
+  ChunkSize int
+}
+
+type WaveFmt struct {
+  SubChunk1Id   []byte 
+  SubChunk1Size int    
+  AudioFormat   int    
+  NumOfChannels int    
+  SampleRate    int    
+  ByteRate      int    
+  BlockAlign    int   
+  BitsPerSample int
+}</code></pre>
+
+    <p>
+      before starting to work on a wave file writer, let's make a few utility
+      functions which would convert ints/floats to their equivalent byte
+      representations in little-endian.
+    </p>
+
+    <pre><code class="language-go">func IntToBits(i int, size int) []byte {
+  switch size {
+  case 16:
+    return Int16ToBits(i)
+  case 32:
+    return Int32ToBits(i)
+  default:
+    panic("invalid size. only 16 and 32 bits are accepted")
+  }
+}
+
+func Int16ToBits(i int) []byte {
+  b := make([]byte, 2)
+  binary.LittleEndian.PutUint16(b, uint16(i))
+  return b
+}
+
+func Int32ToBits(i int) []byte {
+  b := make([]byte, 4)
+  binary.LittleEndian.PutUint32(b, uint32(i))
+  return b
+}
+
+func FloatToBits(f float64, size int) []byte {
+  bits := math.Float64bits(f)
+  b := make([]byte, 8)
+  binary.LittleEndian.PutUint64(b, bits)
+
+  switch size {
+  case 2:
+    return b[:2]
+  case 4:
+    return b[:4]
+  }
+
+  return b
+}</code></pre>
+
+    <p>
+      and another set of utility functions which would take in
+      <code>WaveHeader</code>/<code>WaveFmt</code> and return their equivalent
+      byte representation.
+    </p>
+
+    <pre><code class="language-go">func WaveFmtToBits(wfmt types.WaveFmt) []byte {
+  var b []byte
+
+  b = append(b, wfmt.SubChunk1Id...)
+  b = append(b, Int32ToBits(wfmt.SubChunk1Size)...)
+  b = append(b, Int16ToBits(wfmt.AudioFormat)...)
+  b = append(b, Int16ToBits(wfmt.NumOfChannels)...)
+  b = append(b, Int32ToBits(wfmt.SampleRate)...)
+  b = append(b, Int32ToBits(wfmt.ByteRate)...)
+  b = append(b, Int16ToBits(wfmt.BlockAlign)...)
+  b = append(b, Int16ToBits(wfmt.BitsPerSample)...)
+
+  return b
+}
+
+func SamplesToBits(samples []types.Sample, wfmt types.WaveFmt) ([]byte, error) {
+  var b []byte
+
+  for _, s := range samples {
+    var multiplier int
+
+    switch wfmt.BitsPerSample {
+    case 8:
+      multiplier = math.MaxInt8
+    case 16:
+      multiplier = math.MaxInt16
+    case 32:
+      multiplier = math.MaxInt32
+    case 64:
+      multiplier = math.MaxInt64
+    default:
+      return nil, fmt.Errorf("invalid size - %d, must be 8, 16, 32 or 64-bits only", wfmt.BitsPerSample)
+    }
+
+    bits := IntToBits(int(float64(s)*float64(multiplier)), wfmt.BitsPerSample)
+    b = append(b, bits...)
+  }
+
+  return b, nil
+}
+
+func CreateHeaderBits(samples []types.Sample, wfmt types.WaveFmt) []byte {
+  var b []byte
+
+  chunkSizeInBits := Int32ToBits(36 + (len(samples)*wfmt.NumOfChannels*wfmt.BitsPerSample)/8)
+
+  b = append(b, []byte(constants.WaveChunkId)...)
+  b = append(b, chunkSizeInBits...)
+  b = append(b, []byte(constants.WaveFileFormat)...)
+
+  return b
+}</code></pre>
+
+    <p>
+      as we have everything ready now, let's write a simple struct
+      <code>WaveWriter</code> which saves the samples into a wave file.
+    </p>
+
+    <pre><code class="language-go">package helpers
+
+import (
+  "os"
+
+  "github.com/0xmukesh/sound-synthesizer/constants"
+  "github.com/0xmukesh/sound-synthesizer/types"
+  "github.com/0xmukesh/sound-synthesizer/utils"
+)
+
+type WaveWriter struct{}
+
+func NewWaveWriter() WaveWriter {
+  return WaveWriter{}
+}
+
+func (w WaveWriter) WriteWaveFile(file string, samples []types.Sample, metadata types.WaveFmt) error {
+  f, err := os.Create(file)
+  if err != nil {
+    return err
+  }
+  defer f.Close()
+
+  var data []byte
+
+  headerBits := utils.CreateHeaderBits(samples, metadata)
+  data = append(data, headerBits...)
+
+  wfmtInBits := utils.WaveFmtToBits(metadata)
+  data = append(data, wfmtInBits...)
+
+  data = append(data, []byte(constants.WaveSubChunk2Id)...)
+  data = append(data, utils.Int32ToBits(len(samples)*metadata.NumOfChannels*metadata.BitsPerSample/8)...)
+
+  samplesBits, err := utils.SamplesToBits(samples, metadata)
+  if err != nil {
+    return err
+  }
+  data = append(data, samplesBits...)
+
+  if _, err := f.Write(data); err != nil {
+    return err
+  }
+
+  return nil
+}</code></pre>
+
+    <p>
+      the header is created using the above utility functions and also the
+      metadata and samples are converted to their equivalent byte
+      representations using the above utility functions.
+    </p>
+
+    <p>
+      let's using the <code>WriteWaveFile</code> method in our script to save
+      the samples into a <code>wave</code> file.
+    </p>
+
+    <pre><code class="language-go">var samples []types.Sample
+
+for i := 0; i < ns; i++ {
+  sample := types.Sample(math.Sin(angle*freq*float64(i)) * startAmplitude)
+  startAmplitude *= decayFactor
+
+  samples = append(samples, sample)
+}
+
+waveWriter := helpers.NewWaveWriter()
+if err := waveWriter.WriteWaveFile("test.wav", samples, wavefmt); err != nil {
+  panic(err.Error())
+}</code></pre>
+
+    <p>
+      and on running the script, a new file named <code>test.wav</code> must be
+      created, which must sound similar to -
+      <a href="https://files.catbox.moe/bq0vik.wav">test.wav</a>
+    </p>
+
     <footer style="text-align: center; margin-top: 32px">
       <a href="/">0xmukesh</a>
     </footer>
