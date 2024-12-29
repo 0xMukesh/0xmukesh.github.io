@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>generating sine waves using golang</title>
-    <meta name="description" content="generating sine waves using golang" />
+    <title>playing with sine waves using golang</title>
+    <meta name="description" content="cause it is fun" />
     <meta
       name="keywords"
       content="programming, go, golang, audio programming, from scratch, computer science"
@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   </head>
   <body class="blog">
-    <h1>generating sine waves using golang</h1>
+    <h1>playing with sine waves using golang</h1>
     <p class="blog__byline">
       by <a href="/">mukesh</a> on
       <time datetime="2024-12-28">28th December 2024</time>
@@ -34,7 +34,7 @@
       about building a sound synthesizer in c++, so i thought of giving audio
       programming a shot. in this blog post, we'll cover few of the basic topics
       and build a simple program which would generate a sine wave of a certain
-      frequency and save it to a <code>.wave</code> file, amplify and peform
+      frequency and save it to a <code>.wave</code> file, amplify it and peform
       stereopanning on a given <code>.wave</code> file.
     </p>
 
@@ -161,8 +161,7 @@ func main() {
 
     <p>
       the above program generates a <code>.bin</code> file containing binary
-      representation of samples of a sine wave of 400 Hz frequency, at a sample
-      rate of 44.1 kHz.
+      representation of the audio samples, at a sample rate of 44.1kHz.
     </p>
 
     <blockquote>y = sin(440x)</blockquote>
@@ -183,11 +182,11 @@ func main() {
     </p>
 
     <p>
-      and the floating point sample is converted to its corresponding
-      little-endian byte representation and written to <code>wave.bin</code>.
-      i'm converting it to little-endian as the CPU of my laptop (intel i5) uses
-      little-endian. check which byte representation your machine's CPU follows
-      via the following command:
+      the sample (which is a floating point number) is converted to its
+      corresponding little-endian byte representation and then written to
+      <code>wave.bin</code>. i'm converting it to little-endian as my CPU (intel
+      i5) uses little-endian. check which byte representation your machine's CPU
+      follows via the following command:
     </p>
 
     <pre><code class="language-bash">lscpu | grep "Byte Order"</code></pre>
@@ -211,21 +210,20 @@ func main() {
         <code>-showmode 1</code> opens a GUI showing the sine wave re-created
         from the samples.
       </li>
-
-      <p>
-        on running the above <code>ffplay</code> command, you would a sound
-        something similar to -
-        <a href="https://files.catbox.moe/b8n1k9.mp4"
-          >https://files.catbox.moe/b8n1k9.mp4</a
-        >
-      </p>
     </ol>
+
+    <p>
+      on running the above <code>ffplay</code> command, you should hear a sound
+      something similar to -
+      <a href="https://files.catbox.moe/b8n1k9.mp4">rec.mp4</a>
+    </p>
 
     <h2>adding exponential decay</h2>
 
     <p>
-      let's add some exponential decay so that the sound slowly fades off
-      instead of abruptly ending.
+      right now, the audio abruptly ends. let's fix that by adding exponential
+      decay. exponential decay keeps on gradually decreasing the amplitude,
+      which leads to a neat <i>fade away</i> sorta effect.
     </p>
 
     <pre><code class="language-go">startAmplitude := 1.0
@@ -251,17 +249,15 @@ for i := 0; i < ns; i++ {
     <p>
       on running the script, you should notice that the audio fades off that the
       end -
-      <a href="https://files.catbox.moe/lcls0l.mp4"
-        >https://files.catbox.moe/lcls0l.mp4</a
-      >
+      <a href="https://files.catbox.moe/lcls0l.mp4">rec.mp4</a>
     </p>
 
     <h2>understanding wave file format</h2>
 
     <p>
-      we've generated the byte code that can produce some sound, let's save it
+      we have generated the byte code that can produce some sound, let's save it
       into a <code>wave</code> file, so it can be played by the media players
-      rather than using <code>ffplay</code>
+      rather than using <code>ffplay</code>.
     </p>
 
     <p>
@@ -271,7 +267,9 @@ for i := 0; i < ns; i++ {
       <a
         href="https://www.sciencedirect.com/topics/engineering/pulse-code-modulation"
         >pulse code modulation</a
-      >, it isn't required to know about PCM to understand this blog post.
+      >
+      (although, it isn't required to fully understand pulse code modulation to
+      implement this blog post by yourself).
     </p>
 
     <p>
@@ -289,8 +287,7 @@ for i := 0; i < ns; i++ {
 
     <p>
       the structure of the header is as follows: (on the left side, byte offsets
-      are mentioned and on the right side, the corresponding stored data's
-      label)
+      are mentioned and on the right side, the corresponding data's label)
     </p>
 
     <ol>
@@ -355,14 +352,16 @@ for i := 0; i < ns; i++ {
       <a
         href="https://web.archive.org/web/20141213140451/https://ccrma.stanford.edu/courses/422/projects/WaveFormat/"
         >https://ccrma.stanford.edu/courses/422/projects/WaveFormat/</a
-      >. you can also visualize the format of a <code>wave</code> file by
-      playing around with it in a hex editor like
-      <a href="https://imhex.werwolv.net/">ImHex</a>
+      >. if you wanna go a bit depth, then you play around by opening a
+      <code>wave</code> file in hex editors like
+      <a href="https://imhex.werwolv.net/">ImHex</a>.
     </p>
 
     <h2>working with wave files</h2>
 
-    <p>let's first structure the format in code.</p>
+    <p>
+      let's first code out some structs adhering the above mentioned format.
+    </p>
 
     <pre><code class="language-go">package types
 
@@ -385,9 +384,9 @@ type WaveFmt struct {
 }</code></pre>
 
     <p>
-      before starting to work on a wave file writer, let's make a few utility
-      functions which would convert ints/floats to their equivalent byte
-      representations in little-endian.
+      before coding out an implementation for <code>WaveWriter</code>, let's
+      make a few utility functions which would convert ints/floats to their
+      little-endian byte representations.
     </p>
 
     <pre><code class="language-go">func IntToBits(i int, size int) []byte {
@@ -429,9 +428,9 @@ func FloatToBits(f float64, size int) []byte {
 }</code></pre>
 
     <p>
-      and another set of utility functions which would take in
-      <code>WaveHeader</code>/<code>WaveFmt</code> and return their equivalent
-      byte representation.
+      and a few more utility functions which would convert
+      <code>WaveHeader</code> and <code>WaveFmt</code> into their equivalent
+      litte-endian byte representation.
     </p>
 
     <pre><code class="language-go">func WaveFmtToBits(wfmt types.WaveFmt) []byte {
@@ -488,21 +487,14 @@ func CreateHeaderBits(samples []types.Sample, wfmt types.WaveFmt) []byte {
 }</code></pre>
 
     <p>
-      as we have everything ready now, let's write a simple struct
-      <code>WaveWriter</code> which saves the samples into a wave file.
+      now as we have all the utility functions set up, let's write a simple
+      struct
+      <code>WaveWriter</code> which implements a method
+      <code>WriteWaveFile</code> which would save the sample data into a wave
+      file.
     </p>
 
-    <pre><code class="language-go">package helpers
-
-import (
-  "os"
-
-  "github.com/0xmukesh/sound-synthesizer/constants"
-  "github.com/0xmukesh/sound-synthesizer/types"
-  "github.com/0xmukesh/sound-synthesizer/utils"
-)
-
-type WaveWriter struct{}
+    <pre><code class="language-go">type WaveWriter struct{}
 
 func NewWaveWriter() WaveWriter {
   return WaveWriter{}
@@ -540,14 +532,15 @@ func (w WaveWriter) WriteWaveFile(file string, samples []types.Sample, metadata 
 }</code></pre>
 
     <p>
-      the header is created using the above utility functions and also the
-      metadata and samples are converted to their equivalent byte
-      representations using the above utility functions.
+      the header is created using the above utility function
+      (<code>CreateHeaderBits</code>) and also the fmt block and samples are
+      converted to their equivalent byte representations using the above utility
+      functions (<code>WaveFmtToBits</code> and <code>SamplesToBits</code>).
     </p>
 
     <p>
-      let's using the <code>WriteWaveFile</code> method in our script to save
-      the samples into a <code>wave</code> file.
+      let's use the <code>WriteWaveFile</code> method in our script to save the
+      samples into a <code>wave</code> file.
     </p>
 
     <pre><code class="language-go">var samples []types.Sample
@@ -568,6 +561,245 @@ if err := waveWriter.WriteWaveFile("test.wav", samples, wavefmt); err != nil {
       and on running the script, a new file named <code>test.wav</code> must be
       created, which must sound similar to -
       <a href="https://files.catbox.moe/bq0vik.wav">test.wav</a>
+    </p>
+
+    <h2>reading wave files</h2>
+
+    <p>
+      we've successfully implemented the first part of the blog post which is to
+      generate a sine wave of a constant frequency and save it to a wave file.
+      the next part is to amplify a given wave file. to amplify a given input
+      wave file, we have to first parse through it. to do so, we have to
+      implement
+      <code>WaveReader</code>.
+    </p>
+
+    <p>
+      before actually implementing <code>WaveReader</code>, we have add few
+      utility functions which convert bits to ints/floats.
+    </p>
+
+    <pre><code class="language-go">func BitsToInt(b []byte, size int) int {
+  switch size {
+  case 16:
+    return Bits16ToInt(b)
+  case 32:
+    return Bits32ToInt(b)
+  default:
+    panic("invalid size. only 16 and 32 bits are accepted")
+  }
+}
+
+func Bits16ToInt(b []byte) int {
+  if len(b) != 2 {
+    panic(fmt.Errorf("invalid size. expected 2, got %d", len(b)))
+  }
+
+  var payload int16
+  buf := bytes.NewReader(b)
+  if err := binary.Read(buf, binary.LittleEndian, &payload); err != nil {
+    panic(err.Error())
+  }
+
+  return int(payload)
+}
+
+func Bits32ToInt(b []byte) int {
+  if len(b) != 4 {
+    panic(fmt.Errorf("invalid size. expected 4, got %d", len(b)))
+  }
+
+  var payload int32
+  buf := bytes.NewReader(b)
+  if err := binary.Read(buf, binary.LittleEndian, &payload); err != nil {
+    panic(err.Error())
+  }
+
+  return int(payload)
+}
+
+func BitsToFloat(b []byte) float64 {
+  switch len(b) {
+  case 4:
+    bits32 := binary.LittleEndian.Uint32(b)
+    return float64(math.Float32frombits(bits32))
+  case 8:
+    bits64 := binary.LittleEndian.Uint64(b)
+    return math.Float64frombits(bits64)
+  default:
+    panic(fmt.Errorf("invalid size: %d, must be 32 or 64 bits", len(b)*8))
+  }
+}</code></pre>
+
+    <p>
+      the <code>WaveReader</code> struct implements a few methods which parses
+      through the input <code>wave</code> file and returns parsed header
+      (<code>WaveHeader</code>), fmt block (<code>WaveFmt</code>) and samples
+      (<code>[]Samples</code>). while parsing, the samples are scaled down as
+      during writing, the samples were multiplied with max value of that
+      corresponding bit length so it must be divided while parsing to maintain
+      consistency.
+    </p>
+
+    <pre><code class="language-go">type WaveReader struct{}
+
+func NewWaveReader() WaveReader {
+  return WaveReader{}
+}
+
+func (r WaveReader) ParseFile(file string) (types.Wave, error) {
+  f, err := os.Open(file)
+  if err != nil {
+    return types.Wave{}, err
+  }
+  defer f.Close()
+
+  data, err := io.ReadAll(f)
+  if err != nil {
+    return types.Wave{}, err
+  }
+
+  header, err := r.parseHeader(data)
+  if err != nil {
+    return types.Wave{}, err
+  }
+
+  wavefmt, err := r.parseMetadata(data)
+  if err != nil {
+    return types.Wave{}, err
+  }
+
+  samples, err := r.parseData(data)
+  if err != nil {
+    return types.Wave{}, err
+  }
+
+  wave := types.Wave{
+    WaveHeader: header,
+    WaveFmt:    wavefmt,
+    Samples:    samples,
+  }
+
+  return wave, nil
+}
+
+func (r WaveReader) parseHeader(data []byte) (types.WaveHeader, error) {
+  header := types.WaveHeader{}
+
+  chunkId := data[0:4]
+  if string(chunkId) != constants.WaveChunkId {
+    return header, errors.New("invalid file")
+  }
+  header.ChunkId = chunkId
+
+  chunkSize := data[4:8]
+  header.ChunkSize = utils.Bits32ToInt(chunkSize)
+
+  format := data[8:12]
+  if string(format) != constants.WaveFileFormat {
+    return header, errors.New("invalid format")
+  }
+
+  return header, nil
+}
+
+func (r WaveReader) parseMetadata(data []byte) (types.WaveFmt, error) {
+  metadata := types.WaveFmt{}
+
+  subChunk1Id := data[12:16]
+  if string(subChunk1Id) != constants.WaveSubChunk1Id {
+    return metadata, fmt.Errorf("invalid sub chunk 1 id - %s", string(subChunk1Id))
+  }
+
+  metadata.SubChunk1Id = subChunk1Id
+  metadata.SubChunk1Size = utils.Bits32ToInt(data[16:20])
+  metadata.AudioFormat = utils.Bits16ToInt(data[20:22])
+  metadata.NumOfChannels = utils.Bits16ToInt(data[22:24])
+  metadata.SampleRate = utils.Bits32ToInt(data[24:28])
+  metadata.ByteRate = utils.Bits32ToInt(data[28:32])
+  metadata.BlockAlign = utils.Bits16ToInt(data[32:34])
+  metadata.BitsPerSample = utils.Bits16ToInt(data[34:36])
+
+  return metadata, nil
+}
+
+func (r WaveReader) parseData(data []byte) ([]types.Sample, error) {
+  metadata, err := r.parseMetadata(data)
+  if err != nil {
+    return nil, err
+  }
+
+  subChunk2Id := data[36:40]
+  if string(subChunk2Id) != constants.WaveSubChunk2Id {
+    return nil, fmt.Errorf("invalid sub chunk 2 id - %s", string(subChunk2Id))
+  }
+
+  bytesPerSampleSize := metadata.BitsPerSample / 8
+  rawData := data[44:]
+
+  samples := []types.Sample{}
+
+  for i := 0; i < len(rawData); i += bytesPerSampleSize {
+    rawSample := rawData[i : i+bytesPerSampleSize]
+    unscaledSample := utils.BitsToInt(rawSample, metadata.BitsPerSample)
+    scaledSample := types.Sample(float64(unscaledSample) / float64(utils.MaxValue(metadata.BitsPerSample)))
+    samples = append(samples, scaledSample)
+  }
+
+  return samples, nil
+}</code></pre>
+
+    <p>
+      if you have noticed, i have added a new type <code>Wave</code> which just
+      contains wave header, fmt block and samples - easier to access and return
+      the data through <code>Wave</code>.
+    </p>
+
+    <pre><code class="language-go">type Wave struct {
+  WaveHeader
+  WaveFmt
+  Samples []Sample
+}</code></pre>
+
+    <h2>amplifying a given wave file</h2>
+
+    <p>
+      in simple words, amplification is nothing more than scaling up/down the
+      amplitude of the wave at a given point. so basically, messing around with
+      each individual sample.
+    </p>
+
+    <pre><code class="language-go">waveReader := helpers.NewWaveReader()
+waveWriter := helpers.NewWaveWriter()
+
+wave, err := waveReader.ParseFile(input)
+if err != nil {
+  return err
+}
+
+var updatedSamples []types.Sample
+
+for _, sample := range wave.Samples {
+  updatedSample := types.Sample(float64(sample) * scaleFactor)
+  updatedSamples = append(updatedSamples, updatedSample)
+}
+
+if err := waveWriter.WriteWaveFile(output, updatedSamples, wave.WaveFmt); err != nil {
+  return err
+}</code></pre>
+
+    <p>
+      [out-of-context] i have re-structured the entire program into a CLI using
+      <a href="https://cobra.dev">cobra</a>. generating the constant frequency
+      sine wave is handled by <code>generate</code> command and amplification
+      part is handled <code>amplify</code> command. it is not entire necessarily
+      to use cobra, it was more of a personal choice.
+    </p>
+
+    <p>
+      this is the output when a 440Hz pure sine wave is scaled down by 0.2 times
+      -
+      <a href="https://files.catbox.moe/5bdo6o.wav">output.wav</a>
     </p>
 
     <footer style="text-align: center; margin-top: 32px">
