@@ -115,6 +115,147 @@
       or really low frequencies.
     </p>
 
+    <h2>crafting initial sounds</h2>
+
+    <p>let's a simple program which would generate a sine wave of 440 Hz.</p>
+
+    <pre><code class="language-go">package main
+
+import (
+  "encoding/binary"
+  "fmt"
+  "math"
+  "os"
+  "time"
+)
+
+const (
+  duration   = 5
+  sampleRate = 44100
+  freq       = 440
+)
+
+func main() {
+  ns := duration * sampleRate
+  angle := (math.Pi * 2.0) / float64(ns)
+
+  f, err := os.Create("wave.bin")
+  if err != nil {
+    panic(err.Error())
+  }
+  start := time.Now()
+
+  for i := 0; i < ns; i++ {
+    sample := math.Sin(angle * freq * float64(i))
+    var buf [4]byte
+
+    binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(sample)))
+
+    if _, err := f.Write(buf[:]); err != nil {
+      panic(err.Error())
+    }
+  }
+
+  fmt.Printf("done - %dms\n", time.Since(start).Milliseconds())
+}</code></pre>
+
+    <p>
+      the above program generates a <code>.bin</code> file containing binary
+      representation of samples of a sine wave of 400 Hz frequency, at a sample
+      rate of 44.1 kHz.
+    </p>
+
+    <blockquote>y = sin(440x)</blockquote>
+
+    <p>
+      as sample rate is number of samples taken per second, number of samples
+      can be found out with the help of duration and sample rate:
+    </p>
+
+    <blockquote>number of samples = (sample rate) * (duration)</blockquote>
+
+    <p><code>angle</code> is the angular increment per sample.</p>
+
+    <p>
+      <code>sample</code> is snapshot of the wave characteristics at that
+      moment, in this case it is the amplitude i.e. value of the function at
+      that point.
+    </p>
+
+    <p>
+      and the floating point sample is converted to its corresponding
+      little-endian byte representation and written to <code>wave.bin</code>.
+      i'm converting it to little-endian as the CPU of my laptop (intel i5) uses
+      little-endian. check which byte representation your machine's CPU follows
+      via the following command:
+    </p>
+
+    <pre><code class="language-bash">lscpu | grep "Byte Order"</code></pre>
+
+    <p>to play the audio, we can use <code>ffplay</code></p>
+
+    <blockquote>ffplay -f f32le -ar 44100 -showmode 1 wave.bin</blockquote>
+
+    <ol>
+      <li>
+        <code>-f</code> specifies the file format. <code>f32le</code> indicates
+        that the audio is encoded in 32-bit litte-endian byte format.
+      </li>
+
+      <li>
+        <code>-ar</code> specifies the audio sample rate, which is 44.1 kHz in
+        this case.
+      </li>
+
+      <li>
+        <code>-showmode 1</code> opens a GUI showing the sine wave re-created
+        from the samples.
+      </li>
+
+      <p>
+        on running the above <code>ffplay</code> command, you would a sound
+        something similar to -
+        <a href="https://files.catbox.moe/b8n1k9.mp4"
+          >https://files.catbox.moe/b8n1k9.mp4</a
+        >
+      </p>
+    </ol>
+
+    <h2>adding exponential decay</h2>
+
+    <p>
+      let's add some exponential decay so that the sound slowly fades off
+      instead of abruptly ending.
+    </p>
+
+    <pre><code class="language-go">startAmplitude := 1.0
+      endAmplitude := 1.0e-4
+      decayFactor := math.Pow(endAmplitude/startAmplitude, 1.0/float64(ns))
+      // ...
+      
+      for i := 0; i < ns; i++ {
+        sample := math.Sin(angle * freq * float64(i))
+        sample *= startAmplitude
+        startAmplitude *= decayFactor
+      
+        var buf [4]byte
+      
+        binary.LittleEndian.PutUint32(buf[:], math.Float32bits(float32(sample)))
+      
+        if _, err := f.Write(buf[:]); err != nil {
+          panic(err.Error())
+        }
+      }
+      </code></pre>
+
+    <p>
+      on running the script, you should notice that the audio fades off that the
+      end -
+      <a href="https://files.catbox.moe/lcls0l.mp4"
+        >https://files.catbox.moe/lcls0l.mp4</a
+      >
+    </p>
+
     <footer style="text-align: center; margin-top: 32px">
       <a href="/">0xmukesh</a>
     </footer>
