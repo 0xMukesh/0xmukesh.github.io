@@ -802,6 +802,150 @@ if err := waveWriter.WriteWaveFile(output, updatedSamples, wave.WaveFmt); err !=
       <a href="https://files.catbox.moe/5bdo6o.wav">output.wav</a>
     </p>
 
+    <h2>stereopanning</h2>
+
+    <p>
+      in the context of audio programming, stereopanning refers to
+      <i>positioning</i> the sound within the space, allowing you to make it
+      appear as if it's coming from the left speaker, right speaker, or anywhere
+      in between by adjusting the audio signal.
+    </p>
+
+    <p>
+      until now, we have only worked with single audio channels but in case of
+      multiple audio channels, a single float number doesn't make up a sample
+      but rather multiple float numbers make up a sample.
+    </p>
+
+    <p>
+      [f<sub>1</sub>][f<sub>2</sub>][f<sub>3</sub>][f<sub>4</sub>]...[f<sub>n</sub>];
+      where f<sub>n</sub> is the nth float number
+    </p>
+
+    <p>
+      if the number of audio channels is set to be 1, then f<sub>1</sub> alone
+      makes up for the 1st sample. whereas, if the number of audio channels is
+      set to be 2, then f<sub>1</sub> and f<sub>2</sub> combined make up for the
+      1st sample and f<sub>3</sub> and f<sub>4</sub> combined make up for the
+      2nd sample.
+    </p>
+
+    <p>
+      for sake of simplicity, we would perform stereopanning on a mono audio
+      file (i.e. number of audio channels = 1) and return a stereo audio file
+      (i.e. number of audio channels = 2).
+    </p>
+
+    <p>
+      generally, the position of audio in the space is represented using a
+      number within the range of [-1, 1].
+    </p>
+
+    <ol>
+      <li>
+        -1 indicates that the sound is completely positioned towards the left.
+      </li>
+
+      <li>
+        1 indicates that the sound is completely positioned towards the right.
+      </li>
+
+      <li>
+        0 indicates that the sound is equally distributed between the two
+        channels i.e. kept at the <i>center</i>.
+      </li>
+    </ol>
+
+    <p>
+      consider <code>p</code> to be the panning position in range of [-1, 1],
+      then the multiplying factor for both the audio signals can be found by
+      transforming the ranges.
+    </p>
+
+    <ol>
+      <li>
+        <p>
+          for left channel, [-1, 1] is transformed to [-0.5, 0.5] by dividing by
+          2 and then subtracted by 0.5 to get [-1, 0]
+        </p>
+
+        <p>
+          <code>p</code> &rarr; <code>p</code>/2 &rarr; (<code>p</code>/2) - 0.5
+        </p>
+      </li>
+
+      <li>
+        <p>
+          for right channel, [-1, 1] is transformed to [-0.5, 0.5] and then 0.5
+          is added to get [0, 1]
+        </p>
+
+        <p>
+          <code>p</code> &rarr; <code>p</code>/2 &rarr; (<code>p</code>/2) + 0.5
+        </p>
+      </li>
+    </ol>
+
+    <p>in code, it can be expressed as follows</p>
+
+    <pre><code class="language-go">func PanPositionToChanMultipliers(p float64) (float64, float64) {
+  if !(p >= -1 && p <= 1) {
+    panic("pan position outside [-1, 1] range")
+  }
+
+  leftChanMultiplier := (p / 2) - 0.5
+  rightChanMultiplier := (p / 2) + 0.5
+
+  return leftChanMultiplier, rightChanMultiplier
+}</code></pre>
+
+    <p class="caption">ik, not so great function name</p>
+
+    <p>
+      and after figuring out the multipliers for left and right channels, it is
+      pretty much same as amplifying -- just multiplying that factor and writing
+      that data to the <code>wave</code> file.
+    </p>
+
+    <pre><code class="language-go">wave, err := waveReader.ParseFile(input)
+if err != nil {
+  return err
+}
+
+leftChanMultiplier, rightChanMultiplier := utils.PanPositionToChanMultipliers(panningPosition)
+
+var updatedSamples []types.Sample
+
+for _, sample := range wave.Samples {
+  updatedSamples = append(updatedSamples, types.Sample(sample.ToFloat()*leftChanMultiplier))
+  updatedSamples = append(updatedSamples, types.Sample(sample.ToFloat()*rightChanMultiplier))
+}
+
+wave.WaveFmt.NumOfChannels = 2
+
+if err := waveWriter.WriteWaveFile(output, updatedSamples, wave.WaveFmt); err != nil {
+  return err
+}</code></pre>
+
+    <p>
+      i ran the script on
+      <a href="https://files.catbox.moe/6f5yfi.wav">rec.wav</a> and here is the
+      output when the panning position is equal to -1 -
+      <a href="https://files.catbox.moe/3zo6jl.wav">left.wav</a> and here is the
+      output when it is equal to 1 -
+      <a href="https://files.catbox.moe/ki3ng4.wav">right.wav</a>
+    </p>
+
+    <p>
+      you can clearly notice that when you play <code>left.wav</code>, the audio
+      just comes from the left speaker and when you play <code>right.wav</code>,
+      it just comes from the right speaker.
+    </p>
+
+    <p>...and well that is pretty it for this blog post.</p>
+
+    <a href="https://github.com/0xMukesh/sound-synthesizer/">source code</a>
+
     <footer style="text-align: center; margin-top: 32px">
       <a href="/">0xmukesh</a>
     </footer>

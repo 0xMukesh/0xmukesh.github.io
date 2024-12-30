@@ -98,6 +98,7 @@ hr {
 .caption {
   font-size: 90%;
   font-style: italic;
+  text-align: center;
 }
 
 @media print {
