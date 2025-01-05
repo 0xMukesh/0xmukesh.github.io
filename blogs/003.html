@@ -173,16 +173,16 @@ func main() {
     </p>
 
     <p>
-      the reason for that is that 0-255 is an 8-bit value, so you can only store
-      256 different values whereas 0.0-1.0 are floating point values, which are
-      vastly higher in resolving powers. you might want the output of a render
-      to be in 8-8-8 bit RGB format, but the calculations to get there you want
-      to do with far more accuracy than this.
+      the reason for that is 0 - 255 is an 8-bit value, so you can only store
+      256 different values whereas 0.0 - 1.0 is a range of floating point
+      values, which are vastly higher in resolving powers. you might want the
+      output of a render to be in 8-8-8 bit RGB format, but the calculations to
+      get there you want to do with far more accuracy than this.
     </p>
 
     <p>
       and the reason for multiplying with 255.99 instead of 255 is to ensure
-      proper rounding and prevent potential off-by-one errors
+      proper rounding and prevent potential off-by-one errors.
     </p>
 
     <p>
@@ -192,11 +192,9 @@ func main() {
     </p>
 
     <p>
-      on running the script, you get a gradient which varies from black (in the
-      top left corner) to yellow (in the bottom right corner). after running the
-      script, test.ppm file is created. if you're on a UNIX based machine, then
-      type <code>open test.ppm</code> in your terminal to directly view the
-      image or else use an online PPM file viewer.
+      on running the script, a new file named <code>test.ppm</code> is created.
+      on opening that file, you should see a gradient which varies from black
+      (in the top-left corner) to yellow (in the bottom-right corner).
     </p>
 
     <center><img src="../images/003/01.png" alt="gradient" /></center>
@@ -215,8 +213,8 @@ func main() {
     <br />
 
     <p>
-      that's a simple representation of the camera setup. let's understand it a
-      bit better.
+      that's a simple representation of the virtual camera setup used in
+      ray/path tracing. let's understand it a bit better.
     </p>
 
     <p>
@@ -230,9 +228,9 @@ func main() {
       virtual camera is). <code>x</code>, <code>y</code> and <code>z</code> are
       the axes of the camera and the rectangular screen behind is the viewport,
       which is kinda like a rectangular "viewing window" through which you see
-      the scene from the camera point of view and <code>O<sub>v</sub></code> is
-      the center of the viewport and <code>L<sub>v</sub></code> is the lower
-      left corner of the the viewport.
+      the scene from the point of view of the camera and
+      <code>O<sub>v</sub></code> is the center of the viewport and
+      <code>L<sub>v</sub></code> is the lower left corner of the the viewport.
     </p>
 
     <p>
