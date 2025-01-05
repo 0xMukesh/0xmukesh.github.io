@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>writing a mini path tracer: working with materials</title>
+    <meta name="description" content="working with materials" />
+    <meta
+      name="keywords"
+      content="programming, go, golang, ray tracing, computer graphics, from scratch, computer science"
+    />
+    <meta name="author" content="0xmukesh" />
+
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+
+  <body class="blog">
+    <h1>writing a mini path tracer: working with materials</h1>
+    <p class="blog__byline">
+      by <a href="/">mukesh</a> on
+      <time datetime="2025-01-04">4th January 2025</time>
+    </p>
+
+    <p>
+      in the <a href="/blogs/004.html">previous</a> blog post of this series, we
+      have successfully rendered a sphere and shaded it using surface normals.
+      in this blog post, we will work with different materials (mainly diffuse
+      and metallic materials, i will cover dielectric materials in another post)
+    </p>
+
+    <h2>hittable objects</h2>
+
+    <p>
+      before starting to write out the logic for different materials, let's
+      design an interface which encapsulates all the possible
+      <i>hittable</i> objects i.e. objects on to which rays can strike, within
+      our path tracer.
+    </p>
+
+    <pre><code class="language-go">type HitRecord struct {
+  N, P        Vector
+  T           float64
+}
+
+type Hittable interface {
+  Hit(r Ray, tMin, tMax float64) (bool, *HitRecord)
+}</code></pre>
+
+    <p>
+      <code>Hittable</code> interface encapsulates all the structs which
+      implement <code>Hit</code> function with that specific function signature.
+    </p>
+
+    <p>
+      <code>Hit</code> function takes in a ray which is shot towards it and also
+      an interval of <code>t</code> (i.e. <code>tMin</code> and
+      <code>tMax</code>) and returns a boolean which indicates whether the ray
+      hit the object or not and also a <code>HitRecord</code>.
+    </p>
+
+    <p>
+      a hit record contains the metadata related to the rays which hit the
+      object. let me now explain which <i>metadata</i> is exactly being stored
+      in <code>HitRecord</code>, as it is pretty hard to guess from the single
+      lettered fields.
+    </p>
+
+    <ol>
+      <li>
+        <code>T</code> is the value of <code>t</code> for which P(t) = Qt + d
+        ray hits that object. <code>Hit</code> function only considers those
+        values of <code>t</code> which lie in the range of <code>tMin</code> to
+        <code>tMax</code> i.e. <code>tMin</code> &lt;= t &lt;=
+        <code>tMax</code>.
+      </li>
+
+      <li>
+        <code>P</code> is the vectorical representation of the ray i.e. P(t) at
+        t = <code>T</code>.
+      </li>
+
+      <li>
+        <code>N</code> is the surface normal of the object at the hitpoint.
+      </li>
+    </ol>
+
+    <p>
+      currently, we have the logic responsible for rendering a sphere within
+      <code>RayColor</code> function.
+    </p>
+
+    <pre><code class="language-go">func RayColor(r Ray) Vector {
+  center := NewVector(0, 0, -1)
+  radius := 0.5
+    
+  found, p := r.HitSphere(center, radius)
+    
+  if found {
+    normal := r.At(p).SubtractVector(center).UnitVector()
+    return NewVector(normal.X+1, normal.Y+1, normal.Z+1).MultiplyScalar(0.5)
+  }
+    
+  unitVec := r.Direction.UnitVector()
+  t := 0.5 * (unitVec.Y + 1)
+  color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+  return color
+}</code></pre>
+
+    <p>
+      let's design a simple struct which stores all necessary data related to a
+      sphere (which is center and radius, at the moment) and also implements
+      <code>Hittable</code> interface.
+    </p>
+
+    <pre><code class="language-go">type Sphere struct {
+  Centre Vector
+  Radius float64
+}
+
+func NewSphere(centre Vector, radius float64) Sphere {
+  return Sphere{
+    Centre: centre,
+    Radius: radius,
+  }
+}
+
+func (s Sphere) Hit(r Ray, tMin, tMax float64) (bool, *HitRecord) {
+  cq := r.Origin.SubtractVector(s.Centre)
+  a := r.Direction.DotProduct(r.Direction)
+  b := 2 * r.Direction.DotProduct(cq)
+  c := cq.DotProduct(cq) - (s.Radius * s.Radius)
+  d := b*b - 4*a*c
+
+  if d >= 0 {
+    hitRecord := &HitRecord{}
+
+    t := (-b - math.Sqrt(d)) / (2 * a)
+
+    if tMin <= t && tMax >= t {
+      hitRecord.T = t
+      hitRecord.P = r.At(t)
+      hitRecord.N = hitRecord.P.SubtractVector(s.Centre).DivideScalar(s.Radius)
+      return true, hitRecord
+    }
+
+    t = (-b + math.Sqrt(d)) / (2 * a)
+
+    if tMin <= t && tMax >= t {
+      hitRecord.T = t
+      hitRecord.P = r.At(t)
+      hitRecord.N = hitRecord.P.SubtractVector(s.Centre).DivideScalar(s.Radius)
+      return true, hitRecord
+    }
+  }
+
+  return false, nil
+}</code></pre>
+
+    <p>
+      the logic is pretty much same as <code>HitSphere</code> function but
+      rather than returning the hitpoint value, we're returning the hit record.
+    </p>
+
+    <pre><code class="language-go">func (r Ray) HitSphere(center Vector, radius float64) (bool, float64)
+func (s Sphere) Hit(r Ray, tMin, tMax float64) (bool, *HitRecord)</code></pre>
+
+    <p>
+      and this time, we are calculating both the roots of the quadratic
+      equation. if the 1st root didn't lie in the range then check for the 2nd
+      one. as in the later parts of the blog post, we will render multiple
+      spheres then we need to caluclate both the roots else the image won't
+      render as excepted.
+    </p>
+
+    <p>
+      let's utilize this new <code>Sphere</code> struct to render the
+      "bluish-purple" sphere that we rendered in the previous post.
+    </p>
+
+    <p>
+      we need to update the <code>RayColor</code> function to accept anything
+      that implements the <code>Hittable</code> interface and use its
+      <code>Hit</code>
+      method.
+    </p>
+
+    <pre><code class="language-go">func RayColor(r Ray, h Hittable) Vector {
+  found, hitRecord := h.Hit(r, 0, math.MaxFloat64)
+
+  if found {
+    return hitRecord.N.AddVector(NewVector(1, 1, 1)).MultiplyScalar(0.5)
+  }
+
+  unitVec := r.Direction.UnitVector()
+  t := 0.5 * (unitVec.Y + 1)
+  color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+  return color
+}</code></pre>
+
+    <p>
+      create a new sphere using <code>NewSphere</code> function (sorta like
+      constructor for <code>Sphere</code> struct) as follows:
+    </p>
+
+    <pre><code class="language-go">sphere := NewSphere(NewVector(0, 0, -1), 0.5)</code></pre>
+
+    <p>and pass it into <code>RayColor</code> function to get the color</p>
+
+    <pre><code class="language-go">color := RayColor(ray, sphere)</code></pre>
+
+    <p>
+      on running the script, you should see the same "bluish-purple" sphere.
+    </p>
+
+    <center><img src="../images/006/01.png" alt="hittable object" /></center>
+
+    <h2>multiple hittable objects</h2>
+
+    <p>
+      currently, our path tracer can render only one hittable object at once.
+      let's make an abstraction which will act like a <i>list</i> of all the
+      hittable objects in the rendered image, aka scene.
+    </p>
+
+    <pre><code class="language-go">type Scene struct {
+  Elements []Hittable
+}
+
+func NewScene(elements ...Hittable) Scene {
+  return Scene{
+    Elements: elements,
+  }
+}</code></pre>
+
+    <p>
+      let's also implement the <code>Hit</code> method onto
+      <code>Scene</code> struct, which takes in a ray as a parameter and loop
+      throughs all the hittable objects and return the hit record for the one
+      which the ray hits.
+    </p>
+
+    <pre><code class="language-go">func (s Scene) Hit(r Ray, tMin, tMax float64) (bool, *HitRecord) {
+  hitAnything := false
+  closest := tMax
+  record := &HitRecord{}
+
+  for _, e := range s.Elements {
+    hit, tempRecord := e.Hit(r, tMin, closest)
+
+    if hit {
+      hitAnything = true
+      closest = tempRecord.T
+      record = tempRecord
+    }
+  }
+
+  return hitAnything, record
+}</code></pre>
+
+    <p>now let's create a scene with the bluish-purple sphere and a floor.</p>
+
+    <pre><code class="language-go">sphere := NewSphere(NewVector(0, 0, -1), 0.5)
+floor := NewSphere(NewVector(0, -100.5, -1), 100.0)
+scene := NewScene(floor, sphere)</code></pre>
+
+    <p>
+      as we have implemented <code>Hit</code> function to
+      <code>Scene</code> struct, we must be able to pass <code>scene</code> to
+      <code>RayColor</code> function.
+    </p>
+
+    <pre><code class="language-go">color := RayColor(ray, scene)
+rgb = rgb.AddVector(color)</code></pre>
+
+    <p>
+      on running the script, you'll see a beautiful lil' sphere and green
+      colored floor.
+    </p>
+
+    <center><img src="../images/006/02.png" alt="sphere and floor" /></center>
+
+    <p>
+      the current image size is 256x256, let's change it to 400x200 to capture a
+      bit more of the floor on to the image.
+    </p>
+
+    <pre><code class="language-go">imageWidth := 400
+imageHeight := 200
+
+viewportWidth := 4.0
+viewportHeight := 2.0</code></pre>
+
+    <p>
+      the ratio between <code>viewportWidth</code> and
+      <code>viewportHeight</code> must be always equal to the aspect ratio, if
+      the pixels are equally spaced in the viewport.
+    </p>
+
+    <center><img src="../images/006/03.png" alt="400x200" /></center>
+
+    <p>lovely!</p>
+
+    <p>here is another image with silly sphere army.</p>
+
+    <pre><code class="language-go">sphereOne := NewSphere(NewVector(0, 0, -1), 0.5)
+sphereTwo := NewSphere(NewVector(1, 0, -1.5), 0.6)
+sphereThree := NewSphere(NewVector(-1, 0, -1.5), 0.6)
+floor := NewSphere(NewVector(0, -100.5, -1), 100.0)
+scene := NewScene(sphereOne, sphereTwo, sphereThree, floor)</code></pre>
+
+    <br />
+
+    <center><img src="../images/006/04.png" alt="sphere army" /></center>
+
+    <p>
+      let's now implement different types of materials, which can applied on to
+      the sphere.
+    </p>
+
+    <h2>diffuse materials</h2>
+
+    <p>
+      there are mainly two types of reflection which a light ray undergoes in
+      the real world - specular and diffuse. specular reflection is the regular
+      type of reflection which you might have studied in your high school, where
+      the angle of incidence is equal to the angle of reflection, i.e., the laws
+      of reflection hold true. in diffuse reflection, the reflected ray and
+      incident ray are not symmetrical about the normal; the reflected ray
+      bounces off in a random direction from the surface.
+    </p>
+
+    <center>
+      <img src="../images/006/05.png" alt="types of reflection" />
+    </center>
+
+    <p>
+      to simulate the light ray bouncing off in random direction, we can just
+      generate random unit vector and check if direction of the surface normal
+      at the hitpoint and the random unit vector are same, if yes then change
+      the direction of the reflected ray to that unit vector.
+    </p>
+
+    <pre><code class="language-go">func RandomInRange(min, max float64) float64 {
+  return min + (max-min)*rand.Float64()
+}
+
+func RandomUnitVector() Vector {
+  for {
+    v := NewVector(RandomInRange(-1, 1), RandomInRange(-1, 1), RandomInRange(-1, 1))
+    if math.MinInt64 < v.Length()*v.Length() && v.Length()*v.Length() <= 1 {
+      return v.UnitVector()
+    }
+  }
+}
+
+func RandomOnHemisphere(normal Vector) Vector {
+  onUnitSphere := RandomUnitVector()
+
+  if onUnitSphere.DotProduct(normal) > 0 {
+    return onUnitSphere
+  } else {
+    return onUnitSphere.MultiplyScalar(-1)
+  }
+}</code></pre>
+
+    <ol>
+      <li>
+        <code>RandomInRange</code> function returns a random floating point
+        number in the range of [min, max&rpar;.
+      </li>
+
+      <li>
+        <code>RandomUnitVector</code> function returns a random unit vector.
+      </li>
+
+      <li>
+        <code>RandomOnHemisphere</code> function returns a random unit vector in
+        the direction of the hemisphere where the surface normal at that
+        hitpoint is pointing to.
+      </li>
+    </ol>
+
+    <script src="/js/blogs/add-top-nav.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

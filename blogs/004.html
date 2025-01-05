@@ -27,15 +27,16 @@
     </p>
 
     <p>
-      in the previous blog, we've setup a simple virtual camera and have
-      rendered a blue-white gradient. in this blog, we'd render a simple sphere
-      and learn about antialiasing.
+      in the <a href="/blogs/003.html">previous</a> blog post of this series,
+      we've setup a simple virtual camera and have rendered a blue-white
+      gradient. in this blog, we will render a simple sphere and learn about
+      antialiasing.
     </p>
 
     <h2>some math related to spheres</h2>
 
     <p>
-      we've to first figure out whether a certain ray <i>hits</i> a sphere or
+      we have to first figure out whether a certain ray <i>hits</i> a sphere or
       not.
     </p>
 
@@ -63,7 +64,7 @@
 
     <p>
       the equation for a sphere of radius <code>r</code> and centered at a point
-      (C<sub>x</sub>, C<sub>y</sub>, C<sub>z</sub>) is as follows
+      (C<sub>x</sub>, C<sub>y</sub>, C<sub>z</sub>) is as follows:
     </p>
 
     <blockquote>
@@ -71,7 +72,10 @@
       r^2
     </blockquote>
 
-    the above equation can be also represented in the form of vectors as follows
+    <p>
+      the above equation can be also represented in the form of vectors as
+      follows:
+    </p>
 
     <blockquote>
       (C - P)⋅(C - P) = r^2; where C = (C<sub>x</sub>, C<sub>y</sub>,
@@ -198,10 +202,27 @@ func RayColor(r Ray) Vector {
 }</code></pre>
 
     <p>
-      i've updated the <code>RayColor</code> function a bit to also return the
-      hit point's coordinates, which is later used by <code>Ray.At</code> method
-      to calculate the direction of surface normal
+      i've updated the <code>HitSphere</code> function a bit to also return the
+      solution of that quadratic equation, which is later used by
+      <code>Ray.At</code> method to calculate the surface normal.
     </p>
+
+    <pre><code class="language-go">if d >= 0 {
+  p := (-b - math.Sqrt(d)) / (2 * a)
+  return true, p
+}</code></pre>
+
+    <p>
+      if you have noticed, the <code>HitSphere</code> function only takes one of
+      the roots into consideration. this is just to simplify things, as we have
+      only spheres in front of the camera. we will just consider the closest hit
+      point value i.e. the smallest value of <code>p</code>.
+    </p>
+
+    <pre><code class="language-go">if found {
+  normal := r.At(p).SubtractVector(center).UnitVector()
+  return NewVector(normal.X+1, normal.Y+1, normal.Z+1).MultiplyScalar(0.5)
+}</code></pre>
 
     <p>
       the shading process is pretty much simple. an unit vector is found along
@@ -274,12 +295,18 @@ func RayColor(r Ray) Vector {
     <p>
       for each sample, a random offset (in the range of [0, 1)) is added to the
       pixel coordinates. so each time, the ray is shot to a slightly different
-      point within the pixel's area
+      point within the pixel's area.
     </p>
 
     <p>
       this random sampling softens the jagged edges and creates much more
-      smoother gradients in areas with changing colors or lighting
+      smoother gradients in areas with changing colors or lighting.
+    </p>
+
+    <p>
+      <code>samplesPerPixel</code> is the number of rays which are processed to
+      render a single pixel. the processed value of each ray is called sample
+      and these samples are averaged out to get the final color for the pixel.
     </p>
 
     <p>
@@ -291,9 +318,9 @@ func RayColor(r Ray) Vector {
 
     <p>
       notice how the edges are much more smoother now, but with sampling, the
-      processing time increases a lot as multiple rays are shot to process one
-      single pixel. it took ~1.25 seconds to render a 256x256 pixel image cause
-      100 rays are processed and averaged to color a single pixel.
+      processing time increases a lot as multiple rays are to be processed to
+      render a single pixel. it took ~1.25 seconds to render a 256x256 pixel
+      image (100 rays were processed and averaged out to render a single pixel).
     </p>
 
     <p>
