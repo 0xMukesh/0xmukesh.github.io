@@ -85,7 +85,7 @@ type Hittable interface {
       </li>
 
       <li>
-        <code>N</code> is the surface normal of the object at the hitpoint.
+        <code>N</code> is the surface normal of the object at the hit point.
       </li>
     </ol>
 
@@ -163,7 +163,7 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64) (bool, *HitRecord) {
 
     <p>
       the logic is pretty much same as <code>HitSphere</code> function but
-      rather than returning the hitpoint value, we're returning the hit record.
+      rather than returning the hit point value, we're returning the hit record.
     </p>
 
     <pre><code class="language-go">func (r Ray) HitSphere(center Vector, radius float64) (bool, float64)
@@ -339,10 +339,15 @@ scene := NewScene(sphereOne, sphereTwo, sphereThree, floor)</code></pre>
     </center>
 
     <p>
-      to simulate the light ray bouncing off in random direction, we can just
-      generate random unit vector and check if direction of the surface normal
-      at the hitpoint and the random unit vector are same, if yes then change
-      the direction of the reflected ray to that unit vector.
+      to simulate the light ray bouncing off in random directions, we can
+      generate random unit vector and check if the unit vector and the surface
+      normal are in the same direction, by taking dot product. if yes, then
+      direction of reflected ray would be equal to that of the unit vector.
+    </p>
+
+    <p>
+      let's code out a few utility functions which will help us in generating
+      these unit vectors.
     </p>
 
     <pre><code class="language-go">func RandomInRange(min, max float64) float64 {
@@ -368,6 +373,8 @@ func RandomOnHemisphere(normal Vector) Vector {
   }
 }</code></pre>
 
+    <br />
+
     <ol>
       <li>
         <code>RandomInRange</code> function returns a random floating point
@@ -380,10 +387,113 @@ func RandomOnHemisphere(normal Vector) Vector {
 
       <li>
         <code>RandomOnHemisphere</code> function returns a random unit vector in
-        the direction of the hemisphere where the surface normal at that
-        hitpoint is pointing to.
+        the direction of the hemisphere where the surface normal at that hit
+        point is pointing to.
       </li>
     </ol>
+
+    <p>
+      after the light ray strikes an object (to be specific, hittable object but
+      i would be using "object" as hittable object is kinda mouthful), the
+      bounces off in a random direction. if the light ray strikes again to
+      another object then it is again reflected to a random direction and so on
+      - basically recursion.
+    </p>
+
+    <p>
+      we have to also add a depth to the recursion i.e. the max number of times
+      the recursion would take place else there would be possiblities of
+      infinite loop.
+    </p>
+
+    <p>implementing it in code is pretty much straightforward.</p>
+
+    <pre><code class="language-go">func RayColor(r Ray, h Hittable, depth int) Vector {
+  if depth <= 0 {
+    return NewVector(0, 0, 0)
+  }
+
+  found, hitRecord := h.Hit(r, 0, math.MaxFloat64)
+
+  if found {
+    direction := RandomOnHemisphere(hitRecord.N)
+    return RayColor(NewRay(hitRecord.P, direction), h, depth-1).MultiplyScalar(0.7)
+  }
+
+  unitVec := r.Direction.UnitVector()
+  t := 0.5 * (unitVec.Y + 1)
+  color := NewVector(1, 1, 1).MultiplyScalar(1.0 - t).AddVector(NewVector(0.5, 0.7, 1.0).MultiplyScalar(t))
+  return color
+}</code></pre>
+
+    <p>
+      <code>0.7</code> is the attenuation which represents the factor by which
+      the intensity of the light ray decreases each time it hits an object. the
+      more surfaces the light ray strikes, the less the intensity, meaning
+      darker the color. this simulates the behavior of a light ray in real life
+      - every surface from which the light ray bounces, the surface absorbs a
+      certain portion of its intensity, thereby decreasing the intensity of the
+      light ray.
+    </p>
+
+    <p>
+      pass in <code>depth</code> parameter to <code>RayColor</code> function in
+      the main script
+    </p>
+
+    <pre><code class="language-go">color := RayColor(ray, scene, 50)
+rgb = rgb.AddVector(color)</code></pre>
+
+    <p>
+      here is the rendered image. i have set samples per pixel to be 400 to
+      properly see the <i>shadows</i> of the sphere.
+    </p>
+
+    <center><img src="../images/006/06.png" alt="diffuse soft model" /></center>
+
+    <p>
+      you should be able to see slight shadows underneath the sphere cause area
+      between the bottom of the sphere and the ground had the most of light ray
+      bounces.
+    </p>
+
+    <p>
+      the code might look all fine but there is a slight issue related to
+      floating point numbers. when a ray hits a surface, the path tracer shoots
+      new rays from that hit point to calculate shadows. due to floating point
+      precision issues, the hit point might end up being either slightly above
+      or below the surface. when the path tracer shoots a new ray from this
+      point, it immediately hits the same surface it just came from. this is
+      called as <b>shadow acne</b>.
+    </p>
+
+    <p>
+      to fix this, we have to just change <code>tMin</code> to 0.0001 (or any
+      small floating point number so as to handle these cases of floating point
+      precision issues).
+    </p>
+
+    <pre><code class="language-go">found, hitRecord := h.Hit(r, 0.0001, math.MaxFloat64)</code></pre>
+
+    <br />
+
+    <center>
+      <img src="../images/006/07.png" alt="without shadow acne" />
+    </center>
+
+    <p>now the shadows underneath the sphere is very clear.</p>
+
+    <p>
+      the sphere can also be rendered in a different color by playing around
+      with attenuations of different components i.e. attenuation of R, G and B.
+    </p>
+
+    <pre><code class="language-go">direction := RandomOnHemisphere(hitRecord.N)
+return RayColor(NewRay(hitRecord.P, direction), h, depth-1).MultiplyComponents(NewVector(0.3, 0.6, 0.1))</code></pre>
+
+    <br />
+
+    <center><img src="../images/006/08.png" alt="" /></center>
 
     <script src="/js/blogs/add-top-nav.js"></script>
     <script>
