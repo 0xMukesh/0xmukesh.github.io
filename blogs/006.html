@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>writing a mini path tracer: working with materials</title>
+    <title>writing a mini path tracer: hittables and diffuse materials</title>
     <meta name="description" content="working with materials" />
     <meta
       name="keywords"
@@ -20,7 +20,7 @@
   </head>
 
   <body class="blog">
-    <h1>writing a mini path tracer: working with materials</h1>
+    <h1>writing a mini path tracer: hittables and diffuse materials</h1>
     <p class="blog__byline">
       by <a href="/">mukesh</a> on
       <time datetime="2025-01-04">4th January 2025</time>
@@ -29,8 +29,7 @@
     <p>
       in the <a href="/blogs/004.html">previous</a> blog post of this series, we
       have successfully rendered a sphere and shaded it using surface normals.
-      in this blog post, we will work with different materials (mainly diffuse
-      and metallic materials, i will cover dielectric materials in another post)
+      in this blog post, we will work with hittables and diffuse materials.
     </p>
 
     <h2>hittable objects</h2>
@@ -317,11 +316,6 @@ scene := NewScene(sphereOne, sphereTwo, sphereThree, floor)</code></pre>
 
     <center><img src="../images/006/04.png" alt="sphere army" /></center>
 
-    <p>
-      let's now implement different types of materials, which can applied on to
-      the sphere.
-    </p>
-
     <h2>diffuse materials</h2>
 
     <p>
@@ -437,8 +431,8 @@ func RandomOnHemisphere(normal Vector) Vector {
     </p>
 
     <p>
-      pass in <code>depth</code> parameter to <code>RayColor</code> function in
-      the main script
+      to render a diffuse material, pass in the <code>depth</code> parameter to
+      <code>RayColor</code> function in the main script
     </p>
 
     <pre><code class="language-go">color := RayColor(ray, scene, 50)
@@ -481,7 +475,7 @@ rgb = rgb.AddVector(color)</code></pre>
       <img src="../images/006/07.png" alt="without shadow acne" />
     </center>
 
-    <p>now the shadows underneath the sphere is very clear.</p>
+    <p>the shadows underneath the sphere is very clear now.</p>
 
     <p>
       the sphere can also be rendered in a different color by playing around
@@ -494,6 +488,114 @@ return RayColor(NewRay(hitRecord.P, direction), h, depth-1).MultiplyComponents(N
     <br />
 
     <center><img src="../images/006/08.png" alt="" /></center>
+
+    <p>
+      with our current implementation of diffuse materials, the incident light
+      ray has equal probability to scatter in any random direction, which is in
+      the same direction as the surface normal. this renders a nice
+      <i>soft</i> diffuse model.
+    </p>
+
+    <p>
+      <a href="https://en.wikipedia.org/wiki/Lambertian_reflectance"
+        >lambertian distribution</a
+      >
+      is a more accurate representation of real world diffuse materials. in
+      lambertian distribution, the incident ray is scattered in a way which is
+      proportional to cos(&phi;), where &phi; is angle between the incident ray
+      and the surface normal. due to this, the incident ray is more likely to be
+      scattered in a direction closer to the surface normal.
+    </p>
+
+    <p>
+      if you draw circles parallel to the equator at different heights on a
+      sphere, you will notice that the cirles get smaller as you move towards
+      the poles i.e. the top. if a sphere has a uniform point density, then more
+      points would be found in the areas where these circles are smaller i.e.
+      the top to maintain equal point density in all the regions on the sphere.
+    </p>
+
+    <p>
+      when these uniformly distributed points are used to create reflection
+      direction vectors, we naturally get a lambertian distribution distribution
+      with more reflection directions near the surface normal.
+    </p>
+
+    <p>
+      implementing it in code is pretty simple as we just need to add a random
+      unit vector to the surface normal at that hit point.
+    </p>
+
+    <pre><code class="language-go">if found {
+  direction := hitRecord.N.AddVector(RandomUnitVector())
+  return RayColor(NewRay(hitRecord.P, direction), h, depth-1).MultiplyComponents(NewVector(0.3, 0.6, 0.1))
+}</code></pre>
+
+    <br />
+
+    <center>
+      <img src="../images/006/09.png" alt="lambertian distribution" />
+    </center>
+
+    <p>
+      if you keenly observe the previously rendered green sphere image and the
+      current one using lambertian distribution, you will notice that in the
+      current one the shadows are more pronounced.
+    </p>
+
+    <p>
+      the attenuation of green is set to be 0.6 i.e. 60% of the light is
+      reflected back, but it looks a bit more <i>dark</i> than expected. it is
+      because most of the image viewers expect the image to be "gamma-corrected"
+      i.e. it excepts the values which are passed into the PPM file to undergo
+      some non-linear transformation.
+    </p>
+
+    <p>
+      but we are not perfoming any kind of non-linear transformation i.e. the
+      data which we are writing into the PPM exists in a linear space, due to
+      which the image viewer misinterprets the image and shows it a bit more
+      <i>dark</i> than expected.
+    </p>
+
+    <p>
+      gamma 2.2 is the standard gamma level for windows and apple devies that
+      produces optimal colors for graphics but as an approximation we will use
+      gamma 2.
+    </p>
+
+    <p>
+      the "2" in gamma 2 indicates the power to which the value in gamma space
+      is raised to get the equivalent linear space value. we are going from
+      linear space to gamma space, so we have to take the square root of the
+      values before writing it to the PPM file.
+    </p>
+
+    <pre><code class="language-go">ir := int(255.99 * math.Sqrt(rgb.X))
+ig := int(255.99 * math.Sqrt(rgb.Y))
+ib := int(255.99 * math.Sqrt(rgb.Z))</code></pre>
+
+    <br />
+
+    <center><img src="../images/006/10.png" alt="gamma correction" /></center>
+
+    <p>now it looks more like 60% of the light is being reflected back.</p>
+
+    <p>
+      well, that's pretty much it for this blog post. play around and try
+      generating some silly image -- that's where the real fun of writing a
+      ray/path tracer lies! In the next post, we'll work with metallic
+      materials.
+    </p>
+
+    <p>
+      got any thoughts related to this blog post? drop 'em over here -
+      <a
+        href="https://github.com/0xMukesh/0xmukesh.github.io/discussions/6"
+        target="_blank"
+        >discussion</a
+      >
+    </p>
 
     <script src="/js/blogs/add-top-nav.js"></script>
     <script>
