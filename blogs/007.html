@@ -357,6 +357,283 @@
 
     <h2>coding our first neurons</h2>
 
+    <p>
+      let's code out a simple neural network with two layers (input and output
+      layer) in golang. the input layer consists of 3 neurons and the output
+      layer consists of 2 neurons.
+    </p>
+
+    <p>
+      start with defining <code>A</code>, <code>W</code> and
+      <code>B</code> matrices. for now, use any random values to populate the
+      matrices.
+    </p>
+
+    <pre><code class="language-go">package main
+
+func main() {
+  A := []float64{1, 2, 3}
+  W := [][]float64{
+    {0.5, 0.7},
+    {0.4, 0.6},
+    {0.3, 0.2},
+  }
+  B := []float64{1, 0.9}
+}</code></pre>
+
+    <p>
+      let's start with implementing the matrix multiplication between
+      <code>A</code> and <code>W</code>.
+    </p>
+
+    <pre><code class="language-go">AxW := make([][]float64, len(A))
+
+for i := range AxW {
+  AxW[i] = make([]float64, len(W[0]))
+}
+
+for i := 0; i < len(A); i++ {
+  for j := 0; j < len(W[0]); j++ {
+    sum := 0.0
+
+    for k := 0; k < len(W); k++ {
+      sum += A[i][k] * W[k][j]
+    }
+
+    AxW[i][j] = sum
+  }
+}</code></pre>
+
+    <p>
+      the code starts off with allocating the required size for the result
+      matrix i.e. <code>AxW</code>. the shape of <code>AxW</code> matrix is mxn,
+      where m is equal to number of rows of A and n is the number of columns of
+      W.
+    </p>
+
+    <p>
+      the code then loops through every row in <code>A</code> and every column
+      in <code>W</code>, and then it multiplies the corresponding elements and
+      calculates the total sum.
+    </p>
+
+    <p>
+      the above code assumes that both the matrices are multipliable with each
+      other. for two matrices, the number of columns in the first matrix must be
+      equal to number of rows in the second matrix.
+    </p>
+
+    <p>
+      let's now implement the matrix addition between <code>AxW</code> and
+      <code>B</code>.
+    </p>
+
+    <pre><code class="language-go">result := make([][]float64, len(AxW))
+
+for i := range result {
+  result[i] = make([]float64, len(AxW[0]))
+}
+
+for i := 0; i < len(AxW); i++ {
+  for j := 0; j < len(AxW[0]); j++ {
+    result[i][j] = AxW[i][j] + B[i][j]
+  }
+}</code></pre>
+
+    <p>
+      the code starts off with allocating the required size for the result
+      matrix. the shape of <code>result</code> matrix is equal to the shape of
+      <code>AxW</code> matrix, as two matrices can be added/subtracted only when
+      their shapes (dimensions) are equal.
+    </p>
+
+    <p>here's the entire code until now:</p>
+
+    <pre><code class="language-go">package main
+
+import "fmt"
+
+func main() {
+  A := [][]float64{{1, 2, 3}}
+  W := [][]float64{
+    {0.5, 0.7},
+    {0.4, 0.6},
+    {0.3, 0.2},
+  }
+  B := [][]float64{{1, 0.9}}
+
+  AxW := make([][]float64, len(A))
+
+  for i := range AxW {
+    AxW[i] = make([]float64, len(W[0]))
+  }
+
+  for i := 0; i < len(A); i++ {
+    for j := 0; j < len(W[0]); j++ {
+      sum := 0.0
+
+      for k := 0; k < len(W); k++ {
+        sum += A[i][k] * W[k][j]
+      }
+
+      AxW[i][j] = sum
+    }
+  }
+
+  result := make([][]float64, len(AxW))
+
+  for i := range result {
+    result[i] = make([]float64, len(AxW[0]))
+  }
+
+  for i := 0; i < len(AxW); i++ {
+    for j := 0; j < len(AxW[0]); j++ {
+      result[i][j] = AxW[i][j] + B[i][j]
+    }
+  }
+
+  fmt.Println(result)
+}</code></pre>
+
+    <p>
+      on running the script, it must print out <code>[[3.2 3.4]]</code>. you can
+      verify the answer via a calculator or solving the matrices by hand.
+    </p>
+
+    <h3>refactoring</h3>
+
+    <p>
+      the current implementation works but it is pretty rough and has a lot of
+      areas of failure. let's make a few utility functions related to different
+      matrix operations so that we don't have to write out the logic from
+      scratch, using <code>for</code> loop, every time we want to do that
+      specific matrix operation.
+    </p>
+
+    <p>
+      let's create a new distinct type named <code>Matrix</code>, on which we
+      will define our utility functions as custom methods.
+    </p>
+
+    <pre><code class="language-go">package math
+
+type Matrix [][]float64</code></pre>
+
+    <p>
+      over here, we are creating a new distinct type and not a type alias. to
+      define a type alias, we have to add <code>=</code> operator in between.
+    </p>
+
+    <pre><code class="language-go">type Matrix = [][]float64</code></pre>
+
+    <p>
+      let's start with methods which return metadata related to the matrix i.e.
+      return number of rows and columns.
+    </p>
+
+    <pre><code class="language-go">func (m Matrix) Rows() int {
+  return len(m)
+}
+
+func (m Matrix) Cols() int {
+  return len(m[0])
+}</code></pre>
+
+    <p>
+      let's also add another helper function which allocates memory for a matrix
+      with given number of rows and columns.
+    </p>
+
+    <pre><code class="language-go">func AllocateMatrix(rows, cols int) Matrix {
+  matrix := make(Matrix, rows)
+  for i := range matrix {
+    matrix[i] = make([]float64, cols)
+  }
+
+  return matrix
+}</code></pre>
+
+    <p>now let's utilize these functions to implement matrix addition.</p>
+
+    <pre><code class="language-go">func (m Matrix) Add(n Matrix) Matrix {
+  if (m.Rows() != n.Rows()) || (m.Cols() != n.Cols()) {
+    panic("invalid dimensions")
+  }
+
+  result := AllocateMatrix(m.Rows(), n.Cols())
+
+  for i := 0; i < m.Rows(); i++ {
+    for j := 0; j < n.Cols(); j++ {
+      result[i][j] = m[i][j] + n[i][j]
+    }
+  }
+
+  return result
+}</code></pre>
+
+    <p>
+      the code is pretty much the same as the barebones for-loop which we wrote
+      initially. the only additional thing that is added is checking if both the
+      matrices can be added or not i.e. checking if their dimensions are equal.
+    </p>
+
+    <p>let's also implement matrix multiplication.</p>
+
+    <pre><code class="language-go">func (m Matrix) Multiply(n Matrix) Matrix {
+  if m.Cols() != n.Rows() {
+    panic(fmt.Errorf("invalid operation, tried to multiply %dx%d matrix with %dx%d matrix", m.Rows(), m.Cols(), n.Rows(), n.Cols()))
+  }
+
+  result := AllocateMatrix(m.Rows(), n.Cols())
+
+  for i := 0; i < m.Rows(); i++ {
+    for j := 0; j < n.Cols(); j++ {
+      sum := 0.0
+
+      for k := 0; k < n.Rows(); k++ {
+        sum += m[i][k] * n[k][j]
+      }
+
+      result[i][j] = sum
+    }
+  }
+
+  return result
+}</code></pre>
+
+    <p>
+      the code is pretty much the same except for the fact that the it now also
+      checks whether both the matrices are multipliable by checking if number of
+      columns of the 1st matrix is equal to number of rows of the 2nd matrix.
+    </p>
+
+    <p>time to use these utility functions to refactor <code>main.go</code>.</p>
+
+    <pre><code class="language-go">package main
+
+import (
+  "fmt"
+  m "nn/math"
+)
+
+func main() {
+  A := m.Matrix{{1, 2, 3}}
+  W := m.Matrix{
+    {0.5, 0.7},
+    {0.4, 0.6},
+    {0.3, 0.2},
+  }
+  B := m.Matrix{{1, 0.9}}
+
+  result := A.Multiply(W).Add(B)
+  fmt.Println(result)
+}</code></pre>
+
+    <p>
+      the code looks much more cleaner and elegant! and it is also much easier
+      to understand what is exactly happening.
+    </p>
+
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
     </footer>
