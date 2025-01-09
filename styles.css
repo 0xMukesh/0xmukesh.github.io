@@ -9,7 +9,8 @@
   --bg-dark: black;
 }
 
-p {
+p,
+li {
   font-size: 110%;
 }
 
