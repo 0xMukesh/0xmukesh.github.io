@@ -643,8 +643,135 @@ func main() {
     <h2>multilayers</h2>
 
     <center>
-      <img src="../images/007/04.svg" style="width: 50%; height: auto" />
+      <img src="../images/007/04.svg" style="width: 65%; height: auto" />
     </center>
+
+    <p>
+      until now we have only worked with single hidden layer, which was the
+      output layer. let's add in another layer.
+    </p>
+
+    <p>
+      there is a slight change in naming convention - the weights of first layer
+      are denoted as w<sub>ij</sub> where <code>i</code> is the index of neuron
+      in the current layer and <code>j</code> is the index of neuron of in the
+      next layer and similarly for weights of second layer but it is denoted as
+      v<sub>ij</sub>.
+    </p>
+
+    <p>
+      adding more layers to a neural network, allows the network to learn more
+      complex patterns and relationships within the input data.
+    </p>
+
+    <p>
+      implementing it in code is pretty easy. the output of first hidden layer
+      is the input of second hidden layer, so in place of <code>A</code>, we'll
+      use <code>result1</code> as the input while calculating values in the
+      output layer (second hidden layer). <code>W1</code> and
+      <code>B1</code> are the weights and biases corresponding to first hidden
+      layer and similarly for <code>W2</code> and <code>B2</code>.
+    </p>
+
+    <pre><code class="language-go">package main
+
+import (
+  "fmt"
+  m "nn/math"
+)
+
+func main() {
+  A := m.Matrix{{1, 2, 3}}
+  W1 := m.Matrix{
+    {0.5, 0.7},
+    {0.4, 0.6},
+    {0.3, 0.2},
+  }
+  B1 := m.Matrix{{1, 0.9}}
+  W2 := m.Matrix{
+    {0.7, 0.9},
+    {-0.4, 0.3},
+  }
+  B2 := m.Matrix{{1.1, -0.9}}
+
+  result1 := A.Multiply(W1).Add(B1)
+  result2 := result1.Multiply(W2).Add(B2)
+  fmt.Println(result2)
+}</code></pre>
+
+    <p>lovely! but let's refactor the code a bit.</p>
+
+    <h3>denselayer struct</h3>
+
+    <p>
+      let's create a layer of abstraction which <i>generates</i> a hidden layer
+      with random weights and biases based on number of input neurons and number
+      of output neurons.
+    </p>
+
+    <pre><code class="language-go">package neural
+
+import (
+  m "nn/math"
+)
+
+type DenseLayer struct {
+  Input, Weights, Bias m.Matrix
+  NInputs, NNeurons    int
+}</code></pre>
+
+    <p>
+      <code>NInputs</code> is the number of input neurons and
+      <code>NNeurons</code> is the number of output neurons.
+    </p>
+
+    <pre><code class="language-go">func NewDenseLayer(nInputs, nNeurons int) *DenseLayer {
+  dl := &DenseLayer{}
+
+  dl.Weights = m.AllocateMatrix(nInputs, nNeurons)
+  dl.Bias = m.AllocateMatrix(1, nNeurons)
+
+  for i := range dl.Weights {
+    for j := range dl.Weights[i] {
+      dl.Weights[i][j] = rand.Float64()*2 - 1
+    }
+  }
+
+  dl.NInputs = nInputs
+  dl.NNeurons = nNeurons
+
+  return dl
+}</code></pre>
+
+    <p>
+      <code>NewDenseLayer</code> acts like the constructor for
+      <code>DenseLayer</code> struct. it returns a new denselayer with randomly
+      generated weights, in the range of [-1, 1), and zero'ed biases.
+    </p>
+
+    <p>
+      <code>rand.Float64</code> returns a random float in the range of [0, 1),
+      so to generate a float in the range of [-1, 1) we have multiplied it by 2
+      and then subtracted 1 from it - a common technique for mapping elements in
+      [0, 1) range to [-1, 1).
+    </p>
+
+    <p>
+      until now, we have been processing the input data and passing it to the
+      next layer to process its values. this is called as <b>forward pass</b>.
+      during forward pass, the input data moves from the input layer through the
+      hidden layers to the output layer.
+    </p>
+
+    <pre><code class="language-go">func (dl *DenseLayer) Forward(input m.Matrix) m.Matrix {
+  return input.Multiply(dl.Weights).Add(dl.Bias)
+}</code></pre>
+
+    <p>
+      <code>Forward</code> method performs a forward pass on that specific
+      hidden layer, basically returning sum of the weighted sum and biases
+      calculating the weighted sum and adding the biases.
+    </p>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
