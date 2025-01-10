@@ -746,21 +746,22 @@ type DenseLayer struct {
     <p>
       <code>NewDenseLayer</code> acts like the constructor for
       <code>DenseLayer</code> struct. it returns a new denselayer with randomly
-      generated weights, in the range of [-1, 1), and zero'ed biases.
+      generated weights, in the range of [-1, 1), and zero'ed biases, and sets
+      the value of <code>NInputs</code> and <code>NNeurons</code>.
     </p>
 
     <p>
       <code>rand.Float64</code> returns a random float in the range of [0, 1),
-      so to generate a float in the range of [-1, 1) we have multiplied it by 2
+      so to generate a float in the range of [-1, 1), we have multiplied it by 2
       and then subtracted 1 from it - a common technique for mapping elements in
-      [0, 1) range to [-1, 1).
+      range of [0, 1) to [-1, 1).
     </p>
 
     <p>
       until now, we have been processing the input data and passing it to the
-      next layer to process its values. this is called as <b>forward pass</b>.
-      during forward pass, the input data moves from the input layer through the
-      hidden layers to the output layer.
+      next layer. this is called as <b>forward pass</b>. during forward pass,
+      the input data moves from the input layer through the hidden layers to the
+      output layer.
     </p>
 
     <pre><code class="language-go">func (dl *DenseLayer) Forward(input m.Matrix) m.Matrix {
@@ -769,8 +770,133 @@ type DenseLayer struct {
 
     <p>
       <code>Forward</code> method performs a forward pass on that specific
-      hidden layer, basically returning sum of the weighted sum and biases
-      calculating the weighted sum and adding the biases.
+      hidden layer, basically returns sum of the weighted sum and biases.
+    </p>
+
+    <p>let's utilize this new layer of abstraction in <code>main.go</code>.</p>
+
+    <pre><code class="language-go">package main
+
+import (
+  "fmt"
+  m "nn/math"
+  n "nn/neural"
+)
+
+func main() {
+  input := m.Matrix{{1, 2, 3}}
+  dl1 := n.NewDenseLayer(3, 2)
+  dl2 := n.NewDenseLayer(2, 2)
+  result1 := dl1.Forward(input)
+  result2 := dl2.Forward(result1)
+
+  fmt.Println(result2)
+}</code></pre>
+
+    <p>
+      the above code performs a forward pass on a neural network with 3 layers -
+      input layer with 3 neurons, hidden layer with 2 neurons and output layer
+      with 2 neurons.
+    </p>
+
+    <h2>batch inputs</h2>
+
+    <center>
+      <img src="../images/007/05.svg" style="width: 65%; height: auto" />
+    </center>
+
+    <br />
+
+    <center>
+      <img src="../images/007/06.svg" style="width: 65%; height: auto" />
+    </center>
+
+    <br />
+
+    <p>
+      neither rome is built within a single iteration nor a neural network is
+      trained with a single batch of input data. (sorry for the bad joke)
+    </p>
+
+    <p>
+      we have to tweak our forward pass logic to support batch inputs, as the
+      one mentioned above, and return individual outputs for each set of inputs.
+    </p>
+
+    <pre><code class="language-go">// expected input
+input := m.Matrix{
+  {1, 2, 3},
+  {4, 5, 6},
+}
+
+// expected output
+output := m.Matrix{
+  {0.4, -0.56},
+  {-7.89, 0.98},
+}</code></pre>
+
+    <p>
+      but just adding another row to the input matrix wouldn't work, as in our
+      forward pass method, bias is a row matrix, and with batched inputs, the
+      weighted sum wouldn't be a row matrix as earlier, and two matrices of
+      different dimensions can't be added.
+    </p>
+
+    <p>
+      a solution for this is to loop through the input matrix, where the type of
+      each element is <code>[]float64</code>. convert the elements from
+      <code>[]float64</code> to a row matrix, perform the calculations, convert
+      it back to <code>[]float64</code> and append it to a result matrix.
+    </p>
+
+    <p>
+      let's code out the utility functions related to conversion between
+      <code>[]float64</code> and row matrix.
+    </p>
+
+    <pre><code class="language-go">func ToRowMatrix(v []float64) Matrix {
+  m := AllocateMatrix(1, len(v))
+
+  for i := range m {
+    for j := range m[i] {
+      m[i][j] = v[j]
+    }
+  }
+
+  return m
+}</code></pre>
+
+    <pre><code class="language-go">func (m Matrix) ToFloatSlice() []float64 {
+  if len(m) != 1 {
+    panic("not a row matrix")
+  }
+
+  return m[0]
+}</code></pre>
+
+    <p>let's use these utility functions while performing forward pass.</p>
+
+    <pre><code class="language-go">func (dl *DenseLayer) Forward(input m.Matrix) m.Matrix {
+  result := m.AllocateMatrix(len(input), dl.NNeurons)
+
+  for i, v := range input {
+    result[i] = m.ToRowMatrix(v).Multiply(dl.Weights).Add(dl.Bias).ToFloatSlice()
+  }
+
+  return result
+}</code></pre>
+
+    <p>
+      the shape of input matrix is mxn, where m is the number of batches and n
+      is the number of input neurons (features). the shape of result matrix is
+      mxn, where m is the number of batches and n is the number of output
+      neurons.
+    </p>
+
+    <p>
+      update the input to the one as mentioned above and run
+      <code>main.go</code> again. the output must contain 2 rows and within each
+      row, there must be 2 values.
     </p>
 
     <footer>
