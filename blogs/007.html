@@ -899,6 +899,250 @@ output := m.Matrix{
       row, there must be 2 values.
     </p>
 
+    <h2>activation functions</h2>
+
+    <p>
+      with the current architecture of our neural network (multi-layer
+      perceptron), it can only model the predications with linear functions
+      irrespective of number of hidden layers. if f(x) is linear then
+      f(f(f(f(x)))) is also linear.
+    </p>
+
+    <p>
+      in the below image, the neural network is trying to classify objects into
+      two different categories represented by red and blue dots.
+    </p>
+
+    <center>
+      <img src="../images/007/07.svg" style="width: 40%; height: auto" />
+    </center>
+
+    <p>
+      the network might have high accuracy for simple training data, but as the
+      training data gets more complicated, the network fails to model the
+      predications properly using just linear functions.
+    </p>
+
+    <center>
+      <img src="../images/007/08.svg" style="width: 40%; height: auto" />
+    </center>
+
+    <p>
+      notice how the network fails to model the predications using just linear
+      functions. the network labels a decent chunk of objects belonging to red
+      category as blue.
+    </p>
+
+    <p>
+      activation functions are the components of the neural network that
+      introduce non-linearity into the network, allowing the networks to learn
+      more complex patterns and relationships. notice the change between how the
+      network models the predications with help of activation function and with
+      just linear functions. activation functions also determine whether a
+      neuron is <i>activated</i> or not and by much as well.
+    </p>
+
+    <center>
+      <img src="../images/007/09.svg" style="width: 40%; height: auto" />
+    </center>
+
+    <p>
+      notice how the network is able to model the predications with much more
+      accuracy as compared to with just linear functions.
+    </p>
+
+    <p>
+      there are different types of activation functions, so let's go through few
+      of most commonly used ones:
+    </p>
+
+    <ol>
+      <li>unit step function</li>
+      <li>sigmoid</li>
+      <li>tanh</li>
+      <li>ReLU</li>
+      <li>leaky ReLU</li>
+      <li>softmax</li>
+    </ol>
+
+    <h3>unit step function</h3>
+
+    <p>
+      $$f(x) = \left\{ \begin{array}{ll} 1 & \text{if } x > 0 \\ 0 & \text{if }
+      x \leq 0 \end{array} \right. $$
+    </p>
+
+    <p>
+      >> check out the graph of step function on
+      <a href="https://www.desmos.com/calculator/iu4hww4zeq" target="_blank"
+        >desmos</a
+      >
+    </p>
+
+    <p>
+      the unit step function is a discontinous function which models the on/off
+      behavior of a switch into the network. it is also known as the
+      <a href="https://en.wikipedia.org/wiki/Oliver_Heaviside">heaviside</a>
+      function.
+    </p>
+
+    <p>
+      if the value of a neuron is less than or equal to 0 then it is not
+      activated else it is activated. the unit step function is one of the most
+      basic activation function and it clearly shows the concept of a neuron
+      being activated.
+    </p>
+
+    <p>
+      but unit step function isn't generally used as an activation function.
+      while training our neural network, the optimizer (the component
+      responsible for training the network) needs to also know
+      <i>how much</i> of the neuron is activated i.e. how close or far is the
+      neuron from the threshold.
+    </p>
+
+    <p>
+      with unit step function, the output is either 1 or 0 so the question of
+      "<i>how much</i>" can't really be answered with the help of unit step
+      function. thereby, making unit step function less informative, in terms of
+      being an activation functions.
+    </p>
+
+    <h3>sigmoid</h3>
+
+    <p>$$\sigma(x) = \frac{1}{1 + e^{-x}}$$</p>
+
+    <p>
+      >> check out the graph of sigmoid function on
+      <a href="https://www.desmos.com/calculator/0jaesaq1jv" target="_blank"
+        >desmos</a
+      >
+    </p>
+
+    <p>
+      the sigmoid function (also called as logistic function) is a S-shaped
+      monotonically increasing function. the major difference between the unit
+      step function and sigmoid function is that sigmoid is monotonically
+      increasing.
+    </p>
+
+    <p>
+      due to the monotonically increasing behaviour of the sigmoid function, the
+      optimizer can judge how close or far is the neuron from the threshold.
+    </p>
+
+    <p>the range of sigmoid function is (0, 1) (where 0 and 1 are exclusive)</p>
+
+    <p>
+      $$\sigma(x) = 0, \text{when} \; x = -\infty \\ \sigma(x) = 1, \text{when}
+      \; x = \infty$$
+    </p>
+
+    <p>
+      sigmoid function is a common choice as an activation function when
+      probability distributions are expected in the output layer as the input to
+      the function is transformed into a value between 0.0 and 1.0.
+    </p>
+
+    <h3>tanh</h3>
+
+    <p>
+      $$\text{tanh}(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}} = 2\sigma(2x) - 1$$
+    </p>
+
+    <p>
+      >> check out the graph of tanh on
+      <a href="https://www.desmos.com/calculator/h1zo4m8kgl" target="_blank"
+        >desmos</a
+      >
+    </p>
+
+    <p>
+      tangent hyperbolic or tanh function is another common choice as an
+      activation function in neural networks. tanh is a shifted and stretched
+      version of the sigmoid.
+    </p>
+
+    <p>
+      the range of tanh is -1.0 to 1.0, as compared to 0.0 to 1.0 in the case of
+      sigmoid. generally, tanh is preferred over sigmoid as it performs better.
+    </p>
+
+    <p>
+      but there is an issue with both tanh and sigmoid and that is
+      <b>vanishing gradient problem</b>. i won't be going too deep into this
+      topic as it requires the knowledge of backpropagation. i will be covering
+      this topic along with backpropagation in the next part of this series.
+    </p>
+
+    <h3>ReLU</h3>
+
+    <p>
+      $$f(x) = \left\{ \begin{array}{ll} x & \text{if } x > 0 \\ 0 & \text{if }
+      x \leq 0 \end{array} \right. = \text{max}(0, \; x) $$
+    </p>
+
+    <p>
+      >> check out the graph of ReLU on
+      <a href="https://www.desmos.com/calculator/acf2vxkmdn" target="_blank"
+        >desmos</a
+      >
+    </p>
+
+    <p>
+      rectified linear activation function or ReLU is a simple yet effective
+      non-linear activation function. if a value is greater than 0 then it
+      outputs it as it is else it outputs 0.
+    </p>
+
+    <p>
+      ReLU addresses the vanishing gradient problem, making it effective in deep
+      learning architectures.
+    </p>
+
+    <p>
+      but there is a problem with ReLU as well - <b>dying ReLU problem</b>. as
+      this topic also requires knowledge of backpropagation, i would be covering
+      this topic, along with vanishing gradient problem, in the next blog post
+      in this series.
+    </p>
+
+    <p>
+      but here is a simple explaination of dying ReLU problem which is enough to
+      give you the context to understand why leaky ReLU exists.
+    </p>
+
+    <p>
+      the dying ReLU problem occurs when neurons using the ReLU activation
+      function become permanently inactive during neural network training (i
+      will deep dive into what neural network training is and how does it happen
+      in later blog posts). these neurons consistenly output 0 for any input,
+      effectively <i>dying</i> and stopping their "learning" process.
+    </p>
+
+    <h3>leaky ReLU</h3>
+
+    <p>
+      $$f(x) = \left\{ \begin{array}{ll} x & \text{if } x > 0 \\ 0.01x &
+      \text{if } x \leq 0 \end{array} \right. = \text{max}(0.01x, \; x)$$
+    </p>
+
+    <p>
+      >> check out the graph of leaky ReLU on
+      <a href="https://www.desmos.com/calculator/m3cxjrlvtc">desmos</a>
+    </p>
+
+    <p>
+      leaky ReLU came into existence to fix the issue of the dying ReLU problem.
+      rather than outputting 0 which leads to dead neurons, the leaky ReLU
+      output that value multiplied by a tiny fraction such as 0.01.
+    </p>
+
+    <!-- 
+    <h3>softmax</h3>
+
+    <p>$$S(x_i) = \frac{e^{x_i}}{\sum_{j = 1}^{n} e^{x_j}}$$</p> -->
+
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
     </footer>
