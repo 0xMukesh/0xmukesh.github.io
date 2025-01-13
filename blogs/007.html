@@ -1078,8 +1078,9 @@ output := m.Matrix{
     <h3>ReLU</h3>
 
     <p>
-      $$f(x) = \left\{ \begin{array}{ll} x & \text{if } x > 0 \\ 0 & \text{if }
-      x \leq 0 \end{array} \right. = \text{max}(0, \; x) $$
+      $$\begin{aligned} f(x) &= \left\{ \begin{array}{ll} x & \text{if } x > 0
+      \\ 0 & \text{if } x \leq 0 \end{array} \right. \\ &= \text{max}(0, \; x)
+      \end{aligned}$$
     </p>
 
     <p>
@@ -1123,8 +1124,9 @@ output := m.Matrix{
     <h3>leaky ReLU</h3>
 
     <p>
-      $$f(x) = \left\{ \begin{array}{ll} x & \text{if } x > 0 \\ 0.01x &
-      \text{if } x \leq 0 \end{array} \right. = \text{max}(0.01x, \; x)$$
+      $$\begin{aligned} f(x) &= \left\{ \begin{array}{ll} x & \text{if } x > 0
+      \\ 0.01x & \text{if } x \leq 0 \end{array} \right. \\ &= \text{max}(0.01x,
+      \; x) \end{aligned}$$
     </p>
 
     <p>
