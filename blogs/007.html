@@ -1138,10 +1138,26 @@ output := m.Matrix{
       output that value multiplied by a tiny fraction such as 0.01.
     </p>
 
-    <!-- 
     <h3>softmax</h3>
 
-    <p>$$S(x_i) = \frac{e^{x_i}}{\sum_{j = 1}^{n} e^{x_j}}$$</p> -->
+    <p>$$S(x_i) = \frac{e^{x_i}}{\sum_{j = 1}^{n} e^{x_j}}$$</p>
+
+    <p>
+      >> check out the visualization of softmax on
+      <a href="https://www.desmos.com/calculator/arep8wx65j">desmos</a>
+    </p>
+
+    <p>
+      the softmax function is a special one as it doesn't take in a single input
+      but rather a vector of inputs and returns a vector of probabilities.
+    </p>
+
+    <p>
+      the softmax function is used in the output layer of the neural network to
+      convert the raw output scores into probabilities. with the help of the
+      softmax, the output values are always in the range of (0, 1) and sum up to
+      1, making them interpretable as probabilities.
+    </p>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
