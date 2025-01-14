@@ -1252,6 +1252,127 @@ dl2 result: [[1.472915080022815 -1.2377578322618843] [3.0304664796029424 -2.5466
       greater than 0 are untouched.
     </p>
 
+    <h3>implementing softmax</h3>
+
+    <pre><code class="language-go">type Softmax struct {
+  Input m.Matrix
+}
+
+func NewSoftmax(input m.Matrix) *Softmax {
+  return &Softmax{
+    Input: input,
+  }
+}</code></pre>
+
+    <p>
+      in softmax function, e is raised to the power of each of the input values,
+      the sum of all these values is calculated and then each exponential value
+      is normalized by dividing it by the sum.
+    </p>
+
+    <pre><code class="language-go">func (s *Softmax) Forward() m.Matrix {
+  output := m.AllocateMatrix(s.Input.Rows(), s.Input.Cols())
+
+  for i := range s.Input {
+    exps := make([]float64, s.Input.Cols())
+    sum := 0.0
+
+    for j := range s.Input[i] {
+      exps[j] = math.Exp(s.Input[i][j])
+    }
+
+    for j := range exps {
+      sum += exps[j]
+    }
+
+    for j := range exps {
+      output[i][j] = exps[j] / sum
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <p>
+      let's use softmax as the activation layer for the output layer i.e.
+      <code>dl2</code> in our code.
+    </p>
+
+    <pre><code class="language-go">func main() {
+  input := m.Matrix{
+    {1, 2, 3},
+    {4, 5, 6},
+  }
+  dl1 := n.NewDenseLayer(3, 2)
+  dl2 := n.NewDenseLayer(2, 2)
+  result1 := dl1.Forward(input)
+  fmt.Printf("dl1 result: %v\n", result1)
+
+  relu := activations.NewReLU(result1)
+  reluResult := relu.Forward()
+  fmt.Printf("relu: %v\n", reluResult)
+
+  result2 := dl2.Forward(reluResult)
+  fmt.Printf("dl2 result: %v\n", result2)
+
+  softmax := activations.NewSoftmax(result2)
+  softmaxResult := softmax.Forward()
+  fmt.Printf("softmax: %v\n", softmaxResult)
+}</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[0.15515579283567238 1.3418595751701707] [-2.326611495106075 4.655190256597826]]
+relu: [[0.15515579283567238 1.3418595751701707] [0 4.655190256597826]]
+dl2 result: [[1.1318912355545137 0.29906364197338153] [4.431470142630381 1.313496448955001]]
+softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191613522825]]</code></pre>
+
+    <p>
+      if you notice, the probabilities within a single row (single input batch)
+      add up to 1, which proves the inclusive behavior of softmax function.
+    </p>
+
+    <p>
+      there is a problem with our current implementation of softmax which is
+      overflow error due to <code>math.Exp</code>. it doesn't a large number to
+      cause overflow error due to <code>math.Exp</code>. for example, 1000
+      causes overflow error and <code>math.Exp(1000)</code> returns
+      <code>+Inf</code>.
+    </p>
+
+    <p>
+      to fix, we can subtract the max number from the current value before
+      calculating value of e^x for that value. due to the nature of softmax
+      function, the output values won't change even if you add/subtract the same
+      number to all the input values.
+    </p>
+
+    <pre><code class="language-go">func (s *Softmax) Forward() m.Matrix {
+  output := m.AllocateMatrix(s.Input.Rows(), s.Input.Cols())
+
+  for i := range s.Input {
+    max := slices.Max(s.Input[i])
+    exps := make([]float64, s.Input.Cols())
+    sum := 0.0
+
+    for j := range s.Input[i] {
+      exps[j] = math.Exp(s.Input[i][j] - max)
+    }
+
+    for j := range exps {
+      sum += exps[j]
+    }
+
+    for j := range exps {
+      output[i][j] = exps[j] / sum
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <p>lovely!</p>
+
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
     </footer>
