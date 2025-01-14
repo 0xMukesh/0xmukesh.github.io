@@ -9,11 +9,6 @@
   --bg-dark: black;
 }
 
-p,
-li {
-  font-size: 110%;
-}
-
 img {
   max-width: 70%;
   height: auto;

@@ -1168,6 +1168,90 @@ output := m.Matrix{
       1, making them interpretable as probabilities.
     </p>
 
+    <p>
+      softmax returns an output which is <b>normalized</b> and <b>inclusive</b>.
+      it is normalized as the output values are always in the range of (0, 1)
+      and it is inclusive as sum of all the output values is always 1 i.e. the
+      output values are dependant on each other.
+    </p>
+
+    <p>
+      phew, that was a lot of theory. let's get back to coding and write some
+      code to implement these activation functions.
+    </p>
+
+    <p>
+      let's update our existing mini neural network and use ReLU and softmax as
+      the activation function. we'll use ReLU on the hidden layer and softmax on
+      the output layer.
+    </p>
+
+    <h3>implementing ReLU</h3>
+
+    <p>
+      we'll follow a similar design pattern as the one that we used for the
+      <code>DenseLayer</code> struct while implementating the different
+      activation functions.
+    </p>
+
+    <pre><code class="language-go">type ReLU struct {
+  Input m.Matrix
+}
+
+func NewReLU(input m.Matrix) *ReLU {
+  return &ReLU{
+    Input: input,
+  }
+}</code></pre>
+
+    <p>
+      implementation of ReLU is pretty straightforward as it involves finding
+      the maximum between 0 and the input.
+    </p>
+
+    <pre><code class="language-go">func (r ReLU) Forward() m.Matrix {
+  output := m.AllocateMatrix(r.Input.Rows(), r.Input.Cols())
+
+  for i := range r.Input {
+    for j := range r.Input[i] {
+      output[i][j] = math.Max(0, r.Input[i][j])
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <p>let's use ReLU on the hidden layer i.e. <code>dl1</code> in our code.</p>
+
+    <pre><code class="language-go">func main() {
+  input := m.Matrix{
+    {1, 2, 3},
+    {4, 5, 6},
+  }
+  dl1 := n.NewDenseLayer(3, 2)
+  dl2 := n.NewDenseLayer(2, 2)
+  result1 := dl1.Forward(input)
+  fmt.Printf("dl1 result: %v\n", result1)
+
+  relu := activations.NewReLU(result1)
+  reluResult := relu.Forward()
+  fmt.Printf("relu: %v\n", reluResult)
+
+  result2 := dl2.Forward(reluResult)
+  fmt.Printf("dl2 result: %v\n", result2)
+}</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[2.0918056492311905 -0.06373246654912879] [4.303810170604677 -1.1511349329761926]]
+relu: [[2.0918056492311905 0] [4.303810170604677 0]]
+dl2 result: [[1.472915080022815 -1.2377578322618843] [3.0304664796029424 -2.546639430480636]]</code></pre>
+
+    <p>
+      notice how the values less than 0 are set to 0 and the ones which are
+      greater than 0 are untouched.
+    </p>
+
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
     </footer>
