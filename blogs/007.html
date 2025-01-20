@@ -44,7 +44,7 @@
     <h1>from neuron to intelligence: introduction to neural networks</h1>
     <p class="blog__byline">
       by <a href="/">mukesh</a> on
-      <time datetime="2025-01-08">8th January 2025</time>
+      <time datetime="2025-01-08">19th January 2025</time>
     </p>
 
     <p>
@@ -1372,6 +1372,116 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
 }</code></pre>
 
     <p>lovely!</p>
+
+    <h2>loss functions</h2>
+
+    <p>
+      as discussed earlier, we pass in the corresponding labels for every
+      training data in supervised learning, which basically acts like the
+      expected/desired output.
+    </p>
+
+    <p>
+      currently our neural network's parameters (weights and biases) are set
+      randomly so obviously it won't give the desired output right away. we have
+      to <i>train</i> it.
+    </p>
+
+    <p>
+      training a neural network is very much similar as to how a human learns
+      which is via trial and error and getting feedback. we use a function which
+      tells how <i>wrong</i> the network's output is with respect to the desired
+      outputs and accordingly we tweak the weights and biases to increase the
+      accuracy.
+    </p>
+
+    <p>
+      similar to activation functions, there are different loss function and
+      each has a specific usecase, so let's go through few of the commonly used
+      ones.
+    </p>
+
+    <ol>
+      <li>mean absolute error</li>
+      <li>mean squared error</li>
+      <li>huber loss</li>
+      <li>log-cosh loss</li>
+      <li>cross-entropy loss</li>
+      <li>hinge loss</li>
+    </ol>
+
+    <h3>mean absolute error</h3>
+
+    <p>$$\text{MAE} = \frac{1}{n} \sum_{i = 1}^{n} | \hat{y} - y |$$</p>
+
+    <p>
+      \(y\) is the output by the network and \(\hat{y}\) is the desired output
+    </p>
+
+    <p>
+      mean absolute error or L1 loss function is one of the most simple loss
+      functions used for regression type problems - it calculates the absolute
+      difference between the desired output and the actual output and returns
+      the mean value.
+    </p>
+
+    <h3>mean squared error</h3>
+
+    <p>
+      $$\text{MSE} = \frac{1}{n} \sum_{i = 1}^{n} \left(\hat{y} - y \right)^2$$
+    </p>
+
+    <p>
+      mean squared error or L2 loss function is a commonly used loss function
+      for linear regression type problems - it calculates the difference between
+      desired output and actual output, squares it and returns the mean value of
+      it.
+    </p>
+
+    <p>
+      mean squared error (L2 loss function)is generally used over mean absolute
+      error (L1 loss function) as it penalizes (puts more <i>weight</i>) large
+      errors more and small errors less and also because L1 loss function
+      produces a non-differentiable function (function in similar shape as |x|
+      i.e. non-differentiable at x = 0) which causes problems which trying to
+      train the model by optimizing the parameters which involves differentiaing
+      the loss function (will discuss more about it in the topic of optimizers).
+    </p>
+
+    <h3>huber loss</h3>
+
+    <p>
+      $$\begin{aligned} \text{Huber} &= \frac{1}{n} \sum_{i = 1}^{n} \frac{1}{2}
+      (\hat{y} - y)^2, \; |\hat{y} - y| \leq \delta \\ &= \frac{1}{n} \sum_{i =
+      1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2} \delta \right), \;
+      |\hat{y} - y| > \delta \end{aligned}$$
+    </p>
+
+    <p>
+      if the input data consists of outliers, a data point that is significantly
+      different from other data points in a dataset, and mean squared error is
+      used as the loss function then it will result will in large deviations as
+      the entire model tries to fit towards outliers.
+    </p>
+
+    <p>
+      to eliminate this issue, the huber loss takes in the pros of L1 and L2
+      function and forms a hybrid function of both. L1 function isn't that
+      sensitive to outliers as L2 function but L2 function penalizes small
+      errors well and is differentiable.
+    </p>
+
+    <p>
+      \(\delta \) is the threshold up till which huber loss behaves as like L2
+      function and after which it behaves like L1 function, to avoid large
+      deviation caused due to L2 function because of outliers.
+    </p>
+
+    <p>
+      huber loss function offers a smooth transition between loss functions of
+      two different nature - quadratic and linear, making it optimal choice for
+      datasets with both normally distributed data and some outliers.
+    </p>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
