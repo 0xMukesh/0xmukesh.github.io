@@ -1209,7 +1209,7 @@ func NewReLU(input m.Matrix) *ReLU {
       the maximum between 0 and the input.
     </p>
 
-    <pre><code class="language-go">func (r ReLU) Forward() m.Matrix {
+    <pre><code class="language-go">func (r *ReLU) Forward() m.Matrix {
   output := m.AllocateMatrix(r.Input.Rows(), r.Input.Cols())
 
   for i := range r.Input {
@@ -1407,12 +1407,11 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
       <li>huber loss</li>
       <li>log-cosh loss</li>
       <li>cross-entropy loss</li>
-      <li>hinge loss</li>
     </ol>
 
     <h3>mean absolute error</h3>
 
-    <p>$$\text{MAE} = \frac{1}{n} \sum_{i = 1}^{n} | \hat{y} - y |$$</p>
+    <p>$$L(y, \hat{y}) = \frac{1}{n} \sum_{i = 1}^{n} | \hat{y} - y |$$</p>
 
     <p>
       \(y\) is the output by the network and \(\hat{y}\) is the desired output
@@ -1428,7 +1427,8 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
     <h3>mean squared error</h3>
 
     <p>
-      $$\text{MSE} = \frac{1}{n} \sum_{i = 1}^{n} \left(\hat{y} - y \right)^2$$
+      $$L(y, \hat{y}) = \frac{1}{n} \sum_{i = 1}^{n} \left(\hat{y} - y
+      \right)^2$$
     </p>
 
     <p>
@@ -1451,10 +1451,10 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
     <h3>huber loss</h3>
 
     <p>
-      $$\begin{aligned} \text{Huber} &= \frac{1}{n} \sum_{i = 1}^{n} \frac{1}{2}
-      (\hat{y} - y)^2, \; |\hat{y} - y| \leq \delta \\ &= \frac{1}{n} \sum_{i =
-      1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2} \delta \right), \;
-      |\hat{y} - y| > \delta \end{aligned}$$
+      $$\begin{aligned} L(y, \hat{y}) &= \frac{1}{n} \sum_{i = 1}^{n}
+      \frac{1}{2} (\hat{y} - y)^2, \; |\hat{y} - y| \leq \delta \\ &=
+      \frac{1}{n} \sum_{i = 1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2}
+      \delta \right), \; |\hat{y} - y| > \delta \end{aligned}$$
     </p>
 
     <p>
@@ -1482,6 +1482,170 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
       two different nature - quadratic and linear, making it optimal choice for
       datasets with both normally distributed data and some outliers.
     </p>
+
+    <h3>log-cosh loss</h3>
+
+    <p>$$L(y, \hat{y}) = \sum_{i = 1}^{n}\log(\cosh(y - \hat{y}))$$</p>
+
+    <p>
+      log-cosh loss is another commonly used loss function in regression type
+      problems. it combines the pros of L1 and L2 functions without introducing
+      an additional hyperparameter like \(\delta\) in huber loss.
+    </p>
+
+    <p>$$\log(\cosh(x)) \approx \frac{x^2}{2}, \; x \text{ is very small}$$</p>
+    <p>$$\log(\cosh(x)) \approx |x| - \log(2), \; x \text{ is very large}$$</p>
+
+    <p>
+      for small values of predication errors, log-cosh loss behaves like L2
+      function and for large values, it behaves like L1 function, thereby
+      handling the issue with outliers.
+    </p>
+
+    <p>
+      log-cosh is twice differentiable everywhere. this smooth gradient can lead
+      to better optimization behavior, especially for methods that use second
+      derivates like netwon's method.
+    </p>
+
+    <h3>cross-entropy loss</h3>
+
+    <p>$$L(y, \hat{y}) = -\sum_{i = 1}^{n} \left(\hat{y} \; \log y \right)$$</p>
+
+    <p>
+      cross-entropy loss is a commonly used loss function for classification
+      type problems. it calculates the product between desired output and
+      negative loss of predicated output.
+    </p>
+
+    <p>
+      generally, in classification problems, the desired outputs will be in the
+      form of a <b>one-hot vector</b> i.e. the expected output's value is 1 and
+      the remaining others are 0.
+    </p>
+
+    <p>
+      consider a simple neural network which is trying to solve a classification
+      problem and has 3 neurons in the output layer, so the desired output would
+      look something like [1, 0, 0]
+    </p>
+
+    <p>thereby, the cross-entropy loss function can be simplified down</p>
+
+    <p>$$L(y, \hat{y}) = -\log y_{a}$$</p>
+
+    <p>
+      where \(y_{a}\) is the predicated output of the desired output neuron.
+    </p>
+
+    <p>
+      for our simple neural network, we will use cross-entropy loss as the
+      function, so let's code it out!
+    </p>
+
+    <h3>implementating cross-entropy loss function</h3>
+
+    <pre><code class="language-go">type CrossEntropy struct {
+  Input m.Matrix
+}
+
+func NewCrossEntropy(input m.Matrix) *CrossEntropy {
+  return &CrossEntropy{
+    Input: input,
+  }
+}</code></pre>
+
+    <pre><code class="language-go">func (c *CrossEntropy) Forward(targetClasses m.Matrix) []float64 {
+  predicatedClassesIdx := make([]int, len(targetClasses))
+  losses := make([]float64, len(targetClasses))
+
+  for i := range targetClasses {
+    for j := range targetClasses[i] {
+      if targetClasses[i][j] == 1 {
+        predicatedClassesIdx[i] = j
+      }
+    }
+  }
+
+  for i, v := range predicatedClassesIdx {
+    predicatedValue := c.Input[i][v]
+    losses[i] = -math.Log(predicatedValue)
+  }
+
+  return losses
+}</code></pre>
+
+    <p>
+      <code>input</code> is of shape mxn where m is the number of batches and n
+      is the number of neurons in the output layer and
+      <code>targetClasses</code> is a matrix consisting of one-hot encoded
+      vector and the shape of <code>targetClasses</code> is mxn where m is the
+      number of batches and n is the number of neurons in the output layer.
+    </p>
+
+    <p>
+      the function first loops through <code>targetClasses</code> and stores
+      indexes of desired outputs in <code>predicatedClassesIdx</code> and then
+      it loops through <code>predicatedClassesIdx</code> and applies a negative
+      log on those values.
+    </p>
+
+    <p>let's utilize the loss function in our tiny neural network.</p>
+
+    <pre><code class="language-go">func main() {
+  input := m.Matrix{
+    {1, 2, 3},
+    {4, 5, 6},
+  }
+  dl1 := n.NewDenseLayer(3, 2)
+  dl2 := n.NewDenseLayer(2, 2)
+  targetClasses := m.Matrix{
+    {0, 1},
+    {1, 0},
+  }
+
+  result1 := dl1.Forward(input)
+  fmt.Printf("dl1 result: %v\n", result1)
+
+  relu := activations.NewReLU(result1)
+  reluResult := relu.Forward()
+  fmt.Printf("relu: %v\n", reluResult)
+
+  result2 := dl2.Forward(reluResult)
+  fmt.Printf("dl2 result: %v\n", result2)
+
+  softmax := activations.NewSoftmax(result2)
+  softmaxResult := softmax.Forward()
+  fmt.Printf("softmax: %v\n", softmaxResult)
+
+  crossEntropy := losses.NewCrossEntropy(softmaxResult)
+  crossEntropyResult := crossEntropy.Forward(targetClasses)
+  fmt.Printf("cross entropy - %v\n", crossEntropyResult)
+}</code></pre>
+
+    <p>
+      the loss function takes values of output neurons and target classes as the
+      input and returns an array of losses.
+    </p>
+
+    <pre><code>dl1 result: [[3.2368390212243874 -3.138187035707692] [7.568743712607484 -7.624673711374685]]
+relu: [[3.2368390212243874 0] [7.568743712607484 0]]
+dl2 result: [[-0.3955121935487683 0.31564765946169937] [-0.9248314199602927 0.7380831182164586]]
+softmax: [[0.32934260574552865 0.6706573942544714] [0.1593711427347598 0.8406288572652402]]
+cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
+
+    <p>
+      in the first batch, output at index <code>1</code> is the desired output
+      and in the second batch, output at index <code>2</code> is the desired
+      output
+    </p>
+
+    <p>
+      -ln(0.6706573942544714) = 0.39949686219 and -ln(0.1593711427347598) =
+      1.83651956581
+    </p>
+
+    <p>which matches our output, lovely!</p>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
