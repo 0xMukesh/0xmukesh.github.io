@@ -191,7 +191,7 @@
     <br />
 
     <center>
-      <img src="../images/007/01.svg" style="width: 50%; height: auto" />
+      <img src="../images/007/001.svg" style="width: 50%; height: auto" />
     </center>
 
     <br />
@@ -229,7 +229,7 @@
     </p>
 
     <center>
-      <img src="../images/007/02.svg" style="width: 50%; height: auto" />
+      <img src="../images/007/002.svg" style="width: 50%; height: auto" />
     </center>
 
     <p>in the above figure, the weights in the following fashion:</p>
@@ -271,7 +271,7 @@
     </p>
 
     <center>
-      <img src="../images/007/03.svg" style="width: 50%; height: auto" />
+      <img src="../images/007/003.svg" style="width: 50%; height: auto" />
     </center>
 
     <p>
@@ -318,9 +318,9 @@
 
       <li>
         <code>W</code> is a matrix of weights of all the neuron connections.
-        weights present in the <code>i</code>th column of the matrix corresponds
-        to weights related to a<sub>i</sub>. the shape of the matrix is mxn,
-        where m is the number of neurons in current layer and n is the number of
+        weights related to a<sub>i</sub>. the shape of the matrix is mxn, where
+        weights present in the <code>i</code>th row of the matrix corresponds to
+        m is the number of neurons in current layer and n is the number of
         neurons in the next layer.
 
         <p>
@@ -643,7 +643,7 @@ func main() {
     <h2>multilayers</h2>
 
     <center>
-      <img src="../images/007/04.svg" style="width: 65%; height: auto" />
+      <img src="../images/007/004.svg" style="width: 65%; height: auto" />
     </center>
 
     <p>
@@ -802,13 +802,13 @@ func main() {
     <h2>batch inputs</h2>
 
     <center>
-      <img src="../images/007/05.svg" style="width: 65%; height: auto" />
+      <img src="../images/007/005.svg" style="width: 65%; height: auto" />
     </center>
 
     <br />
 
     <center>
-      <img src="../images/007/06.svg" style="width: 65%; height: auto" />
+      <img src="../images/007/006.svg" style="width: 65%; height: auto" />
     </center>
 
     <br />
@@ -914,7 +914,7 @@ output := m.Matrix{
     </p>
 
     <center>
-      <img src="../images/007/07.svg" style="width: 40%; height: auto" />
+      <img src="../images/007/007.svg" style="width: 40%; height: auto" />
     </center>
 
     <p>
@@ -924,7 +924,7 @@ output := m.Matrix{
     </p>
 
     <center>
-      <img src="../images/007/08.svg" style="width: 40%; height: auto" />
+      <img src="../images/007/008.svg" style="width: 40%; height: auto" />
     </center>
 
     <p>
@@ -943,7 +943,7 @@ output := m.Matrix{
     </p>
 
     <center>
-      <img src="../images/007/09.svg" style="width: 40%; height: auto" />
+      <img src="../images/007/009.svg" style="width: 40%; height: auto" />
     </center>
 
     <p>
@@ -1450,11 +1450,13 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
 
     <h3>huber loss</h3>
 
+    <p>$$e = |\hat{y} - y|$$</p>
+
     <p>
       $$\begin{aligned} L(y, \hat{y}) &= \frac{1}{n} \sum_{i = 1}^{n}
-      \frac{1}{2} (\hat{y} - y)^2, \; |\hat{y} - y| \leq \delta \\ &=
-      \frac{1}{n} \sum_{i = 1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2}
-      \delta \right), \; |\hat{y} - y| > \delta \end{aligned}$$
+      \frac{1}{2} (\hat{y} - y)^2, \; e \leq \delta \\ &= \frac{1}{n} \sum_{i =
+      1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2} \delta \right), \; e >
+      \delta \end{aligned}$$
     </p>
 
     <p>
@@ -1493,8 +1495,13 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
       an additional hyperparameter like \(\delta\) in huber loss.
     </p>
 
-    <p>$$\log(\cosh(x)) \approx \frac{x^2}{2}, \; x \text{ is very small}$$</p>
-    <p>$$\log(\cosh(x)) \approx |x| - \log(2), \; x \text{ is very large}$$</p>
+    <p>when x is very small:</p>
+
+    <p>$$\log(\cosh(x)) \approx \frac{x^2}{2}$$</p>
+
+    <p>when x is very large:</p>
+
+    <p>$$\log(\cosh(x)) \approx |x| - \log(2)$$</p>
 
     <p>
       for small values of predication errors, log-cosh loss behaves like L2
@@ -1646,6 +1653,214 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
     </p>
 
     <p>which matches our output, lovely!</p>
+
+    <h2>backpropagation</h2>
+
+    <p>
+      until now, we have been calculating the network output by multiplying the
+      weights, adding biases, and applying activation functions but how do you
+      train a neural network? how can the loss value returned by the loss
+      function be reduced?
+    </p>
+
+    <p>
+      a neural network can be compared to a machine with millions of knobs
+      (parameters - weights and biases) and on tweaking those knobs, the result
+      changes. to reduce the loss, we have to find the optimal values of weights
+      and biases for each layer that is closest to the desired result (minimize
+      the cost).
+    </p>
+
+    <p>
+      backpropagation is a machine learning algorithm which is responsible for
+      training the neural networks and you can find it almost every single
+      neural network irrespective of its complexity.
+    </p>
+
+    <p>let's revisit our neural network diagram</p>
+
+    <center>
+      <img src="../images/007/004.svg" style="width: 65%; height: auto" />
+    </center>
+
+    <p>
+      the neural network comprises an input layer, one hidden layer, and an
+      output layer. the hidden layer uses ReLU as the activation function, the
+      output layer uses softmax as the activation function, and cross-entropy is
+      used as the loss function.
+    </p>
+
+    <p>
+      we first have to calculate how each parameter contributes to the total
+      error and then use that value to update that parameter.
+    </p>
+
+    <p>
+      the contribution of a parameter towards the total error of the network can
+      be represented mathematically with the help of partial derivates.
+    </p>
+
+    <p>
+      ex. the contribution of \(w_{11}\) weight towards the total error \(L\)
+      can be expressed as \(\frac{\delta L}{\delta w_{11}}\) i.e. partial
+      derivate of loss function with respect to \(w_{11}\).
+    </p>
+
+    <p>
+      let's first try to understand how \(w_{11}\) weight affects \(z_{1}\) and
+      also mathematically derive an expression for it.
+    </p>
+
+    <center>
+      <img src="../images/007/010.svg" style="width: 65%; height: auto" />
+    </center>
+
+    <p>
+      the above image shows the entire process behind how \(z_{1}\) was
+      computed. \(z_{1}\) can be expressed as a function of multiple parameters.
+    </p>
+
+    <p>$$z_{1} = S \left( z^{'}_{1} \right)$$</p>
+
+    <p>
+      where \(S\) is the softmax activation function and \(z^{'}_{1}\) is the
+      weighted sum of the hidden layer neurons i.e. \(y_{1}\) and \(y_{2}\).
+    </p>
+
+    <p>
+      $$\begin{aligned} z_{1} &= S \left( z^{'}_{1} \right) \\ &= S \left(
+      \sum_{i = 1}^{2} y_{i}v_{i1} + c_{1} \right) \end{aligned}$$
+    </p>
+
+    <p>
+      similarly, \(y_{1}\) and \(y_{2}\) can also be expressed as multi
+      parameter functions.
+    </p>
+
+    <p>
+      $$\begin{aligned} y_{1} &= R \left( y^{'}_{1} \right) \\ &= R
+      \left(\sum_{i = 1}^{3} a_{i}w_{i1} + b_{1} \right) \end{aligned}$$
+    </p>
+
+    <p>
+      $$\begin{aligned} y_{2} &= R \left( y^{'}_{2} \right) \\ &= R
+      \left(\sum_{i = 1}^{3} a_{i}w_{i2} + b_{1} \right) \end{aligned}$$
+    </p>
+
+    <p>
+      where \(R\) is the ReLU activation function and \(y^{'}_{1}\) and
+      \(y^{'}_{2}\) are the weighted sums of the input layer neurons i.e.
+      \(a_{1}\), \(a_{2}\) and \(a_{3}\).
+    </p>
+
+    <p>
+      the contribution of \(w_{11}\) towards the value of \(z_{1}\) can be
+      mathematically expressed as \(\frac{\delta z_{1}}{\delta w_{11}}\) i.e.
+      partial derivate of \(z_{1}\) with respect to \(w_{11}\).
+    </p>
+
+    <p>
+      \(w_{11}\) is not directly responsible for the value of \(z_{1}\) but it
+      is involved in the process of computing \(z_{1}\) so on changing
+      \(w_{11}\), \(z_{1}\) will also change and we are trying to find the
+      expression which will tell by how much \(z_{1}\) will change on tweaking
+      \(w_{11}\) i.e. change of \(z_{1}\) per unit change of \(w_{11}\).
+    </p>
+
+    <p>
+      the expression for partial derivate of \(z_{1}\) with respect to
+      \(w_{11}\) can be found out with the help of chain rule.
+    </p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta w_{11}} = \frac{\delta y^{'}_{1}}{w_{11}}
+      \cdot \frac{\delta y_1}{\delta y^{'}_{1}} \cdot \frac{\delta
+      z^{'}_{1}}{\delta y_{1}} \cdot \frac{\delta z_{1}}{\delta z^{'}_{1}}$$
+    </p>
+
+    <p>
+      let's find out the value of each partial derivate and multiply them at the
+      end.
+    </p>
+
+    <p>
+      >> finding out partial derivate of \(y^{'}_{1}\) with respect to
+      \(w_{11}\) is pretty simple as \(y^{'}_{1}\) is a linear expression.
+    </p>
+
+    <p>$$y^{'}_{1} = a_{1}w_{11} + a_{2}w_{21} + a_{3}w_{31} + b_{1}$$</p>
+
+    <p>$$\frac{\delta y^{'}_{1}}{w_{11}} = a_{1}$$</p>
+
+    <p>
+      >> to find out partial derivate of \(y_1\) with respect \(y^{'}_{1}\), we
+      have to recall the definition of ReLU activation function as \(y_1\) is
+      the ReLU activated value of \(y^{'}_{1}\) i.e. \(y_1 = R (y^{'}_{1}) \).
+    </p>
+
+    <p>
+      $$R(x) = \left\{ \begin{array}{ll} x & \text{if } \; x > 0 \\ 0 & \text{if
+      } \; x \leq 0 \end{array} \right.$$
+    </p>
+
+    <p>
+      $$y_{1} = \left\{ \begin{array}{ll} y^{'}_{1} & \text{if } \; y^{'}_{1} >
+      0 \\ 0 & \text{if } \; y^{'}_{1} \leq 0 \end{array} \right.$$
+    </p>
+
+    <p>
+      $$\frac{\delta y_{1}}{\delta y^{'}_{1}} = \left\{ \begin{array}{ll} 1 &
+      \text{if } \; y^{'}_{1} > 0 \\ 0 & \text{if } \; y^{'}_{1} \leq 0
+      \end{array} \right.$$
+    </p>
+
+    <p>
+      >> finding out partial derivate of \(z^{'}_{1}\) with respect to \(y_{1}\)
+      is also pretty simple as \(z^{'}_{1}\) is a linear expression.
+    </p>
+
+    <p>$$z^{'}_{1} = y_{1}v_{11} + y_{2}v_{21} + c_{1}$$</p>
+    <p>$$\frac{\delta z^{'}_{1}}{\delta y_{1}} = v_{11}$$</p>
+
+    <p>
+      >> to find out partial derivate of \(z_{1}\) with respect to
+      \(z^{'}_{1}\), we have to recall the definition of softmax function as
+      \(z_{1}\) is the softmax activated value of \(z^{'}_{1}\) i.e. \(z_{1} =
+      S(z^{'}_{1})\)
+    </p>
+
+    <p>
+      $$S(z^{'}_{1}) = \frac{e^{z^{'}_{1}}}{e^{z^{'}_{1}} + e^{z^{'}_{2}}}$$
+    </p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta z^{'}_{1}} = \frac{e^{z^{'}_{1}} \left(
+      e^{z^{'}_{1}} + e^{z^{'}_{2}}\right) - e^{z^{'}_{1}} \cdot
+      e^{z^{'}_{1}}}{\left( e^{z^{'}_{1}} + e^{z^{'}_{2}}\right)^{2}}$$
+    </p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta z^{'}_{1}} = \frac{e^{z^{'}_{1}}}{\left(
+      e^{z^{'}_{1}} + e^{z^{'}_{2}}\right)} \cdot \left( \frac{\left(
+      e^{z^{'}_{1}} + e^{z^{'}_{2}}\right) - e^{z^{'}_{1}}}{\left( e^{z^{'}_{1}}
+      + e^{z^{'}_{2}}\right)} \right)$$
+    </p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta z^{'}_{1}} = S(z^{'}_{1}) \cdot (1 -
+      S(z^{'}_{1}))$$
+    </p>
+
+    <p>
+      after finding all the individual partial derivates, we have to just
+      multiply all of them
+    </p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta w_{11}} = \left\{ \begin{array}{ll}
+      a_{1}v_{11}S(z^{'}_{1})(1 - S(z^{'}_{1})) & \text{if } \; y^{'}_{1} > 0 \\
+      0 & \text{if } \; y^{'}_{1} \leq 0 \end{array} \right.$$
+    </p>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
