@@ -1512,7 +1512,7 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
     <p>
       log-cosh is twice differentiable everywhere. this smooth gradient can lead
       to better optimization behavior, especially for methods that use second
-      derivates like netwon's method.
+      derivatives like netwon's method.
     </p>
 
     <h3>cross-entropy loss</h3>
@@ -1654,6 +1654,87 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
 
     <p>which matches our output, lovely!</p>
 
+    <h3>calculating mean loss</h3>
+
+    <p>
+      mean loss across all the batches gives a rough idea about how well the
+      neural network works
+    </p>
+
+    <pre><code class="language-go">func CalculateMeanLoss(losses []float64) float64 {
+  sum := 0.0
+
+  for _, v := range losses {
+    sum += v
+  }
+
+  meanLoss := sum / float64(len(losses))
+  return meanLoss
+}</code></pre>
+
+    <br />
+
+    <pre><code class="language-go">crossEntropy := losses.NewCrossEntropy(softmaxResult)
+crossEntropyResult := crossEntropy.Forward(targetClasses)
+fmt.Printf("cross entropy - %v\n", crossEntropyResult)
+
+fmt.Printf("mean loss - %f\n", utils.CalculateMeanLoss(crossEntropyResult))</code></pre>
+
+    <h3>calculating mean accuracy</h3>
+
+    <p>
+      accuracy is another commonly used metric while training a neural network,
+      it describes how often the largest output value is the desired output in
+      terms of a fraction.
+    </p>
+
+    <pre><code class="language-go">func CalculateAccuracy(targetClasses, output m.Matrix) float64 {
+  predicatedClassesIdx := []int{}
+
+  for i := range targetClasses {
+    for j := range targetClasses[i] {
+      if targetClasses[i][j] == 1 {
+        predicatedClassesIdx = append(predicatedClassesIdx, j)
+      }
+    }
+  }
+
+  accuracies := []int{}
+
+  for i, v := range predicatedClassesIdx {
+    maxElemIdx := MaxElemIdx(output[i])
+    predicatedClassIdx := v
+
+    if maxElemIdx == predicatedClassIdx {
+      accuracies = append(accuracies, 1)
+    } else {
+      accuracies = append(accuracies, 0)
+    }
+  }
+
+  sum := 0
+
+  for _, v := range accuracies {
+    sum += v
+  }
+
+  meanAccuracy := float64(sum)/float64(len(accuracies))
+  return meanAccuracy
+}</code></pre>
+
+    <br />
+
+    <pre><code>softmax := activations.NewSoftmax(result2)
+softmaxResult := softmax.Forward()
+fmt.Printf("softmax: %v\n", softmaxResult)
+
+crossEntropy := losses.NewCrossEntropy(softmaxResult)
+crossEntropyResult := crossEntropy.Forward(targetClasses)
+fmt.Printf("cross entropy - %v\n", crossEntropyResult)
+
+fmt.Printf("mean loss - %f\n", utils.CalculateMeanLoss(crossEntropyResult))
+fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softmaxResult))</code></pre>
+
     <h2>backpropagation</h2>
 
     <p>
@@ -1697,13 +1778,13 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
 
     <p>
       the contribution of a parameter towards the total error of the network can
-      be represented mathematically with the help of partial derivates.
+      be represented mathematically with the help of partial derivatives.
     </p>
 
     <p>
       ex. the contribution of \(w_{11}\) weight towards the total error \(L\)
       can be expressed as \(\frac{\delta L}{\delta w_{11}}\) i.e. partial
-      derivate of loss function with respect to \(w_{11}\).
+      derivatives of loss function with respect to \(w_{11}\).
     </p>
 
     <p>
@@ -1779,12 +1860,12 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
     </p>
 
     <p>
-      let's find out the value of each partial derivate and multiply them at the
-      end.
+      let's find out the value of each partial derivative and multiply them at
+      the end.
     </p>
 
     <p>
-      >> finding out partial derivate of \(y^{'}_{1}\) with respect to
+      >> finding out partial derivative of \(y^{'}_{1}\) with respect to
       \(w_{11}\) is pretty simple as \(y^{'}_{1}\) is a linear expression.
     </p>
 
@@ -1793,8 +1874,8 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
     <p>$$\frac{\delta y^{'}_{1}}{w_{11}} = a_{1}$$</p>
 
     <p>
-      >> to find out partial derivate of \(y_1\) with respect \(y^{'}_{1}\), we
-      have to recall the definition of ReLU activation function as \(y_1\) is
+      >> to find out partial derivative of \(y_1\) with respect \(y^{'}_{1}\),
+      we have to recall the definition of ReLU activation function as \(y_1\) is
       the ReLU activated value of \(y^{'}_{1}\) i.e. \(y_1 = R (y^{'}_{1}) \).
     </p>
 
@@ -1815,15 +1896,15 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
     </p>
 
     <p>
-      >> finding out partial derivate of \(z^{'}_{1}\) with respect to \(y_{1}\)
-      is also pretty simple as \(z^{'}_{1}\) is a linear expression.
+      >> finding out partial derivative of \(z^{'}_{1}\) with respect to
+      \(y_{1}\) is also pretty simple as \(z^{'}_{1}\) is a linear expression.
     </p>
 
     <p>$$z^{'}_{1} = y_{1}v_{11} + y_{2}v_{21} + c_{1}$$</p>
     <p>$$\frac{\delta z^{'}_{1}}{\delta y_{1}} = v_{11}$$</p>
 
     <p>
-      >> to find out partial derivate of \(z_{1}\) with respect to
+      >> to find out partial derivative of \(z_{1}\) with respect to
       \(z^{'}_{1}\), we have to recall the definition of softmax function as
       \(z_{1}\) is the softmax activated value of \(z^{'}_{1}\) i.e. \(z_{1} =
       S(z^{'}_{1})\)
@@ -1852,14 +1933,151 @@ cross entropy - [0.3994968621904994 1.8365195658108964]</code></pre>
     </p>
 
     <p>
-      after finding all the individual partial derivates, we have to just
-      multiply all of them
+      after finding all the individual partial derivative, we have to just
+      multiply all of them.
+    </p>
+
+    <p>if \(y^{'}_{1}\) is greater than 0</p>
+
+    <p>
+      $$\frac{\delta z_{1}}{\delta w_{11}} = a_{1}v_{11}S(z^{'}_{1})(1 -
+      S(z^{'}_{1}))$$
+    </p>
+
+    <p>else</p>
+
+    <p>$$\frac{\delta z_{1}}{\delta w_{11}} = 0$$</p>
+
+    <p>
+      after the partial derivatives are calculated, the parameters are updated
+      using gradient descent - it'll be discussed in deep in optimizers section.
+      as of right now, you can think gradient descent is an algorithm which is
+      responsible for updating the parameters using the partial derivatives
+      computed by backpropagation.
     </p>
 
     <p>
-      $$\frac{\delta z_{1}}{\delta w_{11}} = \left\{ \begin{array}{ll}
-      a_{1}v_{11}S(z^{'}_{1})(1 - S(z^{'}_{1})) & \text{if } \; y^{'}_{1} > 0 \\
-      0 & \text{if } \; y^{'}_{1} \leq 0 \end{array} \right.$$
+      but it's not that simple. let's try to understand by taking the actual
+      output of our neural network and apply the logic backpropagation on it.
+    </p>
+
+    <p>
+      the output of our neural network can be represented in the form a matrix
+      as follows:
+    </p>
+
+    <p>
+      $$Z = \left( \begin{matrix} z_{11} & z_{12} \\ z_{21} & z_{22}
+      \end{matrix} \right)$$
+    </p>
+
+    <p>
+      where each output is represented in the form of \(z_{li}\) where \(l\) is
+      the index of the input batch/sample and \(i\) is the index of the output
+      neuron.
+    </p>
+
+    <p>
+      $$\frac{\delta L}{\delta W} = \frac{\delta L}{\delta Z} \cdot \frac{\delta
+      Z}{\delta Z^{'}} \cdot \frac{\delta Z^{'}}{\delta Y} \cdot \frac{\delta
+      Y}{\delta Y^{'}} \cdot \frac{\delta Y^{'}}{\delta W}$$
+    </p>
+
+    <p>
+      the outermost function is the loss function so first we have to calculate
+      the partial derivative of the loss function with respect to each \(z\).
+    </p>
+
+    <p>
+      in our neural network, we are using cross-entropy as the loss function.
+    </p>
+
+    <p>$$L(z, \hat{z}) = - \sum_{i = 1}^{n} \left(\hat{z} \log{z} \right)$$</p>
+
+    <p>$$\frac{\delta L}{\delta z_{i}} = -\frac{\hat{z_i}}{z_i}$$</p>
+
+    <p>
+      we've to use the above partial derivative on the \(Z\) matrix to get the
+      partial derivative of loss function.
+    </p>
+
+    <p>
+      $$\frac{\delta L}{\delta Z} = \left(\begin{matrix}
+      -\frac{\hat{z_{11}}}{z_{11}} & -\frac{\hat{z_{12}}}{z_{12}} \\ \\
+      -\frac{\hat{z_{21}}}{z_{21}} & -\frac{\hat{z_{22}}}{z_{22}} \end{matrix}
+      \right)$$
+    </p>
+
+    <p>
+      next up is the partial derivative of softmax function with each of its
+      inputs i.e. \(\frac{\delta Z}{\delta Z^{'}}\).
+    </p>
+
+    <p>
+      earlier we have found out the partial derivative of the softmax function
+      but it was just <i>partial</i> (pun intended), we didn't find out the
+      complete expression for partial derivative of the softmax function.
+    </p>
+
+    <p>
+      if value of one the softmax output is changed then it also affects the
+      value of other outputs because softmax normalizes the output by taking sum
+      of all the exponential values.
+    </p>
+
+    <p>
+      consider a simple case where \(Z^{'} = \left[\begin{matrix} z^{'}_1 &
+      z^{'}_2 \end{matrix} \right]\) are the weighted sums and \(Z =
+      \left[\begin{matrix} z_1 & z_2 \end{matrix} \right]\) are the softmax
+      outputs, then the partial derivative of softmax function i.e.
+      \(\frac{\delta Z}{\delta Z^{'}}\) can be represented as follows
+    </p>
+
+    <p>
+      $$\frac{\delta Z}{\delta Z^{'}} = \left(\begin{matrix} \frac{\delta
+      z_1}{\delta z^{'}_{1}} & \frac{\delta z_2}{\delta z^{'}_{1}} \\ \\
+      \frac{\delta z_1}{\delta z^{'}_{2}} & \frac{\delta z_2}{\delta z^{'}_{2}}
+      \end{matrix} \right)$$
+    </p>
+
+    <p>
+      the above matrix is a jacboian matrix. in the context of multi-variable
+      calculus, jacboian matrix of a multi-variable function is a matrix of all
+      its first-order partial derivatives.
+    </p>
+
+    <p>
+      we have already found out the expression of \(\frac{\delta z_1}{\delta
+      z^{'}_{1}}\) and the expression of \(\frac{\delta z_2}{\delta z^{'}_{2}}\)
+      is almost similar. let's find out a generalized expression for partial
+      derivative of softmax function.
+    </p>
+
+    <p>$$z_{1} = \frac{e^{z^{'}_{1}}}{e^{z^{'}_{1}} + e^{z^{'}_{2}}}$$</p>
+    <p>$$z_{2} = \frac{e^{z^{'}_{2}}}{e^{z^{'}_{1}} + e^{z^{'}_{2}}}$$</p>
+
+    <p>
+      $$\frac{\delta z_1}{\delta z^{'}_{1}} = S(z^{'}_{1})(1 - S(z^{'}_{1}))$$
+    </p>
+
+    <p>
+      $$\frac{\delta z_1}{\delta z^{'}_{2}} = \frac{-e^{z^{'}_{1}} \cdot
+      e^{z^{'}_{2}}}{\left(e^{z^{'}_{1}} + e^{z^{'}_{2}} \right)^{2}} =
+      -S(z_1)S(z_2)$$
+    </p>
+
+    <p>with the above observation, we can conclude that</p>
+
+    <p>
+      $$\frac{\delta z_i}{\delta z^{'}_{j}} = S(z^{'}_{i})(\delta_{ij} -
+      S(z^{'}_{j}))$$
+    </p>
+
+    <p>where \(\delta_{ij}\) is kronecker delta, which is defined as</p>
+
+    <p>
+      $$\delta_{ij} = \left\{ \begin{array}{ll} 1 & \text{if } \; i = j \\ 0 &
+      \text{if } \; i \neq j \end{array} \right.$$
     </p>
 
     <footer>
