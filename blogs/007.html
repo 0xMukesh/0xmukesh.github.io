@@ -197,29 +197,18 @@
     <br />
 
     <p>
-      in the above image, a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub>, y<sub
-        >1</sub
-      >
-      and y<sub>2</sub> are the neurons. a<sub>1</sub>, a<sub>2</sub> and a<sub
-        >3</sub
-      >
-      recieve the training data (aka input data) which is then processed and
-      sent to y<sub>1</sub>
-      and y<sub>2</sub>.
+      in the above image, \(a_1\), \(a_2\), \(a_3\), \(y_1\) and \(y_2\) are the
+      neurons. \(a_1\), \(a_2\) and \(a_3\) recieve the training data (aka input
+      data) which is then processed and sent to \(y_1\) and \(y_2\).
     </p>
 
     <p>
       a collection of neurons form a layer. in the above image, there are two
-      input and output layers. the input layer consists of a<sub>1</sub>, a<sub
-        >2</sub
-      >
-      and a<sub>3</sub> whereas the output layer consists of b<sub>1</sub> and
-      b<sub>2</sub>. the neurons in the current layer affect the value of
-      neurons in the next layer i.e. the value of y<sub>1</sub> depends on
-      a<sub>1</sub>, a<sub>2</sub> and a<sub>3</sub> and similarly for y<sub
-        >2</sub
-      >
-      as well.
+      input and output layers. the input layer consists of \(a_1\), \(a_2\) and
+      \(a_3\) whereas the output layer consists of \(b_1\) and \(b_2\). the
+      neurons in the current layer affect the value of neurons in the next layer
+      i.e. the value of \(y_1\) depends on \(a_1\), \(a_2\) and \(a_3\) and
+      similarly for \(y_2\) as well.
     </p>
 
     <p>
@@ -235,12 +224,12 @@
     <p>in the above figure, the weights in the following fashion:</p>
 
     <ol>
-      <li>a<sub>i</sub> - y<sub>1</sub> connection - w<sub>i</sub></li>
-      <li>a<sub>j</sub> - y<sub>2</sub> connection - v<sub>j</sub></li>
+      <li>\(a_i\) - \(y_1\) connection - \(w_i\)</li>
+      <li>\(a_j\) - \(y_2\) connection - \(v_j\)</li>
     </ol>
 
     <p>
-      the value of y<sub>1</sub> is determined by taking weighted sum of all the
+      the value of \(y_1\) is determined by taking weighted sum of all the
       neurons which are connected to it. in the above example, it would be
       calculated as follows:
     </p>
@@ -250,7 +239,7 @@
       a_iw_i \end{aligned}$$
     </p>
 
-    <p>and similarly for y<sub>2</sub></p>
+    <p>and similarly for \(y_2\)</p>
 
     <p>
       $$\begin{aligned} y_2 &= a_1v_1 + a_2v_2 + a_3v_3 \\ &= \sum_{j = 1}^3
@@ -259,10 +248,10 @@
 
     <p>
       currently, our neural network is based on a simple linear equation of the
-      form y = mx but what if we want to offset the result? i.e. if the result
-      of the weighted sum is 0 then we want the neural network to return 2. we
-      would have to add an offset constant to our above-mentioned linear
-      equation, which makes it y = mx + c.
+      form \(y = mx\) but what if we want to offset the result? i.e. if the
+      result of the weighted sum is 0 then we want the neural network to return
+      2. we would have to add an offset constant to our above-mentioned linear
+      equation, which makes it \(y = mx + c\).
     </p>
 
     <p>
@@ -275,14 +264,14 @@
     </center>
 
     <p>
-      in the above image, b<sub>1</sub> and b<sub>2</sub> are the biases for
-      y<sub>1</sub> and y<sub>2</sub>. every neuron has its' own biases -
-      similar to how every neuron connection has its' own weight.
+      in the above image, \(b_1\) and \(b_2\) are the biases for \(y_1\) and
+      \(y_2\). every neuron has its' own biases - similar to how every neuron
+      connection has its' own weight.
     </p>
 
     <p>
-      to calculate the value of y<sub>1</sub>, we have to just add b<sub>1</sub>
-      to the previously calculated weighted sum.
+      to calculate the value of \(y_1\), we have to just add \(b_1\) to the
+      previously calculated weighted sum.
     </p>
 
     <p>
@@ -290,7 +279,7 @@
       \left(\sum_{i = 1}^3 a_iw_i \right) + b_1 \end{aligned}$$
     </p>
 
-    <p>and similarly for y<sub>2</sub></p>
+    <p>and similarly for \(y_2\)</p>
 
     <p>
       $$\begin{aligned} y_2 &= (a_1v_1 + a_2v_2 + a_3v_3) + b_2 \\ &=
@@ -299,13 +288,12 @@
 
     <p>
       let's general the formula using a bit of linear algebra. let's consider a
-      few matrices - <code>A</code>, <code>W</code>, <code>B</code> and
-      <code>Y</code>.
+      few matrices - \(A\), \(W\), \(B\) and \(Y\).
     </p>
 
     <ol>
       <li>
-        <code>A</code> is a row matrix of all the input neurons (also called as
+        \(A\) is a row matrix of all the input neurons (also called as
         "features"). the shape of the matrix ("shape of a matrix" basically
         means dimensions of that matrix) is 1xn, where n is equal to number of
         neurons in the current layer.
@@ -317,11 +305,11 @@
       </li>
 
       <li>
-        <code>W</code> is a matrix of weights of all the neuron connections.
-        weights related to a<sub>i</sub>. the shape of the matrix is mxn, where
-        weights present in the <code>i</code>th row of the matrix corresponds to
-        m is the number of neurons in current layer and n is the number of
-        neurons in the next layer.
+        \(W\) is a matrix of weights of all the neuron connections. weights
+        related to \(a_i\)>. the shape of the matrix is mxn, where weights
+        present in the ith row of the matrix corresponds to m is the number of
+        neurons in current layer and n is the number of neurons in the next
+        layer.
 
         <p>
           $$\text{W} = \left(\begin{matrix} w_1 & v_1 \\ w_2 & v_2 \\ w_3 & v_3
@@ -329,16 +317,16 @@
         </p>
 
         <p>
-          w<sub>1</sub>, w<sub>2</sub> and w<sub>3</sub> are present in the 1st
-          column, thereby they are the weights related to a<sub>1</sub> and
-          similarly for v<sub>1</sub>, v<sub>2</sub> and v<sub>3</sub>.
+          \(w_1\), \(w_2\) and \(w_3\) are present in the 1st column, thereby
+          they are the weights related to \(a_1\) and similarly for \(v_1\),
+          \(v_2\) and \(v_3\).
         </p>
       </li>
 
       <li>
-        <code>B</code> is also a row matrix of all the biases of neurons in the
-        next layer. the shape of the matrix is 1xn, where n is the number of
-        neurons in the next layer.
+        \(B\) is also a row matrix of all the biases of neurons in the next
+        layer. the shape of the matrix is 1xn, where n is the number of neurons
+        in the next layer.
 
         <p>
           $$\text{B} = \left(\begin{matrix} b_1 & b_2 \end{matrix} \right)$$
@@ -346,17 +334,17 @@
       </li>
 
       <li>
-        <code>Y</code> is also a row matrix containing values of all the neurons
-        in next layer. the shape of the matrix is 1xn, where n is the number of
-        neurons in the next layer.
+        \(Y\) is also a row matrix containing values of all the neurons in next
+        layer. the shape of the matrix is 1xn, where n is the number of neurons
+        in the next layer.
       </li>
 
       <p>$$\text{Y} = \left(\begin{matrix} y_1 & y_2 \end{matrix} \right)$$</p>
     </ol>
 
     <p>
-      using linear algebra, we can find relation between <code>A</code>,
-      <code>W</code>, <code>B</code> and <code>Y</code>
+      using linear algebra, we can find relation between \(A\), \(W\), \(B\) and
+      \(Y\).
     </p>
 
     <p>$$\text{Y} = \text{A}\text{W} + \text{B}$$</p>
@@ -370,9 +358,8 @@
     </p>
 
     <p>
-      start with defining <code>A</code>, <code>W</code> and
-      <code>B</code> matrices. for now, use any random values to populate the
-      matrices.
+      start with defining \(A\), \(W\) and \(B\) matrices. for now, use any
+      random values to populate the matrices.
     </p>
 
     <pre><code class="language-go">package main
@@ -388,8 +375,8 @@ func main() {
 }</code></pre>
 
     <p>
-      let's start with implementing the matrix multiplication between
-      <code>A</code> and <code>W</code>.
+      let's start with implementing the matrix multiplication between \(A\) and
+      \(W\).
     </p>
 
     <pre><code class="language-go">AxW := make([][]float64, len(A))
@@ -412,15 +399,15 @@ for i := 0; i < len(A); i++ {
 
     <p>
       the code starts off with allocating the required size for the result
-      matrix i.e. <code>AxW</code>. the shape of <code>AxW</code> matrix is mxn,
-      where m is equal to number of rows of A and n is the number of columns of
-      W.
+      matrix i.e. \(A \times W\). the shape of \(A \times W\) matrix is mxn,
+      where m is equal to number of rows of \(A\) and n is the number of columns
+      of \(W\).
     </p>
 
     <p>
-      the code then loops through every row in <code>A</code> and every column
-      in <code>W</code>, and then it multiplies the corresponding elements and
-      calculates the total sum.
+      the code then loops through every row in \(A\) and every column in \(W\),
+      and then it multiplies the corresponding elements and calculates the total
+      sum.
     </p>
 
     <p>
@@ -430,8 +417,7 @@ for i := 0; i < len(A); i++ {
     </p>
 
     <p>
-      let's now implement the matrix addition between <code>AxW</code> and
-      <code>B</code>.
+      let's now implement the matrix addition between \(A \times W\) and \(B\).
     </p>
 
     <pre><code class="language-go">result := make([][]float64, len(AxW))
@@ -449,7 +435,7 @@ for i := 0; i < len(AxW); i++ {
     <p>
       the code starts off with allocating the required size for the result
       matrix. the shape of <code>result</code> matrix is equal to the shape of
-      <code>AxW</code> matrix, as two matrices can be added/subtracted only when
+      \(A \times W\) matrix, as two matrices can be added/subtracted only when
       their shapes (dimensions) are equal.
     </p>
 
@@ -653,10 +639,9 @@ func main() {
 
     <p>
       there is a slight change in naming convention - the weights of first layer
-      are denoted as w<sub>ij</sub> where <code>i</code> is the index of neuron
-      in the current layer and <code>j</code> is the index of neuron of in the
-      next layer and similarly for weights of second layer but it is denoted as
-      v<sub>ij</sub>.
+      are denoted as \(w_{ij}\) where \(i\) is the index of neuron in the
+      current layer and \(j\) is the index of neuron of in the next layer and
+      similarly for weights of second layer but it is denoted as \(v_{ij}\).
     </p>
 
     <p>
@@ -1452,11 +1437,18 @@ softmax: [[0.6969524774540506 0.3030475225459493] [0.9576280838647717 0.04237191
 
     <p>$$e = |\hat{y} - y|$$</p>
 
+    <p>if \(e \leq \delta\):</p>
+
     <p>
-      $$\begin{aligned} L(y, \hat{y}) &= \frac{1}{n} \sum_{i = 1}^{n}
-      \frac{1}{2} (\hat{y} - y)^2, \; e \leq \delta \\ &= \frac{1}{n} \sum_{i =
-      1}^{n} \delta \left( |\hat{y} - y| - \frac{1}{2} \delta \right), \; e >
-      \delta \end{aligned}$$
+      $$L(y, \hat{y}) = \frac{1}{n} \sum_{i = 1}^{n} \frac{1}{2} (\hat{y} -
+      y)^2$$
+    </p>
+
+    <p>else:</p>
+
+    <p>
+      $$L(y, \hat{y}) = \frac{1}{n} \sum_{i = 1}^{n} \delta \left( |\hat{y} - y|
+      - \frac{1}{2} \delta \right)$$
     </p>
 
     <p>
@@ -1996,7 +1988,10 @@ fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softma
 
     <p>$$L(z, \hat{z}) = - \sum_{i = 1}^{n} \left(\hat{z} \log{z} \right)$$</p>
 
-    <p>$$\frac{\delta L}{\delta z_{i}} = -\frac{\hat{z_i}}{z_i}$$</p>
+    <p>
+      $$\begin{equation} \boxed{\frac{\delta L}{\delta z_{i}} =
+      -\frac{\hat{z_i}}{z_i}} \end{equation}$$
+    </p>
 
     <p>
       using the above partial derivative, we can easily apply it on to \(Z\)
@@ -2075,8 +2070,8 @@ fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softma
     <p>with the above observation, we can conclude that</p>
 
     <p>
-      $$\frac{\delta z_i}{\delta z^{'}_{j}} = S(z^{'}_{i})(\delta_{ij} -
-      S(z^{'}_{j}))$$
+      $$\begin{equation} \boxed{\frac{\delta z_i}{\delta z^{'}_{j}} =
+      S(z^{'}_{i})(\delta_{ij} - S(z^{'}_{j}))} \end{equation}$$
     </p>
 
     <p>where \(\delta_{ij}\) is kronecker delta, which is defined as</p>
@@ -2111,25 +2106,20 @@ fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softma
     </p>
 
     <p>
-      $$\frac{\delta Z}{\delta Z^{'}} = \left(\begin{matrix}
+      $$\begin{aligned} \frac{\delta Z}{\delta Z^{'}} &= \left(\begin{matrix}
       \left(\begin{matrix} \frac{\delta z_{11}}{\delta z^{'}_{11}} &
       \frac{\delta z_{12}}{\delta z^{'}_{11}} \\ \\ \frac{\delta z_{11}}{\delta
       z^{'}_{12}} & \frac{\delta z_{22}}{\delta z^{'}_{22}} \end{matrix} \right)
       \\ \\ \left(\begin{matrix} \frac{\delta z_{21}}{\delta z^{'}_{21}} &
       \frac{\delta z_{22}}{\delta z^{'}_{21}} \\ \\ \frac{\delta z_{21}}{\delta
       z^{'}_{22}} & \frac{\delta z_{22}}{\delta z^{'}_{22}} \end{matrix} \right)
-      \end{matrix} \right)$$
-    </p>
-
-    <p>
-      $$\frac{\delta Z}{\delta Z^{'}} = \left(\begin{matrix}
-      \left(\begin{matrix} S(z^{'}_{11})(1 - S(z^{'}_{11})) &
-      -S(z^{'}_{12})S(z^{'}_{11}) \\ \\ -S(z^{'}_{11})S(z^{'}_{12}) &
-      S(z^{'}_{12})(1 - S(z^{'}_{12})) \end{matrix} \right) \\ \\
-      \left(\begin{matrix} S(z^{'}_{21})(1 - S(z^{'}_{21})) &
-      -S(z^{'}_{22})S(z^{'}_{21}) \\ \\ -S(z^{'}_{21})S(z^{'}_{22}) &
-      S(z^{'}_{22})(1 - S(z^{'}_{22})) \end{matrix} \right) \end{matrix}
-      \right)$$
+      \end{matrix} \right) \\ \\ &= \left(\begin{matrix} \left(\begin{matrix}
+      S(z^{'}_{11})(1 - S(z^{'}_{11})) & -S(z^{'}_{12})S(z^{'}_{11}) \\ \\
+      -S(z^{'}_{11})S(z^{'}_{12}) & S(z^{'}_{12})(1 - S(z^{'}_{12}))
+      \end{matrix} \right) \\ \\ \left(\begin{matrix} S(z^{'}_{21})(1 -
+      S(z^{'}_{21})) & -S(z^{'}_{22})S(z^{'}_{21}) \\ \\
+      -S(z^{'}_{21})S(z^{'}_{22}) & S(z^{'}_{22})(1 - S(z^{'}_{22}))
+      \end{matrix} \right) \end{matrix} \right) \end{aligned}$$
     </p>
 
     <p>
@@ -2260,6 +2250,88 @@ fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softma
     <p>
       >> next up is partial derivative of ReLU with respect to its input i.e.
       \(\frac{\delta Y}{\delta Y^{'}}\)
+    </p>
+
+    <p>
+      $$\frac{\delta Y}{\delta Y^{'}} = \left(\begin{matrix} \frac{\delta
+      y_{11}}{\delta y^{'}_{11}} & \frac{\delta y_{12}}{\delta y^{'}_{12}} \\ \\
+      \frac{\delta y_{21}}{\delta y^{'}_{21}} & \frac{\delta y_{22}}{\delta
+      y^{'}_{22}} \end{matrix} \right)$$
+    </p>
+
+    <p>
+      partial derivative of ReLU function is pretty simple, as it is either 1 or
+      0 - that's it.
+    </p>
+
+    <p>
+      $$\frac{\delta y_{i}}{\delta y^{'}_{i}} = \left\{ \begin{array}{ll} 1 &
+      \text{if } \; y^{'}_{i} > 0 \\ 0 & \text{if } \; y^{'}_{i} \leq 0
+      \end{array} \right. $$
+    </p>
+
+    <p>
+      the above partial derivative can be simplified down using heaviside
+      function (or) unit step function
+    </p>
+
+    <p>$$\frac{\delta y_{i}}{\delta y^{'}_{i}} = H\left(y^{'}_{i} \right)$$</p>
+
+    <p>
+      $$\begin{aligned} \frac{\delta Y}{\delta Y^{'}} &= \left(\begin{matrix}
+      H(y^{'}_{11}) & H(y^{'}_{12}) \\ \\ H(y^{'}_{21}) &H(y^{'}_{22})
+      \end{matrix} \right) \\ \\ &= H \left(\begin{matrix} y^{'}_{11} &
+      y^{'}_{12} \\ \\ y^{'}_{21} & y^{'}_{22} \end{matrix} \right)
+      \end{aligned}$$
+    </p>
+
+    <p>
+      \begin{equation} \boxed{\frac{\delta Y}{\delta Y^{'}} = H(Y^{'})}
+      \end{equation}
+    </p>
+
+    <p>the computed partial derivative until now is</p>
+
+    <p>
+      $$\frac{\delta L}{\delta Y^{'}} = \left(\begin{matrix} \frac{\delta
+      L}{\delta z^{'}_{11}} & \frac{\delta L}{\delta z^{'}_{12}} \\ \\
+      \frac{\delta L}{\delta z^{'}_{21}} & \frac{\delta L}{\delta z^{'}_{22}}
+      \end{matrix} \right) \cdot (W_{h})^{T} \cdot H(Y^{'})$$
+    </p>
+
+    <p>
+      >> next up is partial derivative of weighted sums with respect to input
+      layer weights i.e. \(\frac{\delta Y^{'}}{\delta W}\)
+    </p>
+
+    <p>
+      the layer gradient is equal to transpose of weight matrix of that layer
+      similarly partial derivative with respect to weights of weighted sum of
+      that layer is equal to the input matrix of that layer
+    </p>
+
+    <p>
+      $$A = \left(\begin{matrix}a_{11} & a_{12} & a_{13} \\ \\ a_{21} & a_{22} &
+      a_{23} \end{matrix}\right)$$
+    </p>
+
+    <p>
+      the shape of \(A\) is (number of batches)x(number of inputs) and the shape
+      of \(\frac{\delta L}{\delta Y^{'}}\) is (number of batches)x(number of
+      neurons), so for matrix multiplication to be valid, we multiply the
+      \(A^{T}\) with remaining chain product value.
+    </p>
+
+    <p>
+      $$\frac{\delta L}{\delta W} = A^{T} \cdot \left(\begin{matrix}
+      \frac{\delta L}{\delta z^{'}_{11}} & \frac{\delta L}{\delta z^{'}_{12}} \\
+      \\ \frac{\delta L}{\delta z^{'}_{21}} & \frac{\delta L}{\delta z^{'}_{22}}
+      \end{matrix} \right) \cdot (W_{h})^{T} \cdot H(Y^{'})$$
+    </p>
+
+    <p>
+      oof, that was a LOT of math! but it helps to understand what exactly is
+      happening under-the-hood making it easier to code it out.
     </p>
 
     <footer>
