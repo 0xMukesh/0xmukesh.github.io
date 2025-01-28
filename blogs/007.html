@@ -49,10 +49,9 @@
 
     <p>
       hey there! i have recently started exploring the world of machine learning
-      and have been trying to implement a simple neural network from scratch
-      (referring to "<a href="https://nnfs.io">Neural Networks from Scratch</a
-      >"), so i thought of writing a blog series about neural networks, their
-      working under-the-hood and how to implement one in golang.
+      and have been trying to implement a simple neural network from scratch, so
+      i thought of writing a blog post about neural networks, their working
+      under-the-hood and how to implement one in golang.
     </p>
 
     <h2>what is machine learning?</h2>
@@ -2330,9 +2329,336 @@ fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softma
     </p>
 
     <p>
+      if you want to calculate the contribution of biases towards the cost of
+      the network i.e. \(\frac{\delta L}{\delta B}\) then it is almost same as
+      the above partial derivate but at the you multiply with \(J_{1,n}\).
+    </p>
+
+    <p>
+      $$\frac{\delta L}{\delta B} = \left(\begin{matrix} \frac{\delta L}{\delta
+      z^{'}_{11}} & \frac{\delta L}{\delta z^{'}_{12}} \\ \\ \frac{\delta
+      L}{\delta z^{'}_{21}} & \frac{\delta L}{\delta z^{'}_{22}} \end{matrix}
+      \right) \cdot (W_{h})^{T} \cdot H(Y^{'}) \cdot J_{1, n}$$
+    </p>
+
+    <p>
+      \(J_{n,1}\) represents a matrix of size nx1, where \(n\) is the number of
+      neurons in the previous layer, basically size of \(B\), and within that
+      matrix, all the elements are equal to 1.
+    </p>
+
+    <p>
       oof, that was a LOT of math! but it helps to understand what exactly is
       happening under-the-hood making it easier to code it out.
     </p>
+
+    <p>it's finally the time to implement these in code!</p>
+
+    <h3>implementating backpropagation for cross-entropy loss function</h3>
+
+    <pre><code class="language-go">func (c *CrossEntropy) Backward(targetClasses m.Matrix) m.Matrix {
+  outputValues := c.Input
+  output := m.AllocateMatrix(outputValues.Rows(), outputValues.Cols())
+
+  for i := range targetClasses {
+    for j := range targetClasses[i] {
+      if targetClasses[i][j] == 1 {
+        output[i][j] = -1 / outputValues[i][j]
+      }
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <p>
+      <code>outputValues</code> are the output values of the activation function
+      used in the output layer i.e. softmax in this case.
+    </p>
+
+    <p>
+      we start by allocating memory for a matrix the same size as the activation
+      function's output values, which sets all the elements to 0. Then, we just
+      change the values of the desired output elements to -1/(actual output). We
+      are directly dividing with 1 as <code>targetClasses</code> is a collection
+      of one-hot vectors.
+    </p>
+
+    <p>
+      let's first increase the number of input batches to 3 and then test it out
+    </p>
+
+    <pre><code class="language-go">input := m.Matrix{
+  {0.1, 2.2, 1.7},
+  {0.7, 1.65, 2.1},
+  {0.8, 1.11, 2.24},
+}
+targetClasses := m.Matrix{
+  {0, 1},
+  {1, 0},
+  {1, 0},
+}</code></pre>
+
+    <br />
+
+    <pre><code class="language-go">crossEntropy := losses.NewCrossEntropy(softmaxResult)
+crossEntropyResult := crossEntropy.Forward(targetClasses)
+fmt.Printf("cross entropy - %v\n", crossEntropyResult)
+
+fmt.Printf("mean loss - %f\n", utils.CalculateMeanLoss(crossEntropyResult))
+fmt.Printf("mean accuracy - %f\n", utils.CalculateAccuracy(targetClasses, softmaxResult))
+
+dloss := crossEntropy.Backward(targetClasses)
+fmt.Printf("dloss: %v\n", dloss)</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[0.2941625827854362 -1.4426101587250724] [0.3434467238012378 -0.8618346957670733] [0.27682740589240235 -0.2926228282814122]]
+relu: [[0.2941625827854362 0] [0.3434467238012378 0] [0.27682740589240235 0]]
+dl2 result: [[-0.22156772285052945 0.20632465738574582] [-0.25868928601507535 0.24089239000948684] [-0.20851060446031522 0.19416582195770174]]
+softmax: [[0.394629723848092 0.605370276151908] [0.37763898152017467 0.6223610184798253] [0.400669469865613 0.599330530134387]]
+cross entropy - [0.5019149814658843 0.9738166150810633 0.9146184562427635]
+mean loss - 0.796783
+mean accuracy - 0.333333
+dloss: [[0 -1.6518815663639654] [-2.648031715302613 0] [-2.495822804606016 0]]</code></pre>
+
+    <p>
+      let's normalize the value of gradients by dividing each value with number
+      of batches
+    </p>
+
+    <pre><code class="language-go">func (c *CrossEntropy) Backward(targetClasses m.Matrix) m.Matrix {
+  outputValues := c.Input
+  output := m.AllocateMatrix(outputValues.Rows(), outputValues.Cols())
+
+  for i := range targetClasses {
+    for j := range targetClasses[i] {
+      if targetClasses[i][j] == 1 {
+        output[i][j] = -1 / outputValues[i][j]
+      }
+    }
+  }
+
+  for i := range output {
+    for j := range output[i] {
+      output[i][j] /= float64(len(outputValues))
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <h3>implementating backpropagation for softmax function</h3>
+
+    <p>
+      let's implement the part which generates the matrix of jacboian matrices
+    </p>
+
+    <pre><code class="language-go">func (s *Softmax) Backward(outputs, dvalues m.Matrix) {
+  matrix_3d := make([]m.Matrix, len(outputs))
+
+  for _, singleOutput := range outputs {
+    jacobianMatrix := m.AllocateMatrix(len(singleOutput), len(singleOutput))
+
+    for i := range singleOutput {
+      for j := range singleOutput {
+        kroneckerDelta := 0.0
+        if i == j {
+          kroneckerDelta = 1.0
+        }
+
+        jacobianMatrix[i][j] = singleOutput[i] * (kroneckerDelta - singleOutput[j])
+      }
+    }
+
+    matrix_3d = append(matrix_3d, jacobianMatrix)
+  }
+}</code></pre>
+
+    <p>
+      a 3d matrix is initialized with some memory, the length of which is equal
+      to the number of rows of <code>outputs</code>, i.e. equal to the number of
+      batches in the network.
+    </p>
+
+    <p>
+      we then loop over <code>outputs</code> and access outputs per batch i.e.
+      looping row-wise, apply the previously discussed formula, and append the
+      jacboian matrix to the 3d matrix.
+    </p>
+
+    <p>
+      <code>dvalues</code> is the matrix of partial derivatives passed on by the
+      previous layer during backpropagation, it is multiplied with the final
+      answer to apply chain rule.
+    </p>
+
+    <pre><code class="language-go">func (s *Softmax) Backward(outputs, dvalues m.Matrix) m.Matrix {
+  matrix_3d := make([]m.Matrix, len(outputs))
+
+  for i, singleOutput := range outputs {
+    jacobianMatrix := m.AllocateMatrix(len(singleOutput), len(singleOutput))
+
+    for i := range singleOutput {
+      for j := range singleOutput {
+        kroneckerDelta := 0.0
+        if i == j {
+          kroneckerDelta = 1.0
+        }
+
+        jacobianMatrix[i][j] = singleOutput[i] * (kroneckerDelta - singleOutput[j])
+      }
+    }
+
+    matrix_3d[i] = jacobianMatrix
+  }
+
+  fmt.Printf("m3d - %+v\n", matrix_3d)
+
+  output := m.AllocateMatrix(outputs.Rows(), outputs.Cols())
+
+  for i := range output {
+    for j := range output[i] {
+      output[i][j] = utils.DotProduct(dvalues[i], matrix_3d[i][j])
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <br />
+
+    <pre><code class="language-go">func DotProduct(u, v []float64) float64 {
+  if len(u) != len(v) {
+    panic("can't apply dot product on vectors with unequal lengths")
+  }
+
+  sum := 0.0
+
+  for i := range u {
+    sum += u[i] * v[i]
+  }
+
+  return sum
+}</code></pre>
+
+    <p>
+      here, we are computing the dot product to convert the 3d matrix into a
+      normal matrix, which represents the complete contribution.
+    </p>
+
+    <pre><code class="language-go">dsoftmax := softmax.Backward(softmaxResult, dloss)
+fmt.Printf("dsoftmax: %v\n", dsoftmax)</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[1.305676516049976 1.0391337623476167] [1.0680120249594565 0.6203901323964573] [1.0397092292967307 0.42044719563750793]]
+relu: [[1.305676516049976 1.0391337623476167] [1.0680120249594565 0.6203901323964573] [1.0397092292967307 0.42044719563750793]]
+dl2 result: [[0.6013827510859446 -0.44856428033370743] [0.3315553530821323 -0.2039266875956853] [0.19460200051164125 -0.06825608889063406]]
+softmax: [[0.7407647276311291 0.2592352723688709] [0.6307608007772146 0.3692391992227853] [0.5653387432377114 0.4346612567622886]]
+cross entropy - [1.3500192420922614 0.4608285679021257 0.5703301819378558]
+mean loss - 0.793726
+mean accuracy - 0.666667
+dloss: [[0 -1.2858332521163511] [-0.5284623472520877 0] [-0.5896169992247898 0]]
+m3d - [[[0.19203234592870821 -0.19203234592870821] [-0.19203234592870821 0.19203234592870821]] [[0.2329016129801016 -0.23290161298010154] [-0.23290161298010154 0.2329016129801016]] [[0.24573084863211642 -0.24573084863211642] [-0.24573084863211642 0.24573084863211642]]]
+dsoftmax: [[0.24692157587704303 -0.24692157587704303] [-0.12307973307426179 0.12307973307426176] [-0.14488708558742952 0.14488708558742952]]</code></pre>
+
+    <h3>implementating backpropagation for denselayer</h3>
+
+    <pre><code class="language-go">func (dl *DenseLayer) Backward(dvalues m.Matrix) (m.Matrix, m.Matrix, m.Matrix) {
+  dw := dl.Input.Transpose().Multiply(dvalues)
+  di := dvalues.Multiply(dl.Weights.Transpose())
+
+  J := m.AllocateMatrix(dl.Bias.Cols(), 1)
+
+  for i := range J {
+    for j := range J[i] {
+      J[i][j] = 1
+    }
+  }
+
+  db := dvalues.Multiply(J)
+
+  return dw, di, db
+}</code></pre>
+
+    <p>
+      <code>dw</code>, <code>di</code> and <code>db</code> are the partial
+      derivatives of the dense layer with respect to weight, input and biases
+      respectively.
+    </p>
+
+    <p>
+      the implementation is pretty much straightforward and similar to the math
+      which we have discussed above.
+    </p>
+
+    <pre><code class="language-go">dl2dw, dl2di, dl2db := dl2.Backward(dsoftmax)
+fmt.Printf("dl2dw: %+v\n", dl2dw)
+fmt.Printf("dl2di: %+v\n", dl2di)
+fmt.Printf("dl2db: %+v\n", dl2db)</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[-0.012308220741621856 0.38127472189187084] [0.4274395097407595 1.0676810092941262] [0.8666605107245953 1.465258511916396]]
+relu: [[0 0.38127472189187084] [0.4274395097407595 1.0676810092941262] [0.8666605107245953 1.465258511916396]]
+dl2 result: [[-0.3013259610175256 0.21234692367988245] [-1.094488805733745 0.8544383120315249] [-1.6662965092199982 1.3428305450522573]]
+softmax: [[0.37433291109189054 0.6256670889081095] [0.12467039220351193 0.8753296077964879] [0.04701524238266639 0.9529847576173336]]
+cross entropy - [0.46893685619751463 2.0820818866968422 3.0572834238337285]
+mean loss - 1.869434
+mean accuracy - 0.333333
+dloss: [[0 -0.5327646910676636] [-2.6737168901273693 0] [-7.089899284582374 0]]
+m3d - [[[0.23420778276536133 -0.23420778276536133] [-0.23420778276536133 0.2342077827653613]] [[0.10912768551133445 -0.10912768551133444] [-0.10912768551133444 0.10912768551133453]] [[0.04480480936636552 -0.04480480936636552] [-0.04480480936636552 0.044804809366365536]]]
+dsoftmax: [[0.12477763703063019 -0.12477763703063018] [-0.29177653593216274 0.2917765359321627] [-0.31766158587244453 0.31766158587244453]]
+dl2dw: [[-0.4000215717224984 0.4000215717224984] [-0.7294060501236775 0.7294060501236774]]
+dl2di: [[-0.1490223486487403 -0.16810684023638783] [0.34846969136409245 0.3930963326275696] [0.37938429296088183 0.4279700011660569]]
+dl2db: [[1.3877787807814457e-17] [-5.551115123125783e-17] [0]]</code></pre>
+
+    <h3>implementating backpropagation for relu</h3>
+
+    <pre><code class="language-go">func (r *ReLU) Backward(dvalues m.Matrix) m.Matrix {
+  output := dvalues
+
+  for i := range r.Input {
+    for j := range r.Input[i] {
+      if r.Input[i][j] < 0 {
+        output[i][j] = 0
+      }
+    }
+  }
+
+  return output
+}</code></pre>
+
+    <p>the above code is an implementation of the heaviside function.</p>
+
+    <pre><code>drelu := relu.Backward(dl2di)
+fmt.Printf("drelu: %+v\n", drelu)
+
+dl1dw, dl1di, dl1db := dl1.Backward(drelu)
+fmt.Printf("dl1dw: %+v\n", dl1dw)
+fmt.Printf("dl1di: %+v\n", dl1di)
+fmt.Printf("dl1db: %+v\n", dl1db)</code></pre>
+
+    <br />
+
+    <pre><code>dl1 result: [[0.04175495899247905 0.647760632136202] [-0.7340539917985283 -0.14738514672822278] [-1.0026462215966485 -0.6412235672062925]]
+relu: [[0.04175495899247905 0.647760632136202] [0 0] [0 0]]
+dl2 result: [[-0.3398822529415849 -0.1284685682870848] [0 0] [0 0]]
+softmax: [[0.4473425631739006 0.5526574368260995] [0.5 0.5] [0.5 0.5]]
+cross entropy - [0.593016932650374 0.6931471805599453 0.6931471805599453]
+mean loss - 0.659770
+mean accuracy - 1.000000
+dloss: [[0 -0.6031463816856604] [-0.6666666666666666 0] [-0.6666666666666666 0]]
+m3d - [[[0.24722719434690538 -0.24722719434690538] [-0.24722719434690538 0.24722719434690535]] [[0.25 -0.25] [-0.25 0.25]] [[0.25 -0.25] [-0.25 0.25]]]
+dsoftmax: [[0.14911418772463353 -0.1491141877246335] [-0.16666666666666666 0.16666666666666666] [-0.16666666666666666 0.16666666666666666]]
+dl2dw: [[0.006226256793638896 -0.006226256793638895] [0.09659030050098491 -0.0965903005009849]]
+dl2di: [[0.1212787114496316 -0.056485012625272196] [-0.13555463020236408 0.06313395736872252] [-0.13555463020236408 0.06313395736872252]]
+dl2db: [[2.7755575615628914e-17] [0] [0]]
+drelu: [[0.1212787114496316 -0.056485012625272196] [0 0] [0 0]]
+dl1dw: [[0.01212787114496316 -0.00564850126252722] [0.2668131651891895 -0.12426702777559884] [0.2061738094643737 -0.09602452146296273]]
+dl1di: [[-0.08776873531196863 -0.008278390445063698 -0.002667910206347407] [0 0 0] [0 0 0]]
+dl1db: [[0.0647936988243594] [0] [0]]</code></pre>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
