@@ -2640,7 +2640,12 @@ fmt.Printf("dl1dw: %+v\n", dl1dw)
 fmt.Printf("dl1di: %+v\n", dl1di)
 fmt.Printf("dl1db: %+v\n", dl1db)</code></pre>
 
-    <br />
+    <p>
+      the layer gradient aka partial derivative of the denselayer with respect
+      to inputs is used for chaining the partial derivatives and whereas partial
+      derivative of weights and biases are used for updating the parameters for
+      that layer.
+    </p>
 
     <pre><code>dl1 result: [[0.04175495899247905 0.647760632136202] [-0.7340539917985283 -0.14738514672822278] [-1.0026462215966485 -0.6412235672062925]]
 relu: [[0.04175495899247905 0.647760632136202] [0 0] [0 0]]
