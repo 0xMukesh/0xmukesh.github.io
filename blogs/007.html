@@ -50,8 +50,8 @@
     <p>
       hey there! i have recently started exploring the world of machine learning
       and have been trying to implement a simple neural network from scratch, so
-      i thought of writing a blog post about neural networks, their working
-      under-the-hood and how to implement one in golang.
+      i thought of writing a blog post about neural networks, how they work
+      under-the-hood and how to implement one in golang from scratch.
     </p>
 
     <h2>what is machine learning?</h2>
@@ -60,15 +60,13 @@
       before directly diving into neural networks, we have to get an idea about
       what machine learning actually is. if you are not living under a rock, you
       might have heard about the word "machine learning" or "artificial
-      intelligence" at least once in the recent times. chatgpt,
-      <a href="https://claude.ai" target="_blank">claude</a>,
-      <a href="https://pplx.ai" target="_blank">perplexity</a> and
-      <a href="https://gemini.google.com/">gemini</a> are all possible because
-      of the magic of machine learning.
+      intelligence" at least once in the recent times. chatgpt, deepseek,
+      claude, perplexity and gemini are all possible because of the magic of
+      machine learning.
     </p>
 
     <p>
-      machine learning is a field in computer science which deals with teaching
+      machine learning is a field of computer science which deals with teaching
       computers to learn from <i>experiences</i> and make some predications,
       without being explicity programmed. whereas, artificial intelligence is a
       much broader classfication and it consists of various sub-domains such as
@@ -77,15 +75,15 @@
 
     <p>
       machine learning is all about different algorithms that are fed with some
-      input data, do some math, and make predictions. for example, email
+      input data, do some math, and make some predictions. for example, email
       providers like gmail use machine learning algorithms to filter your email
       and keep spam out of your inbox.
     </p>
 
     <p>
-      on a high-level, the email spam filtering algorithms are trained (i.e.
-      <i>fed with</i>) on a huge dataset of emails and each email is labeled as
-      "spam" or "not spam". after analyzing, the algorithm eventually
+      on a high-level, the email spam filtering algorithms are trained on a huge
+      dataset of emails and each email is labeled as "spam" or "not spam". after
+      analyzing, the algorithm eventually
       <i>learns</i> how to spot whether an email is spam or not by identifying
       some patterns.
     </p>
@@ -93,17 +91,17 @@
     <p>
       in the above example, the algorithm identifies whether a certain mail is
       spam or not spam i.e. classifies the input data into different categories.
-      this is an example of <b>classification</b>. in classification, the
-      algorithm predicts which category something belongs to based on its
-      characteristics.
+      this is an example of <b>classification</b> problem. in classification
+      problems, the algorithm predicts which category something belongs to based
+      on its characteristics.
     </p>
 
     <p>
       in case of weather forecasting, the algorithm takes in different input
       data such as temperature history, humidity, wind speed and pressure and
       predicts the probable temperature. this is an example of
-      <b>regression</b>. in regression, the algorithm predicts a continuous
-      numerical value based on input data.
+      <b>regression</b> problem. in regression, the algorithm predicts a
+      continuous numerical value based on input data.
     </p>
 
     <p>
@@ -181,7 +179,7 @@
     </p>
 
     <p>
-      <b>neurons</b> are the "highly interconnected nodes" of the neural
+      >> <b>neurons</b> are the "highly interconnected nodes" of the neural
       network. neurons act like the processing units in a neural network,
       receiving inputs from other neurons, performing caluclations and then
       producing the output that is passed on to the other connected neurons.
@@ -196,22 +194,22 @@
     <br />
 
     <p>
-      in the above image, \(a_1\), \(a_2\), \(a_3\), \(y_1\) and \(y_2\) are the
-      neurons. \(a_1\), \(a_2\) and \(a_3\) recieve the training data (aka input
+      in the above image, \(x_1\), \(x_2\), \(x_3\), \(y_1\) and \(y_2\) are the
+      neurons. \(x_1\), \(x_2\) and \(x_3\) recieve the training data (aka input
       data) which is then processed and sent to \(y_1\) and \(y_2\).
     </p>
 
     <p>
       a collection of neurons form a layer. in the above image, there are two
-      input and output layers. the input layer consists of \(a_1\), \(a_2\) and
-      \(a_3\) whereas the output layer consists of \(b_1\) and \(b_2\). the
-      neurons in the current layer affect the value of neurons in the next layer
-      i.e. the value of \(y_1\) depends on \(a_1\), \(a_2\) and \(a_3\) and
-      similarly for \(y_2\) as well.
+      layers - input layer and output layer. the input layer consists of
+      \(x_1\), \(x_2\) and \(x_3\) whereas the output layer consists of \(y_1\)
+      and \(y_2\). the neurons in the current layer affect the value of neurons
+      in the next layer i.e. the value of \(y_1\) depends on \(x_1\), \(x_2\)
+      and \(x_3\) and similarly for \(y_2\) as well.
     </p>
 
     <p>
-      <b>weight</b> determines how much a neuron in the current layer affects
+      >> <b>weight</b> determines how much a neuron in the current layer affects
       the neuron in the next layer. each connection of neurons has a specific
       weight assigned to it.
     </p>
@@ -223,8 +221,8 @@
     <p>in the above figure, the weights in the following fashion:</p>
 
     <ol>
-      <li>\(a_i\) - \(y_1\) connection - \(w_i\)</li>
-      <li>\(a_j\) - \(y_2\) connection - \(v_j\)</li>
+      <li>\(x_i\) - \(y_1\) connection - \(w_i\)</li>
+      <li>\(x_j\) - \(y_2\) connection - \(v_j\)</li>
     </ol>
 
     <p>
@@ -234,15 +232,15 @@
     </p>
 
     <p>
-      $$\begin{aligned} y_1 &= a_1w_1 + a_2w_2 + a_3w_3 \\ &= \sum_{i = 1}^3
-      a_iw_i \end{aligned}$$
+      $$\begin{aligned} y_1 &= x_1w_1 + x_2w_2 + x_3w_3 \\ &= \sum_{i = 1}^3
+      x_iw_i \end{aligned}$$
     </p>
 
     <p>and similarly for \(y_2\)</p>
 
     <p>
-      $$\begin{aligned} y_2 &= a_1v_1 + a_2v_2 + a_3v_3 \\ &= \sum_{j = 1}^3
-      a_jv_j \end{aligned}$$
+      $$\begin{aligned} y_2 &= x_1v_1 + x_2v_2 + x_3v_3 \\ &= \sum_{j = 1}^3
+      x_jv_j \end{aligned}$$
     </p>
 
     <p>
@@ -254,7 +252,7 @@
     </p>
 
     <p>
-      the additional +c in the equation is the bias. <b>bias</b> is used to
+      >> the additional +c in the equation is the bias. <b>bias</b> is used to
       offset the value of the weighted sum.
     </p>
 
@@ -274,58 +272,47 @@
     </p>
 
     <p>
-      $$\begin{aligned} y_1 &= (a_1w_1 + a_2w_2 + a_3w_3) + b_1 \\ &=
-      \left(\sum_{i = 1}^3 a_iw_i \right) + b_1 \end{aligned}$$
+      $$\begin{aligned} y_1 &= (x_1w_1 + x_2w_2 + x_3w_3) + b_1 \\ &=
+      \left(\sum_{i = 1}^3 x_iw_i \right) + b_1 \end{aligned}$$
     </p>
 
     <p>and similarly for \(y_2\)</p>
 
     <p>
-      $$\begin{aligned} y_2 &= (a_1v_1 + a_2v_2 + a_3v_3) + b_2 \\ &=
-      \left(\sum_{j = 1}^3 a_jv_j \right) + b_2 \end{aligned}$$
+      $$\begin{aligned} y_2 &= (x_1v_1 + x_2v_2 + x_3v_3) + b_2 \\ &=
+      \left(\sum_{j = 1}^3 x_jv_j \right) + b_2 \end{aligned}$$
     </p>
 
     <p>
-      let's general the formula using a bit of linear algebra. let's consider a
-      few matrices - \(A\), \(W\), \(B\) and \(Y\).
+      let's generalize the formula using a bit of linear algebra. let's assume a
+      few matrices - \(X\), \(W\), \(B\) and \(Y\).
     </p>
 
     <ol>
       <li>
-        \(A\) is a row matrix of all the input neurons (also called as
-        "features"). the shape of the matrix ("shape of a matrix" basically
-        means dimensions of that matrix) is 1xn, where n is equal to number of
-        neurons in the current layer.
+        \(X\) is the matrix which consists all of the input neurons, also called
+        as features.
 
         <p>
-          $$\text{A} = \left(\begin{matrix} a_1 & a_2 & a_3 \end{matrix}
+          $$\text{X} = \left(\begin{matrix} x_1 & x_2 & x_3 \end{matrix}
           \right)$$
         </p>
       </li>
 
       <li>
-        \(W\) is a matrix of weights of all the neuron connections. weights
-        related to \(a_i\)>. the shape of the matrix is mxn, where weights
-        present in the ith row of the matrix corresponds to m is the number of
-        neurons in current layer and n is the number of neurons in the next
-        layer.
+        \(W\) is the matrix which consists all of the weights, related to that
+        layer. the weights in <code>i</code>th row correspond to weights that
+        are related to \(x_i\).
 
         <p>
           $$\text{W} = \left(\begin{matrix} w_1 & v_1 \\ w_2 & v_2 \\ w_3 & v_3
           \end{matrix} \right)$$
         </p>
-
-        <p>
-          \(w_1\), \(w_2\) and \(w_3\) are present in the 1st column, thereby
-          they are the weights related to \(a_1\) and similarly for \(v_1\),
-          \(v_2\) and \(v_3\).
-        </p>
       </li>
 
       <li>
-        \(B\) is also a row matrix of all the biases of neurons in the next
-        layer. the shape of the matrix is 1xn, where n is the number of neurons
-        in the next layer.
+        \(B\) is the matrix which consists of all the biases of neurons in the
+        next layer.
 
         <p>
           $$\text{B} = \left(\begin{matrix} b_1 & b_2 \end{matrix} \right)$$
@@ -333,20 +320,20 @@
       </li>
 
       <li>
-        \(Y\) is also a row matrix containing values of all the neurons in next
-        layer. the shape of the matrix is 1xn, where n is the number of neurons
-        in the next layer.
+        \(Y\) is the output matrix i.e. it contains the values of all the
+        neurons in the next layer. the shape of the matrix is 1xn, where n is
+        the number of neurons in the next layer.
       </li>
 
       <p>$$\text{Y} = \left(\begin{matrix} y_1 & y_2 \end{matrix} \right)$$</p>
     </ol>
 
     <p>
-      using linear algebra, we can find relation between \(A\), \(W\), \(B\) and
+      using linear algebra, we can find relation between \(X\), \(W\), \(B\) and
       \(Y\).
     </p>
 
-    <p>$$\text{Y} = \text{A}\text{W} + \text{B}$$</p>
+    <p>$$\text{Y} = \text{X}\text{W} + \text{B}$$</p>
 
     <h2>coding our first neurons</h2>
 
@@ -357,14 +344,14 @@
     </p>
 
     <p>
-      start with defining \(A\), \(W\) and \(B\) matrices. for now, use any
-      random values to populate the matrices.
+      let's start with defining \(X\), \(W\) and \(B\) matrices. for now, let's
+      use any random values to populate the matrices.
     </p>
 
     <pre><code class="language-go">package main
 
 func main() {
-  A := []float64{1, 2, 3}
+  X := []float64{1, 2, 3}
   W := [][]float64{
     {0.5, 0.7},
     {0.4, 0.6},
@@ -374,67 +361,55 @@ func main() {
 }</code></pre>
 
     <p>
-      let's start with implementing the matrix multiplication between \(A\) and
-      \(W\).
+      to find the output matrix, we've to first find the value of \(X \times W\)
     </p>
 
-    <pre><code class="language-go">AxW := make([][]float64, len(A))
+    <pre><code class="language-go">XxW := make([][]float64, len(X))
 
-for i := range AxW {
-  AxW[i] = make([]float64, len(W[0]))
+for i := range XxW {
+  XxW[i] = make([]float64, len(W[0]))
 }
 
-for i := 0; i < len(A); i++ {
+for i := 0; i < len(X); i++ {
   for j := 0; j < len(W[0]); j++ {
     sum := 0.0
 
     for k := 0; k < len(W); k++ {
-      sum += A[i][k] * W[k][j]
+      sum += X[i][k] * W[k][j]
     }
 
-    AxW[i][j] = sum
+    XxW[i][j] = sum
   }
 }</code></pre>
 
     <p>
-      the code starts off with allocating the required size for the result
-      matrix i.e. \(A \times W\). the shape of \(A \times W\) matrix is mxn,
-      where m is equal to number of rows of \(A\) and n is the number of columns
-      of \(W\).
+      the code starts off with allocating the required size for the resultant
+      matrix (output of the matrix multiplication), and then it loops through
+      every row in \(A\) and every column in \(W\), and then it multiplies the
+      corresponding elements (dot product) and calculates the total sum.
     </p>
 
     <p>
-      the code then loops through every row in \(A\) and every column in \(W\),
-      and then it multiplies the corresponding elements and calculates the total
-      sum.
+      after finding the value \(X \times W\), we to add the biases i.e. matrix
+      addition between \(X \times W\) and \(B\)
     </p>
 
-    <p>
-      the above code assumes that both the matrices are multipliable with each
-      other. for two matrices, the number of columns in the first matrix must be
-      equal to number of rows in the second matrix.
-    </p>
-
-    <p>
-      let's now implement the matrix addition between \(A \times W\) and \(B\).
-    </p>
-
-    <pre><code class="language-go">result := make([][]float64, len(AxW))
+    <pre><code class="language-go">result := make([][]float64, len(XxW))
 
 for i := range result {
-  result[i] = make([]float64, len(AxW[0]))
+  result[i] = make([]float64, len(XxW[0]))
 }
 
-for i := 0; i < len(AxW); i++ {
-  for j := 0; j < len(AxW[0]); j++ {
-    result[i][j] = AxW[i][j] + B[i][j]
+for i := 0; i < len(XxW); i++ {
+  for j := 0; j < len(XxW[0]); j++ {
+    result[i][j] = XxW[i][j] + B[i][j]
   }
 }</code></pre>
 
     <p>
-      the code starts off with allocating the required size for the result
+      the code starts off with allocating the required size for the output
       matrix. the shape of <code>result</code> matrix is equal to the shape of
-      \(A \times W\) matrix, as two matrices can be added/subtracted only when
+      \(X \times W\) matrix, as two matrices can be added/subtracted only when
       their shapes (dimensions) are equal.
     </p>
 
@@ -445,7 +420,7 @@ for i := 0; i < len(AxW); i++ {
 import "fmt"
 
 func main() {
-  A := [][]float64{{1, 2, 3}}
+  X := [][]float64{{1, 2, 3}}
   W := [][]float64{
     {0.5, 0.7},
     {0.4, 0.6},
@@ -453,33 +428,33 @@ func main() {
   }
   B := [][]float64{{1, 0.9}}
 
-  AxW := make([][]float64, len(A))
+  XxW := make([][]float64, len(X))
 
-  for i := range AxW {
-    AxW[i] = make([]float64, len(W[0]))
+  for i := range XxW {
+    XxW[i] = make([]float64, len(W[0]))
   }
 
-  for i := 0; i < len(A); i++ {
+  for i := 0; i < len(X); i++ {
     for j := 0; j < len(W[0]); j++ {
       sum := 0.0
 
       for k := 0; k < len(W); k++ {
-        sum += A[i][k] * W[k][j]
+        sum += X[i][k] * W[k][j]
       }
 
-      AxW[i][j] = sum
+      XxW[i][j] = sum
     }
   }
 
-  result := make([][]float64, len(AxW))
+  result := make([][]float64, len(XxW))
 
   for i := range result {
-    result[i] = make([]float64, len(AxW[0]))
+    result[i] = make([]float64, len(XxW[0]))
   }
 
-  for i := 0; i < len(AxW); i++ {
-    for j := 0; j < len(AxW[0]); j++ {
-      result[i][j] = AxW[i][j] + B[i][j]
+  for i := 0; i < len(XxW); i++ {
+    for j := 0; j < len(XxW[0]); j++ {
+      result[i][j] = XxW[i][j] + B[i][j]
     }
   }
 
@@ -608,7 +583,7 @@ import (
 )
 
 func main() {
-  A := m.Matrix{{1, 2, 3}}
+  X := m.Matrix{{1, 2, 3}}
   W := m.Matrix{
     {0.5, 0.7},
     {0.4, 0.6},
@@ -616,7 +591,7 @@ func main() {
   }
   B := m.Matrix{{1, 0.9}}
 
-  result := A.Multiply(W).Add(B)
+  result := X.Multiply(W).Add(B)
   fmt.Println(result)
 }</code></pre>
 
@@ -650,7 +625,7 @@ func main() {
 
     <p>
       implementing it in code is pretty easy. the output of first hidden layer
-      is the input of second hidden layer, so in place of <code>A</code>, we'll
+      is the input of second hidden layer, so in place of <code>X</code>, we'll
       use <code>result1</code> as the input while calculating values in the
       output layer (second hidden layer). <code>W1</code> and
       <code>B1</code> are the weights and biases corresponding to first hidden
@@ -665,7 +640,7 @@ import (
 )
 
 func main() {
-  A := m.Matrix{{1, 2, 3}}
+  X := m.Matrix{{1, 2, 3}}
   W1 := m.Matrix{
     {0.5, 0.7},
     {0.4, 0.6},
@@ -678,7 +653,7 @@ func main() {
   }
   B2 := m.Matrix{{1.1, -0.9}}
 
-  result1 := A.Multiply(W1).Add(B1)
+  result1 := X.Multiply(W1).Add(B1)
   result2 := result1.Multiply(W2).Add(B2)
   fmt.Println(result2)
 }</code></pre>
@@ -831,6 +806,7 @@ output := m.Matrix{
       each element is <code>[]float64</code>. convert the elements from
       <code>[]float64</code> to a row matrix, perform the calculations, convert
       it back to <code>[]float64</code> and append it to a result matrix.
+      (similar to what happens within numpy's broadcasting)
     </p>
 
     <p>
@@ -2614,7 +2590,7 @@ dl2dw: [[-0.4000215717224984 0.4000215717224984] [-0.7294060501236775 0.72940605
 dl2di: [[-0.1490223486487403 -0.16810684023638783] [0.34846969136409245 0.3930963326275696] [0.37938429296088183 0.4279700011660569]]
 dl2db: [[1.3877787807814457e-17] [-5.551115123125783e-17] [0]]</code></pre>
 
-    <h3>implementating backpropagation for relu</h3>
+    <h3>implementating backpropagation for ReLU</h3>
 
     <pre><code class="language-go">func (r *ReLU) Backward(dvalues m.Matrix) m.Matrix {
   output := dvalues
@@ -2665,163 +2641,7 @@ dl1dw: [[0.01212787114496316 -0.00564850126252722] [0.2668131651891895 -0.124267
 dl1di: [[-0.08776873531196863 -0.008278390445063698 -0.002667910206347407] [0 0 0] [0 0 0]]
 dl1db: [[0.0647936988243594] [0] [0]]</code></pre>
 
-    <h2>parsing MNIST dataset</h2>
-
-    <p>
-      before starting with optimizers, let's parse the MNIST handwritten digit
-      dataset and feed it to our neural network. firstly download training
-      images and training labels datasets from
-      <a href="https://github.com/cvdfoundation/mnist">cvdfoundation/mnist</a>
-      repository and extract the files.
-    </p>
-
-    <p>
-      the training images dataset contains the pixel value of each handwritten
-      image (28x28 pixels) ranging from 0 to 255 and the training labels dataset
-      contain the desired result for each image.
-    </p>
-
-    <h3>file format</h3>
-
-    <ol>
-      <li>
-        <p>the training images dataset is the following format</p>
-
-        <pre><code>magic_number count num_of_rows num_of_cols
-...image_pixel_data</code></pre>
-
-        <p>
-          <code>image_pixel_data</code> is the value of each pixel of the
-          handwritten image and they are arranged in sequential order i.e. the
-          first 784 pixels corresponds to the first handwritten digit and the
-          next 784 pixels correspond to the second handwritten digit and so on.
-        </p>
-
-        <p>
-          <code>count</code> is the total number of handwritten digits in the
-          dataset. we are gonna use the first 600 digits for our tiny neural
-          network.
-        </p>
-      </li>
-
-      <li>
-        <p>the training labels dataset is the following format</p>
-
-        <pre><code>magic_number count
-...labels</code></pre>
-
-        <p>
-          <code>labels</code> correspond to the desired output for each
-          handwritten digit.
-        </p>
-      </li>
-    </ol>
-
-    <h3>implementing the parser</h3>
-
-    <pre><code class="language-go">type MNISTParser struct {
-  Images string
-  Labels string
-}
-
-type MNISTImage struct {
-  Data [28][28]uint8
-}
-
-type MNISTLabel uint8
-
-const DATASET_SIZE = 600
-
-func NewMnistParser(images, labels string) MNISTParser {
-  return MNISTParser{
-    Images: images,
-    Labels: labels,
-  }
-}</code></pre>
-
-    <p>
-      <code>Images</code> and <code>Labels</code> are the file paths for the
-      training images and training labels datasets. initially, we will feed the
-      neural network with the first 600 images.
-    </p>
-
-    <pre><code class="language-go">func (p MNISTParser) ReadImages() (m.Matrix, error) {
-  file, err := os.Open(p.Images)
-  if err != nil {
-    return nil, err
-  }
-  defer file.Close()
-
-  var magic, count, rows, cols uint32
-  binary.Read(file, binary.BigEndian, &magic)
-  binary.Read(file, binary.BigEndian, &count)
-  binary.Read(file, binary.BigEndian, &rows)
-  binary.Read(file, binary.BigEndian, &cols)
-
-  imagesTensor := make([][28][28]uint8, count)
-
-  for i := 0; i < DATASET_SIZE; i++ {
-    var imgData [28][28]uint8
-    binary.Read(file, binary.BigEndian, &imgData)
-    imagesTensor[i] = imgData
-  }
-
-  imagesMatrix := m.AllocateMatrix(DATASET_SIZE, 28*28)
-
-  for i := 0; i < DATASET_SIZE; i++ {
-    for j := range imagesTensor[i] {
-      for k := range imagesTensor[i][j] {
-        imagesMatrix[i][28*j+k] = float64(imagesTensor[i][j][k])
-      }
-    }
-  }
-
-  return imagesMatrix, nil
-}</code></pre>
-
-    <p>
-      the datasets files use big endian as the byte order. the pixel values are
-      first extracted from the binary file into a tensor (matrix of matrices),
-      which is then converted into a matrix, where each row contains all the
-      pixels' values for the handwritten image.
-    </p>
-
-    <pre><code class="language-go">func (p MNISTParser) ReadLabels() (m.Matrix, error) {
-  file, err := os.Open(p.Labels)
-
-  if err != nil {
-    return nil, err
-  }
-  defer file.Close()
-
-  var magic, count uint32
-  binary.Read(file, binary.BigEndian, &magic)
-  binary.Read(file, binary.BigEndian, &count)
-
-  labels := make([]MNISTLabel, count)
-  binary.Read(file, binary.BigEndian, &labels)
-
-  oneHotEncoded := m.AllocateMatrix(DATASET_SIZE, 10)
-
-  for i := 0; i < DATASET_SIZE; i++ {
-    oneHotEncoded[i][labels[i]] = 1
-  }
-
-  return oneHotEncoded, nil
-}</code></pre>
-
-    <p>
-      after parsing all the labels in the training labels dataset, it is
-      converted into a one-hot encoded format.
-    </p>
-
-    <pre><code>labels = [0, 3, 4]
-oneHotEncoded = [
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
-]</code></pre>
-
+    <h2>optimizers</h2>
 
     <footer>
       <a href="./index.html"><p>&leftarrow; go back</p></a>
