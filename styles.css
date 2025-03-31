@@ -107,3 +107,7 @@ hr {
     display: none;
   }
 }
+
+.project__description {
+  margin-bottom: 5px;
+}

@@ -82,7 +82,7 @@
   <body>
     <h1 class="no-print">0xmukesh</h1>
     <p class="no-print">
-      i code. i tinker around with stuff. i (try to) survive college.
+      i can do a bit of programming
       <a href=""></a>
     </p>
 
@@ -102,32 +102,39 @@
         <span>twitter</span>
         <span class="print-only">twitter.com/0xmukesh</span>
       </a>
+
+      <a href="mailto:0xmukesh@proton.me">
+        <span>mail</span>
+        <span class="print-only">0xmukesh@proton.me</span>
+      </a>
     </section>
 
     <hr />
 
     <section id="about">
       <h2>about</h2>
-      hey there! i'm mukesh, a 18 y/o backend engineer and an undergraduate
-      student at
+      hey there! i'm mukesh, a backend engineer and a fresher at
       <a
         href="https://en.wikipedia.org/wiki/National_Institute_of_Technology,_Warangal"
         >NIT Warangal</a
-      >. i love minimalism, linux, mechanical keyboards and a bit of math. most
-      of the time, i write code in golang and typescript
+      >. currently, i'm working on
+      <a href="https://docs.cleopetra.fun">cleopetra</a>, where we're
+      simplifying the process of liquidity pooling on solana DEXes. apart from
+      programming, i love mechanical keyboards, ricing my linux desktop,
+      photography, and math.
     </section>
 
     <hr />
-
     <section id="projects">
       <h2>work</h2>
 
       <div class="project">
         <h3>cleopetra</h3>
-        <p>
+        <p class="project__description">
           CTO of cleopetra, bringing DeFi to masses through AI powered Telegram
           bots and native mobile apps.
-          <br />
+        </p>
+        <p>
           <a href="https://x.com/cleopetrafun">twitter</a>
           <a href="https://docs.cleopetra.fun/welcome">website</a>
         </p>
@@ -135,11 +142,12 @@
 
       <div class="project">
         <h3>haven</h3>
-        <p>
+        <p class="project__description">
           previously built haven, growth engine for your token, allowing
           creators to seamlessly launch loyalty programs, reward loyal fans, and
           unlock new revenue streams.
-          <br />
+        </p>
+        <p>
           <a href="https://x.com/havendotfan">twitter</a>
           <a href="https://haven.fan">website</a>
         </p>
@@ -147,23 +155,25 @@
 
       <div class="project">
         <h3>askanon</h3>
-        <p>
+        <p class="project__description">
           previously built askanon, send anonymous messages to crypto
           influencers straight from twitter using solana blinks. 14K+ messages
           sent!
-          <br />
+        </p>
+        <p>
           <a href="https://askanon.fun">website</a>
         </p>
       </div>
 
       <div class="project">
         <h3>candypay</h3>
-        <p>
+        <p class="project__description">
           previously built candypay, a crypto payments platform built on top of
           solana trusted by 500+ apps and developers including
           <a href="https://www.triton.one/">triton one</a>,
           <a href="https://www.prospera.co/en">prospera global</a>, and more.
-          <br />
+        </p>
+        <p>
           <a href="https://x.com/candypayfun">twitter</a>
           <a href="https://docs.candypay.fun">website</a>
         </p>
@@ -177,11 +187,12 @@
 
       <div class="project">
         <h3>pulmovision</h3>
-        <p>
+        <p class="project__description">
           A multi-label image classification model that analyzes chest X-ray
           scans to identify 14 distinct lung pathologies, built using ResNet50
           architecture and trained on chestMNIST dataset
-          <br />
+        </p>
+        <p>
           <a href="https://github.com/0xmukesh/pulmovision" target="_blank"
             >source code</a
           >
@@ -190,10 +201,11 @@
 
       <div class="project">
         <h3>amplify</h3>
-        <p>
+        <p class="project__description">
           A character-level language model which generates more content based on
           the input data, built using RNN architecture
-          <br />
+        </p>
+        <p>
           <a href="https://github.com/0xmukesh/amplify" target="_blank"
             >source code</a
           >
@@ -202,10 +214,11 @@
 
       <div class="project">
         <h3>brtlang</h3>
-        <p>
+        <p class="project__description">
           a dynamically typed toy programming language whose syntax is inspired
           from <i>internet slang</i>, made using golang
-          <br />
+        </p>
+        <p>
           <a href="https://github.com/0xmukesh/brtlang" target="_blank"
             >source code</a
           >
@@ -214,14 +227,15 @@
 
       <div class="project">
         <h3>raygo</h3>
-        <p>
+        <p class="project__description">
           a simple path tracer made in golang.
           <a href="https://en.wikipedia.org/wiki/Peter_Shirley">peter shirely</a
           >'s book (<a
             href="https://raytracing.github.io/books/RayTracingInOneWeekend.html"
             >ray tracing in one weekend</a
           >) helped me a lot
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/0xmukesh/raygo"
@@ -233,10 +247,11 @@
 
       <div class="project">
         <h3>neural-networks</h3>
-        <p>
+        <p class="project__description">
           a simple multilayer perceptron based neural network implemented in
           golang from scratch
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/0xMukesh/neural-networks"
@@ -248,9 +263,8 @@
 
       <div class="project">
         <h3>brainfreeze</h3>
+        <p class="project__description">a tiny brainf*ck interpreter</p>
         <p>
-          a tiny brainf*ck interpreter
-          <br />
           <a
             class="project__source-code"
             href="https://github.com/0xmukesh/brainfreeze"
@@ -262,14 +276,15 @@
 
       <div class="project">
         <h3><code>@candypay/caramel</code></h3>
-        <p>
+        <p class="project__description">
           a proof-of-concept app that showcases the usage of
           <a
             href="https://docs.candypay.fun/checkout/introduction.html#checkout-by-candypay"
             >candypay checkout</a
           >
           to monetize github packages
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/candypay/caramel"
@@ -281,10 +296,11 @@
 
       <div class="project">
         <h3>candypay nft builder</h3>
-        <p>
+        <p class="project__description">
           a seamless nft creation/minting experience on solana, powered by
           solana pay. won solana summercamp hackathon. currently discontinued
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://pitch.com/public/329fca8c-d130-4d23-b480-263be0cef3ef"
@@ -296,10 +312,11 @@
 
       <div class="project">
         <h3>snipli</h3>
-        <p>
+        <p class="project__description">
           a command-line tool to quickly convert your local files into a github
           gist. #4 product of the day on producthunt
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/0xMukesh/snipli"
@@ -311,10 +328,11 @@
 
       <div class="project">
         <h3>rayli</h3>
-        <p>
+        <p class="project__description">
           a command-line tool to quickly generate beautiful screenshots of your
           code right from the terminal. #3 product of the day on producthunt
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/avneesh0612/rayli"
@@ -326,10 +344,11 @@
 
       <div class="project">
         <h3>faucetli</h3>
-        <p>
+        <p class="project__description">
           a command line tool to get tokens on testnets quickly! #5 product of
           the day on producthunt
-          <br />
+        </p>
+        <p>
           <a
             class="project__source-code"
             href="https://github.com/0xmukesh/faucetli"
