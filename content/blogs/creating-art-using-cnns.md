@@ -2,6 +2,7 @@
 title: Creating art using CNNs
 draft: false
 date: 2025-06-13
+tags: deep-learning
 ---
 
 Hey there! In this blog post, we will explore how to extract the art style from an image of a painting and then apply it to another image, generating a new image that retains the content of the original but utilizes the art style of the painting. If you are not familiar with CNNs, I would highly recommend you to check out my other blogs on CNNs — [CNNs Explained](../blogs/cnns-explained.md) and [Exploring different CNNs](../blogs/exploring-different-cnns.md).

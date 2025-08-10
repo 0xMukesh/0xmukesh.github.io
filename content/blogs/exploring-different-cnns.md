@@ -2,6 +2,7 @@
 title: Exploring different CNNs
 draft: false
 date: 2025-06-04
+tags: deep-learning, vision
 ---
 
 Hey there! In this blog post we are going to explore different CNNs and see how did they evolve from the foundational LeNet to much more complex networks like Inception, ResNet and ResNeXt,
@@ -18,9 +19,13 @@ AlexNet is sorta-like a precursor to LeNet, but with quite a few optimizations a
 2. AlexNet utilized cross-GPU parallelization. It used two GTX 580 GPUs and each GPU handled half of the model’s kernels. There was an advantage with using that specific version of GPU as it allowed to read from and write to one another GPU’s memory directly, without going through another host machine. To reduce the communication overhead between the two GPUs, the communication between the two GPUs only happened in a certain layers of the network.
 3. AlexNet introduced Local Response Normalization or LRN, which was used after ReLU activation function in a few layers, to improve the generalization of the network.
 
+   <br />
+
    $$
    b^{i}_{x,y} = \frac{a^{i}_{x,y}}{\left ({k + \alpha \sum^{\text{max}(N-1, i + n/2)}_{\text{min}(0, i - n/2)} (a^{j}_{x,y})^{2}} \right )^{\beta}}
    $$
+
+   <br />
 
    The main idea of LRN is to boost neurons with strong activations while suppressing the nearby neurons with lower activations. It is very similar to the biological idea called [lateral inhibition](https://en.wikipedia.org/wiki/Lateral_inhibition), which is the capacity of an excited neuron to reduce the activity of its neighboring neurons.
 

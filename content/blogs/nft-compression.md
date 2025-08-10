@@ -2,6 +2,7 @@
 title: Deep dive into NFT compression
 draft: false
 date: 2023-04-14
+tags: solana, web3
 ---
 
 If you’re active on Solana Twitter, you might be familiar with the [DRiP](https://twitter.com/drip_haus) S2 drop. It took ~0.5 SOL for DRiP to airdrop ~100k “compressed” NFTs. Isn’t that nuts? If DRiP had to airdrop 100k uncompressed NFTs, it would cost them ~1.2k SOL. A whooping **2,400x difference** 🤯

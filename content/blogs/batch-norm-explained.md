@@ -2,6 +2,7 @@
 title: Batch normalization explained
 draft: false
 date: 2025-04-16
+tags: deep-learning
 ---
 
 Batch normalization, or batchnorm, is a popular technique used to speed up the training of neural networks by addressing a problem known as _internal covariate shift_. It also reduces sensitivity to weight and bias initialization, which makes the training process much more stable and less dependent on careful tuning of the initial values. Before batchnorm, the weights and biases had to be carefully tuned to ensure stable and efficient training. Poor initialization could lead to either exploding or vanishing gradients, both of which are problematic when trying to train a neural network.

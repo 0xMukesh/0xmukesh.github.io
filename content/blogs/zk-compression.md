@@ -2,6 +2,7 @@
 title: Exploring ZK Compression
 draft: false
 date: 2024-04-07
+tags: solana, web3
 ---
 
 If you've been active on Solana Twitter, you might have seen a lot of new exciting products being launched such as [blinks](https://solana.com/solutions/actions) and [ZK compression](https://www.zkcompression.com/). There is already a lot of developer content available for blinks and developers are already chewing glass and building blinks. Let's look at ZK compression - What the hell is it? What's the problem that ZK compression is trying to fix? How is it achieving it?

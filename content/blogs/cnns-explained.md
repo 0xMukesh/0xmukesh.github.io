@@ -2,6 +2,7 @@
 title: CNNs Explained
 draft: false
 date: 2025-05-12
+tags: deep-learning, vision
 ---
 
 CNNs are a special kind of neural networks that are specifically designed to process data with a grid-like topology, such as images and time-series data. Unlike ANNs, which require the input data to be flattened into a 1D vector, CNNs preserve the spatial structure. The issue with flattening images is that the spatial relationship between the pixels are lost, which leads to poor generalization, a large number of parameters, and an increased risk of over-fitting. CNNs solve this issue by using learnable filters (known as kernels) and the convolution operation.
@@ -42,9 +43,18 @@ $$
 The second matrix slides over all the elements of the first matrix, performing element-wise multiplication followed by a sum. This results in a 2x2 matrix:
 
 $$
-(1·4)+(2·3)+(4·2)+(5·1)=23 \\
-(2·4)+(3·3)+(5·2)+(6·1)=33 \\
-(4·4)+(5·3)+(7·2)+(8·1)=53 \\
+(1·4)+(2·3)+(4·2)+(5·1)=23
+$$
+
+$$
+(2·4)+(3·3)+(5·2)+(6·1)=33
+$$
+
+$$
+(4·4)+(5·3)+(7·2)+(8·1)=53
+$$
+
+$$
 (5·4)+(6·3)+(8·2)+(9·1)=63
 $$
 
@@ -115,9 +125,19 @@ $$
 where,
 
 $$
-y_1=a_1w_1+a_2w_2+a_4w_3+a_5w_4 \\
-y_2=a_2w_1+a_3w_2+a_5w_3+a_6w_4 \\
-y_3=a_4w_1+a_5w_2+a_7w_3+a_8w_4 \\ y_4=a_5w_1+a_6w_2+a_8w_3+a_9w_4
+y_1=a_1w_1+a_2w_2+a_4w_3+a_5w_4
+$$
+
+$$
+y_2=a_2w_1+a_3w_2+a_5w_3+a_6w_4
+$$
+
+$$
+y_3=a_4w_1+a_5w_2+a_7w_3+a_8w_4
+$$
+
+$$
+y_4=a_5w_1+a_6w_2+a_8w_3+a_9w_4
 $$
 
 The general formula for backpropagation is represented as follows, where L represents the loss and $\alpha$ is the learning rate.
@@ -153,8 +173,6 @@ w_3 & w_4
 \frac{dL}{dw_3} & \frac{dL}{dw_4}
 \end{matrix}
 \right)
-
-
 $$
 
 Using chain rule
