@@ -33,6 +33,9 @@ jobs:
           version: 7
           run_install: false
 
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
       - name: Build Quartz
         run: pnpm quartz build
 
