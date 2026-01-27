@@ -20,14 +20,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for git info
+          fetch-depth: 0 
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install Dependencies
-        run: npm ci
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
       - name: Build Quartz
-        run: npx quartz build
+        run: pnpm quartz build
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
