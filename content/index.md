@@ -7,7 +7,7 @@ I'm Mukesh -- a backend engineer with a knack for diving deep into systems and f
 
 Besides the techincal stuff -- I'm a [self proclaimed shutter button enthuiast](./pics.md), basically I like photography. I love watching movies, especially crime thrillers and japanese countryside movies. I mostly hangout online on Discord with bunch of my friends, hop in – https://discord.gg/23hq8DwYjE
 
-I also (_kinda_) maintain a [technical blog](./blogs/).
+I _kinda_ maintain a [technical blog](./blogs/) and I also publish _some_ of my [notes](./notes)
 
 ### Contact me
 

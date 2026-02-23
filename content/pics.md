@@ -9,4 +9,3 @@ draft: false
 ![](./assets/pics/i004.jpg)
 ![](./assets/pics/i005.jpg)
 ![](./assets/pics/i006.jpg)
-![](./assets/pics/i007.jpg)
