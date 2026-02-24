@@ -148,6 +148,8 @@ the main distinction between on-policy and off-policy methods is that off-policy
 ## cross-entropy method
 
 reference: [The Cross Entropy method for Fast Policy Search](https://cdn.aaai.org/ICML/2003/ICML03-068.pdf)
+<br/>
+implementation: [cross-entropy method on cartpole gym env](https://github.com/0xMukesh/paper-implementations/blob/main/src/rl/cartpole_cross_entropy_method.py)
 
 cross-entropy method works very well in environment which doesn't require you to learn complex multistep policies and have short episodes with frequent rewards. cross-entropy method is model-free, policy-based and on-policy based method.
 
