@@ -131,6 +131,42 @@ $$
 
 the goal behind finding the optimal policy is to follow along the path which increase the value functions
 
+## taxonomy of RL methods
+
+there are multiple different methods to solve a RL based problem and each of them can be categorize into the following groups:
+
+- model-free or model-based
+- value-based or policy-based
+- on-policy or off-policy
+
+in model-free methods, the agent doesn't require to model the environment or reward i.e. the agent takes in the current observations, does some computation and performs the optimal action. in model-based methods, the agent tries to _predict_ what would be the next observation/reward.
+
+in value-based methods, the agent (_kinda_) calculates value for every possible action and picks the action with highest value. whereas, policy-based methods try to directly approximate the policy of the agent.
+
+the main distinction between on-policy and off-policy methods is that off-policy can be considered as the _ability_ to learn from historical data which was either obtained by another agent/previous version of the same agent/demonstration by a human. on-policy methods require a fresh data for training and requires constant communication between the agent and the environment.
+
+## cross-entropy method
+
+reference: [The Cross Entropy method for Fast Policy Search](https://cdn.aaai.org/ICML/2003/ICML03-068.pdf)
+
+cross-entropy method works very well in environment which doesn't require you to learn complex multistep policies and have short episodes with frequent rewards. cross-entropy method is model-free, policy-based and on-policy based method.
+
+within cross-entropy method, a neural network is trained which acts like the policy which tells the agent which action is to be performed based on the current state. the policy is represented as a probability distribution over actions i.e. $\pi(a | s)$
+
+the main idea behind cross-entropy is pretty simple and it can be described as:
+
+- agent _plays_ around for N episodes i.e. feed the current observation of the environment to the neural network policy and pick a random action
+- calculate the total reward for every episode
+- decide a reward boundary i.e. all episodes which have total reward greater than equal to reward boundary are considered as "elite" episodes
+- throw away all the episodes below reward boundary
+- train further on the "elite" episodes with observations are the inputs and issued actions as the outputs
+
+over here, total reward refers to total undiscounted reward per episode i.e. return with $\gamma$ = 1 starting from $t$ = 0
+
+$$
+R = G_{0} = \sum_{k = 0}^{T} r_{k}
+$$
+
 ## resources
 
 - [Deep Reinforcement Learning Hands-On](https://www.google.co.in/books/edition/Deep_Reinforcement_Learning_Hands_On/814wEQAAQBAJ)
