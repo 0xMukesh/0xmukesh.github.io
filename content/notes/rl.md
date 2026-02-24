@@ -1,5 +1,5 @@
 ---
-title: Reinforcement learning
+title: Reinforcement Learning
 draft: false
 date: 2026-02-23
 ---
@@ -168,6 +168,8 @@ over here, total reward refers to total undiscounted reward per episode i.e. ret
 $$
 R = G_{0} = \sum_{k = 0}^{T} r_{k}
 $$
+
+if the environment computes the rewards at the end of the episode (like in frozen lake gym environment), then it could be a bit problematic to train it using cross-entropy method. in frozen lake gym environment, a reward of 1.0 is given if the agent reaches the bottom right corner successfully and 0.0 if it fails to do so, and right after computing the reward, the episode is finished. the issue with such environments is that the reward doesn't tell how _good_ the episode was as their are no intermediate rewards like cartpole. due to this issue, while trying to select the elite episodes, a big chunk of bad episodes might be included in it which would lead to instability in training and training might not even converge.
 
 ## resources
 
