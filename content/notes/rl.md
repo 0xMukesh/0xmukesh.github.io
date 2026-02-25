@@ -208,7 +208,7 @@ the above equation can be broken down and expressed with the help of transition 
 
 $$
 \begin{split}
-v_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a | s) \sum_{s' \in \mathcal{S}} P(s'|s, a)[R(s, a) + \gamma v_{\pi} (s')]
+v_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a | s) \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma v_{\pi} (s')]
 \end{split}
 $$
 
@@ -240,7 +240,13 @@ $$
 the above equation can be broken down and expressed with the help of transition probabilities as follows:
 
 $$
-q_{\pi}(s, a) = \sum_{s' \in \mathcal{S}} P(s' | s, a) [R(s, a) + \gamma \sum_{a' \in \mathcal{A}} \pi(a'|s') q_{\pi}(s'|a')]
+q_{\pi}(s, a) = \sum_{s' \in \mathcal{S}} P(s' | s, a) [r + \gamma \sum_{a' \in \mathcal{A}} \pi(a'|s') q_{\pi}(s'|a')]
+$$
+
+if the policy is a greedy then $v_{\pi}(s)$ can be expressed in terms of $q_{\pi}(s, a)$ as
+
+$$
+v_{\pi}(s) = \max_{a \in \mathcal{A}} q_{\pi}(s, a)
 $$
 
 ### bellman equation for optimal policy
@@ -248,12 +254,26 @@ $$
 using the above bellman equations for state-value and action-value functions, we can construct the bellman optimality equations
 
 $$
-v^{*}(s) = \max_{a} \sum_{s' \in \mathcal{S}} P(s'|s, a)[R(s, a) + \gamma v_{\pi} (s')]
+v^{*}(s) = \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma v^{*}_{\pi} (s')]
 $$
 
 $$
-q^{*}(s, a) = \sum_{s' \in \mathcal{S}} P(s'|s, a) + \gamma \sum_{a' \in \mathcal{A}} \max_{a'} q_{\pi}(s' | a')
+q^{*}(s, a) = \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma \sum_{a' \in \mathcal{A}} \max_{a' \in \mathcal{A}} q^{*}_{\pi}(s' | a')]
 $$
+
+> **NOTE**: in the above equations, $v^{*}$ and $q^{*}$ are present on both sides of the equations i.e. it is recursive in nature
+
+## value iteration method
+
+value iteration method is a technique to solve bellman optimality equation using dynamic programming. in value iteration method, the bellman optimality equation related to state-value function is converted into an update rule using which $v^{*}(s)$ is continously refined iteratively.
+
+$$
+v_{i+1}(s) \leftarrow \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma v_{i} (s')]
+$$
+
+at the start of iteration, value is set to be 0 for all states i.e. $v_{0}(s) = 0$.
+
+this method works well when the state space is discrete and small enough to perfom multiple iterations over it. apart from that, in practice, generally we don't have access to the transition probabilities i.e. $P(s' | s, a)$ so instead it is estimated by keeping a track of the history.
 
 ## resources
 
