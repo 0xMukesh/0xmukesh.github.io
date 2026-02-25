@@ -70,17 +70,17 @@ using concept of rewards, the agent can now know which states are more desirable
 apart from rewards, another value is introduced which is return. return is sum of rewards multiplied by a discount factor, which controls the _foresightedness_ of the agent in terms of rewards.
 
 $$
-G_t = \sum_{k = 0}^{T} \gamma^{k} R_{t + k + 1}
+G_t = \sum_{k = 0}^{T} \gamma^{k} r_{t + k + 1}
 $$
 
 where, $\gamma$ lies between 0 and 1. over here as we're dealing with episodic cases, we use $T$ as the upper bound instead of $\infty$ i.e. the process comes to an end when it reaches the terminal state.
 
 discount factor aka $\gamma$ refers to how much the agent values future rewards compared to immediate rewards. if $\gamma$ is small then the agent cares more about immediate gratification whereas if $\gamma$ is high then agent cares more about long-term planning.
 
-return by itself isn't that useful for knowing how _useful_ or _important_ the current state is i.e. if the agent started from the current state then what is the average amount of rewards which it'll accumulate? the reason behind this is that for the same state, there can be different trajectories leading to variation in return. to solve this problem, value of a state is introduced. value of a state $V(s)$ is the expected total discounted future reward, if the agent starts from state $s$
+return by itself isn't that useful for knowing how _useful_ or _important_ the current state is i.e. if the agent started from the current state then what is the average amount of rewards which it'll accumulate? the reason behind this is that for the same state, there can be different trajectories leading to variation in return. to solve this problem, value of a state is introduced. value of a state $v(s)$ is the expected total discounted future reward, if the agent starts from state $s$
 
 $$
-V(s) = \mathbb{E}[G_{t} \; | \; S_{t} = s]
+v(s) = \mathbb{E}[G_{t} \; | \; S_{t} = s]
 $$
 
 ### markov decision process
@@ -170,6 +170,90 @@ R = G_{0} = \sum_{k = 0}^{T} r_{k}
 $$
 
 if the environment computes the rewards at the end of the episode (like in frozen lake gym environment), then it could be a bit problematic to train it using cross-entropy method. in frozen lake gym environment, a reward of 1.0 is given if the agent reaches the bottom right corner successfully and 0.0 if it fails to do so, and right after computing the reward, the episode is finished. the issue with such environments is that the reward doesn't tell how _good_ the episode was as their are no intermediate rewards like cartpole. due to this issue, while trying to select the elite episodes, a big chunk of bad episodes might be included in it which would lead to instability in training and training might not even converge.
+
+## bellman's equations
+
+before jumping into bellman's equation of optimality, we'd need to get familiar with bellman's equation for state-value and action-value functions.
+
+### bellman equation for state-value function
+
+in MDP, state-value function returns the expected cumulative future returns if started from state $s$
+
+$$
+v_{\pi}(s) = \mathbb{E}_{\pi} [G_t | S_t = s]
+$$
+
+where, $G_t$ is the return at timestep $t$ and it is defined as
+
+$$
+\begin{split}
+G_t &= \sum_{k = 0}^{T} \gamma^{k} r_{t + k + 1} \\
+&= r_{t + 1} + \gamma r_{t + 2} + \gamma^{2} r_{t + 3} + \; ... \; + \gamma^{T} r_{t + T + 1} \\
+&= r_{t + 1} + \gamma G_{t + 1}
+\end{split}
+$$
+
+if the above $G_t$ equation was substituted in $v_{\pi}(s)$ equation,
+
+$$
+\begin{split}
+v_{\pi}(s) &= \mathbb{E}_{\pi}[r_{t + 1} + \gamma G_{t + 1} | s] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s] + \gamma \mathbb{E}_{\pi}[G_{t + 1} | s] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s] + \gamma \mathbb{E}[\mathbb{E}_{\pi}[G_{t + 1} | S_{t + 1}] | s] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s] + \gamma \mathbb{E}[v_{\pi}(S_{t + 1}) | s]
+\end{split}
+$$
+
+the above equation can be broken down and expressed with the help of transition probabilities as follows:
+
+$$
+\begin{split}
+v_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a | s) \sum_{s' \in \mathcal{S}} P(s'|s, a)[R(s, a) + \gamma v_{\pi} (s')]
+\end{split}
+$$
+
+### bellman equation for action-value function
+
+in MDP, action-value function returns the expected cumulative future rewards if started from state $s$ and action $a$ is performed
+
+$$
+q_{\pi}(s, a) = \mathbb{E}_{\pi}[G_t | S_t = s, A_t = a]
+$$
+
+using the expansion of $G_t$ from the above section
+
+$$
+\begin{split}
+q_{\pi}(s, a) &= \mathbb{E}_{\pi}[r_{t + 1} + \gamma G_{t + 1} |s, a] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s, a] + \gamma \mathbb{E}_{\pi}[G_{t + 1} | s, a] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s, a] + \gamma \mathbb{E}[\mathbb{E}_{\pi}[G_{t + 1} | S_{t + 1}] | s, a] \\
+&= \mathbb{E}_{\pi}[r_{t + 1} | s, a] + \gamma \mathbb{E}[v_{\pi}(S_{t + 1}) | s, a]
+\end{split}
+$$
+
+using law of total probability,
+
+$$
+v_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a | s) q_{\pi}(s, a)
+$$
+
+the above equation can be broken down and expressed with the help of transition probabilities as follows:
+
+$$
+q_{\pi}(s, a) = \sum_{s' \in \mathcal{S}} P(s' | s, a) [R(s, a) + \gamma \sum_{a' \in \mathcal{A}} \pi(a'|s') q_{\pi}(s'|a')]
+$$
+
+### bellman equation for optimal policy
+
+using the above bellman equations for state-value and action-value functions, we can construct the bellman optimality equations
+
+$$
+v^{*}(s) = \max_{a} \sum_{s' \in \mathcal{S}} P(s'|s, a)[R(s, a) + \gamma v_{\pi} (s')]
+$$
+
+$$
+q^{*}(s, a) = \sum_{s' \in \mathcal{S}} P(s'|s, a) + \gamma \sum_{a' \in \mathcal{A}} \max_{a'} q_{\pi}(s' | a')
+$$
 
 ## resources
 
