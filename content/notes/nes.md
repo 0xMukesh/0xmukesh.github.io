@@ -13,7 +13,7 @@ the lowest memory address. some of the major difference between standard 6502 an
 
 CPU accesses memory through buses. the memory within NES can be split up into 3 major parts:
 - cartridge ROM
-- internal RAM of CPU and PPU
+- internal RAM of CPU
 - I/O registers -- NES uses memory mapped I/O i.e. data can be transferred among devices by writing to a particular address in memory
 
 ![](../assets/nes/processor-diagram.png)
@@ -97,7 +97,10 @@ RAM memory map is divided into multiple sub-regions as follows:
 - **indexed indirect** -- indexed indirect (or) pre-indexed addressing mode takes a single operand and then adds it to X register (with wrap around) to give address of the least significant byte of the target 16-bit address.
 - **indirect indexed** -- indirect indexed (or) post-indexed addressing mode takes a single operand which gives zero page address of least significant byte of another 16-bit address which is then added to Y register to give the target address.
 
+# PPU
+
 # resources
 
 - https://www.nesdev.org/NESDoc.pdf
 - https://www.nesdev.org/obelisk-6502-guide/
+- https://bugzmanov.github.io/nes_ebook/
