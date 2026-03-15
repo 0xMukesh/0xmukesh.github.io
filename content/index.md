@@ -5,9 +5,9 @@ draft: false
 
 I'm Mukesh -- a backend engineer with a knack for diving deep into systems and figuring out how things work under the hood. I'm currently working on [Cleopetra](https://docs.cleopetra.fun), where we're building productivity engine for emerging assets. Apart from that, I'm also an undergraduate student at [NIT Warangal](https://nitw.ac.in), pursuing my bachelor's degree in biotechnology.
 
-Besides the techincal stuff -- I'm a [self proclaimed shutter button enthuiast](./pics.md), basically I like photography. I love watching movies, especially crime thrillers and japanese countryside movies. I mostly hangout online on Discord with bunch of my friends, hop in – https://discord.gg/23hq8DwYjE
+Besides the techincal stuff -- I'm a [self proclaimed shutter button enthuiast](./misc/pics.md), basically I like photography. I love watching movies, especially crime thrillers and japanese countryside movies. I mostly hangout online on Discord with bunch of my friends, hop in – https://discord.gg/23hq8DwYjE
 
-I _kinda_ maintain a [technical blog](./blogs/) and I also publish _some_ of my [notes](./notes)
+I maintain a [technical blog](./blogs) and publish [notes](./notes) on topics I find interesting.
 
 ### Contact me
 

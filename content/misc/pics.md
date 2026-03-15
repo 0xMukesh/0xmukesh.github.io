@@ -1,5 +1,5 @@
 ---
-title: Pics
+title: pics
 draft: false
 ---
 

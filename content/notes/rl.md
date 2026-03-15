@@ -4,13 +4,16 @@ draft: false
 date: 2026-02-23
 ---
 
-within reinforcement learning, there are mainly two entities -- agent and enviroment. agent is the entity which is being trained and environment is the entity where the agent explores and performs its actions. apart from agent and environment, there are 3 other core components aka communication channels which combinded completes the RL agent cycle:
+> [!warning]
+> This is not a complete guide to reinforcement learning. These are my personal notes that will be updated as my understanding of reinforcement learning evolves.
 
-- **state** - state is the piece of information which gives the complete picture of the environment i.e. true configuration of the environment
-- **action** – actions which are performed by the agent on the enviroment. ex: in the context of an RL agent trying to learn how to play super mario bro, an action could be moving left/right or jumping. there are either be discrete set of actions which an agent perfom or continous based on the problem which is being tackled, and the actions which can be performed can also vary from state to state
-- **reward** – after an agent performs an action, the environment computes reward. a reward basically tells how well _behaved_ and _aligned_ with the initial goal is the agent
+Within reinforcement learning, there are mainly two entities — the agent and the environment. The agent is the entity which is being trained, and the environment is the entity where the agent explores and performs its actions. Apart from the agent and environment, there are three other core components, also known as communication channels, which combined complete the RL agent cycle:
 
-within the RL agent cycle, everything happens on the basis of timesteps. at each timestep, the agent takes in the current state and performs an action. the environment computes reward and state for next timestep. the agent will take in the computed reward and tune its actions.
+- **state** — state is the piece of information which gives the complete picture of the environment, i.e., the true configuration of the environment.
+- **action** — actions are performed by the agent on the environment. For example, in the context of an RL agent trying to learn how to play Super Mario Bros., an action could be moving left/right or jumping. There can either be a discrete set of actions which an agent performs or continuous actions depending on the problem which is being tackled, and the actions which can be performed can also vary from state to state.
+- **reward** — after an agent performs an action, the environment computes a reward. A reward basically tells how well *behaved* and *aligned* with the initial goal the agent is.
+
+Within the RL agent cycle, everything happens on the basis of timesteps. At each timestep, the agent takes in the current state and performs an action. The environment computes the reward and the state for the next timestep. The agent then takes in the computed reward and adjusts its actions.
 
 ```mermaid
 flowchart LR
@@ -22,27 +25,27 @@ flowchart LR
     env -->|reward| agent
 ```
 
-sometimes the agent might not be able to see the entirety of the environment i.e. partially observable environment. in such cases, the agent would receive an "observation" which is generated from the state via an observation function or distribution. observation is related to the agent's perception whereas state is related to the environment's dynamics.
+Sometimes the agent might not be able to see the entirety of the environment, i.e., a partially observable environment. In such cases, the agent would receive an "observation" which is generated from the state via an observation function or distribution. Observation is related to the agent's perception, whereas state is related to the environment's dynamics.
 
 ## markov processes
 
-in mathematics, a process is a family of objects which is indexed by another set. in the context of reinforcement learning, the index set would be usually time.
+In mathematics, a process is a family of objects which is indexed by another set. In the context of reinforcement learning, the index set is usually time.
 
-markov processes deals with stochastic processes. stochastic processes are collection of random variables indexed by another parameter (in this case, time). a markov process consists of a system which switches between different states based on some laws of dynamics (which is generally unknown) and these states form a sequence creating a chain.
+Markov processes deal with stochastic processes. Stochastic processes are collections of random variables indexed by another parameter (in this case, time). A Markov process consists of a system which switches between different states based on some laws of dynamics (which are generally unknown), and these states form a sequence creating a chain.
 
-within markov process, there are discrete set of states i.e. finite number of states and it uses integer for indexing i.e. discrete time.
+Within a Markov process, there is a discrete set of states, i.e., a finite number of states, and it uses integers for indexing, i.e., discrete time.
 
-the set of all possible states is called as state space and sequence of observations captured over time is known as history.
+The set of all possible states is called the state space, and the sequence of observations captured over time is known as history.
 
-any stochastic process/system is called as markov process if it satisifies the markov property. the markov propertry states that **given the present, the future is conditionally independent of the past** i.e. current state of the system at $t$ is only dependent on state present at $t - 1$.
+Any stochastic process/system is called a Markov process if it satisfies the Markov property. The Markov property states that **given the present, the future is conditionally independent of the past**, i.e., the current state of the system at time $t$ is only dependent on the state present at $t - 1$.
 
 $$
 P(X_{t+1} \; | \; X_t,X_{t-1},...,X_{0}) = P(X_{t+1} \; | \; X_{t})
 $$
 
-each state can transition from one another and it is based on some probabilistic value i.e. every pair of state has some transition probability. if all the transition probabilities are compiled then we get a transition matrix $T$. transition matrix is the one which defines the system's dynamics.
+Each state can transition from one to another, and this transition is based on some probabilistic value, i.e., every pair of states has some transition probability. If all the transition probabilities are compiled, then we get a transition matrix $T$. The transition matrix is the one which defines the system's dynamics.
 
-ex: if there are only two possible states $s_0$ and $s_1$. when the process is at $s_0$, there is a 75% chance at it remains at $s_0$ and 25% chance that it moves to $s_1$. when the process is at $s_1$, there is a 50-50 chance for transition. in this case, the transition matrix/model $T$ would be as follows:
+Example: if there are only two possible states $s_0$ and $s_1$. When the process is at $s_0$, there is a 75% chance that it remains at $s_0$ and a 25% chance that it moves to $s_1$. When the process is at $s_1$, there is a 50–50 chance for transition. In this case, the transition matrix/model $T$ would be as follows:
 
 $$
 T = \begin{bmatrix}
@@ -51,33 +54,33 @@ T = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-where $T_{ij}$ is the transition probability for $s_i \to s_j$ ($i,\; j \in \{0, 1\}$)
+where $T_{ij}$ is the transition probability for $s_i \to s_j$ ($i,\; j \in {0, 1}$).
 
-a markov process is said to be stationary whose probabilistic behaviour does not change over time i.e. underlying distribution for transition matrix does not change over time.
+A Markov process is said to be stationary if its probabilistic behavior does not change over time, i.e., the underlying distribution for the transition matrix does not change over time.
 
 $$
 T_{ij}(t) = T_{ij}
 $$
 
-if the underlying distribution for transition matrix changes over time then it contradicts the markov propetry. the history for each episode can differ as they are randomly sampled from the transition model's underlying distribution however the probability of transition from $s_i$ to $s_j$ must remain the same over time.
+If the underlying distribution for the transition matrix changes over time, then it contradicts the Markov property. The history for each episode can differ as they are randomly sampled from the transition model's underlying distribution\; however, the probability of transition from $s_i$ to $s_j$ must remain the same over time.
 
 ### markov reward process
 
-markov reward process (or) MRP is an extension of markov process with additional of rewards. along with states, observations and transition matrix, there would be another scalar value which is used to _judge_ the transition between states. reward is a scalar value which belongs to a subset of real values i.e. $R(s) = r \in \cal{R} \subset \mathbb{R}$, where $R$ is the reward function.
+A Markov reward process (or MRP) is an extension of a Markov process with the addition of rewards. Along with states, observations, and the transition matrix, there is another scalar value which is used to *judge* the transition between states. Reward is a scalar value which belongs to a subset of real values, i.e., $R(s) = r \in \cal{R} \subset \mathbb{R}$, where $R$ is the reward function.
 
-using concept of rewards, the agent can now know which states are more desirable than others and move together those states to receive higher rewards. rewards for various state transitions can be represented in the similar fashion as how transition matrix is represented.
+Using the concept of rewards, the agent can now know which states are more desirable than others and move toward those states to receive higher rewards. Rewards for various state transitions can be represented in a similar fashion as how the transition matrix is represented.
 
-apart from rewards, another value is introduced which is return. return is sum of rewards multiplied by a discount factor, which controls the _foresightedness_ of the agent in terms of rewards.
+Apart from rewards, another value is introduced which is return. Return is the sum of rewards multiplied by a discount factor, which controls the *foresightedness* of the agent in terms of rewards.
 
 $$
 G_t = \sum_{k = 0}^{T} \gamma^{k} r_{t + k + 1}
 $$
 
-where, $\gamma$ lies between 0 and 1. over here as we're dealing with episodic cases, we use $T$ as the upper bound instead of $\infty$ i.e. the process comes to an end when it reaches the terminal state.
+where $\gamma$ lies between 0 and 1. Here, as we are dealing with episodic cases, we use $T$ as the upper bound instead of $\infty$, i.e., the process comes to an end when it reaches the terminal state.
 
-discount factor aka $\gamma$ refers to how much the agent values future rewards compared to immediate rewards. if $\gamma$ is small then the agent cares more about immediate gratification whereas if $\gamma$ is high then agent cares more about long-term planning.
+The discount factor, denoted by $\gamma$, refers to how much the agent values future rewards compared to immediate rewards. If $\gamma$ is small, then the agent cares more about immediate gratification, whereas if $\gamma$ is high, then the agent cares more about long-term planning.
 
-return by itself isn't that useful for knowing how _useful_ or _important_ the current state is i.e. if the agent started from the current state then what is the average amount of rewards which it'll accumulate? the reason behind this is that for the same state, there can be different trajectories leading to variation in return. to solve this problem, value of a state is introduced. value of a state $v(s)$ is the expected total discounted future reward, if the agent starts from state $s$
+Return by itself is not very useful for knowing how *useful* or *important* the current state is, i.e., if the agent started from the current state, then what is the average amount of rewards which it will accumulate? The reason behind this is that for the same state, there can be different trajectories leading to variation in return. To solve this problem, the value of a state is introduced. The value of a state $v(s)$ is the expected total discounted future reward if the agent starts from state $s$.
 
 $$
 v(s) = \mathbb{E}[G_{t} \; | \; S_{t} = s]
@@ -85,31 +88,31 @@ $$
 
 ### markov decision process
 
-markov decision process (or) MDP can be considered as an extension of MRP with addition of actions i.e. the agent would no longer just passively observe the states of the system but it can now actively choose an action to take at every state transition.
+A Markov decision process (or MDP) can be considered as an extension of an MRP with the addition of actions, i.e., the agent would no longer just passively observe the states of the system but can now actively choose an action to take at every state transition.
 
-there is a finite set of actions which can be executed and the set of all these actions is known as action space $\cal{A}$.
+There is a finite set of actions which can be executed, and the set of all these actions is known as the action space $\cal{A}$.
 
-after adding actions, the transition matrix would no longer be 2D as going from $s_i$ to $s_j$ depends both on the initial state and also on the action which was taken. the transition matrix in MDP is 3D with dimensions as source state, action and target state i.e. $T_{ijk}$ would be the transition probability for going from $s_i$ to $s_k$ when $a_j$ action was taken. similarly, reward matrix also takes action into account now.
+After adding actions, the transition matrix would no longer be 2D, as going from $s_i$ to $s_j$ depends both on the initial state and also on the action which was taken. The transition matrix in an MDP is 3D, with dimensions as source state, action, and target state, i.e., $T_{ijk}$ would be the transition probability for going from $s_i$ to $s_k$ when action $a_j$ was taken. Similarly, the reward matrix also takes action into account.
 
 $$
 P(S_{t+1}, R_{t+1} \; | \; S_{t}, A_{t}, S_{t-1}, A_{t-1}, ..., S_{0}, A_{0}) = P(S_{t+1}, R_{t+1} \; | \; S_{t}, A_{t})
 $$
 
-the above formula expresses the markov propetry in the case of markov decision processes (MDPs).
+The above formula expresses the Markov property in the case of Markov decision processes (MDPs).
 
-policy can be defined as the probability distribution over actions for every possible state. each policy can have varying amount of returns, hence it is important to find the optimal policy to maximize the returns.
+A policy can be defined as the probability distribution over actions for every possible state. Each policy can have varying amounts of returns\; hence, it is important to find the optimal policy to maximize the returns.
 
 $$
 \pi(a|s) = P[A_t = a |S_t = s]
 $$
 
-and generally the optimal policy is denoted by $\pi^{*}$ i.e. policy which would return the maximum amount of return on average
+The optimal policy is generally denoted by $\pi^{*}$, i.e., the policy which would return the maximum amount of return on average.
 
 $$
 \pi^{*} = \underset{\pi}{\text{max}} \; \mathbb{E}_{\pi} [G_{t}]
 $$
 
-as we had value function in MRP, there are state-value $v(s)$ and action-value $q(s, a)$ functions in MDP
+As we had a value function in an MRP, there are state-value $v(s)$ and action-value $q(s, a)$ functions in an MDP.
 
 $$
 v_{\pi}(s) = \mathbb{E}_{\pi}[G_t | S_t = s]
@@ -119,71 +122,70 @@ $$
 q_{\pi}(s, a) = \mathbb{E}_{\pi}[G_t | S_t = s, A_t = a]
 $$
 
-the state-value and action-value functions for optimal policy have a special behaviour
+The state-value and action-value functions for the optimal policy have a special behavior.
 
 $$
-v_{\pi^{*}}(s) \ge v_{\pi}(s) \; \; \; \text{for all } s \text{ and any } \pi
+v_{\pi^{*}}(s) \ge v_{\pi}(s) \; \text{for all } s \text{ and any } \pi
 $$
 
 $$
-q_{\pi^{*}}(s, a) \ge q_{\pi}(s, a) \; \; \; \text{for all } s, a \text{ and any } \pi
+q_{\pi^{*}}(s, a) \ge q_{\pi}(s, a) \; \text{for all } s, a \text{ and any } \pi
 $$
 
-the goal behind finding the optimal policy is to follow along the path which increase the value functions
+The goal behind finding the optimal policy is to follow the path which increases the value functions.
 
 ## taxonomy of RL methods
 
-there are multiple different methods to solve a RL based problem and each of them can be categorize into the following groups:
+There are multiple different methods to solve an RL-based problem, and each of them can be categorized into the following groups:
 
-- model-free or model-based
-- value-based or policy-based
-- on-policy or off-policy
+* model-free or model-based
+* value-based or policy-based
+* on-policy or off-policy
 
-in model-free methods, the agent doesn't require to model the environment or reward i.e. the agent takes in the current observations, does some computation and performs the optimal action. in model-based methods, the agent tries to _predict_ what would be the next observation/reward.
+In model-free methods, the agent does not require modeling the environment or reward, i.e., the agent takes in the current observations, performs some computation, and executes the optimal action. In model-based methods, the agent tries to *predict* what the next observation/reward would be.
 
-in value-based methods, the agent (_kinda_) calculates value for every possible action and picks the action with highest value. whereas, policy-based methods try to directly approximate the policy of the agent.
+In value-based methods, the agent (*roughly*) calculates the value for every possible action and picks the action with the highest value. Policy-based methods, on the other hand, try to directly approximate the policy of the agent.
 
-the main distinction between on-policy and off-policy methods is that off-policy can be considered as the _ability_ to learn from historical data which was either obtained by another agent/previous version of the same agent/demonstration by a human. on-policy methods require a fresh data for training and requires constant communication between the agent and the environment.
+The main distinction between on-policy and off-policy methods is that off-policy methods can be considered as having the *ability* to learn from historical data which was either obtained by another agent, a previous version of the same agent, or demonstration by a human. On-policy methods require fresh data for training and constant communication between the agent and the environment.
 
 ## cross-entropy method
 
 reference: [The Cross Entropy method for Fast Policy Search](https://cdn.aaai.org/ICML/2003/ICML03-068.pdf)
-<br/>
 implementation: [cross-entropy method on cartpole gym env](https://github.com/0xMukesh/paper-implementations/blob/main/src/rl/cartpole_cross_entropy_method.py)
 
-cross-entropy method works very well in environment which doesn't require you to learn complex multistep policies and have short episodes with frequent rewards. cross-entropy method is model-free, policy-based and on-policy based method.
+The cross-entropy method works very well in environments which do not require learning complex multi-step policies and have short episodes with frequent rewards. The cross-entropy method is a model-free, policy-based, and on-policy method.
 
-within cross-entropy method, a neural network is trained which acts like the policy which tells the agent which action is to be performed based on the current state. the policy is represented as a probability distribution over actions i.e. $\pi(a | s)$
+Within the cross-entropy method, a neural network is trained which acts as the policy that tells the agent which action should be performed based on the current state. The policy is represented as a probability distribution over actions, i.e., $\pi(a | s)$.
 
-the main idea behind cross-entropy is pretty simple and it can be described as:
+The main idea behind cross-entropy is simple and can be described as:
 
-- agent _plays_ around for N episodes i.e. feed the current observation of the environment to the neural network policy and pick a random action
-- calculate the total reward for every episode
-- decide a reward boundary i.e. all episodes which have total reward greater than equal to reward boundary are considered as "elite" episodes
-- throw away all the episodes below reward boundary
-- train further on the "elite" episodes with observations are the inputs and issued actions as the outputs
+* the agent *plays* around for $N$ episodes, i.e., feed the current observation of the environment to the neural network policy and pick a random action
+* calculate the total reward for every episode
+* decide a reward boundary, i.e., all episodes which have total reward greater than or equal to the reward boundary are considered "elite" episodes
+* discard all the episodes below the reward boundary
+* train further on the "elite" episodes where observations are the inputs and issued actions are the outputs
 
-over here, total reward refers to total undiscounted reward per episode i.e. return with $\gamma$ = 1 starting from $t$ = 0
+Here, total reward refers to the total undiscounted reward per episode, i.e., return with $\gamma = 1$ starting from $t = 0$.
 
 $$
 R = G_{0} = \sum_{k = 0}^{T} r_{k}
 $$
 
-if the environment computes the rewards at the end of the episode (like in frozen lake gym environment), then it could be a bit problematic to train it using cross-entropy method. in frozen lake gym environment, a reward of 1.0 is given if the agent reaches the bottom right corner successfully and 0.0 if it fails to do so, and right after computing the reward, the episode is finished. the issue with such environments is that the reward doesn't tell how _good_ the episode was as their are no intermediate rewards like cartpole. due to this issue, while trying to select the elite episodes, a big chunk of bad episodes might be included in it which would lead to instability in training and training might not even converge.
+If the environment computes the rewards at the end of the episode (like in the Frozen Lake gym environment), then it could be a bit problematic to train it using the cross-entropy method. In the Frozen Lake gym environment, a reward of 1.0 is given if the agent reaches the bottom-right corner successfully and 0.0 if it fails to do so, and right after computing the reward, the episode finishes. The issue with such environments is that the reward does not tell how *good* the episode was, as there are no intermediate rewards like in CartPole. Due to this issue, while trying to select the elite episodes, a large chunk of bad episodes might be included, which would lead to instability in training and might even prevent convergence.
 
 ## bellman's equations
 
-before jumping into bellman's equation of optimality, we'd need to get familiar with bellman's equation for state-value and action-value functions.
+Before jumping into Bellman's equation of optimality, we need to get familiar with Bellman's equations for state-value and action-value functions.
 
 ### bellman equation for state-value function
 
-in MDP, state-value function returns the expected cumulative future returns if started from state $s$
+In an MDP, the state-value function returns the expected cumulative future returns if started from state $s$.
 
 $$
 v_{\pi}(s) = \mathbb{E}_{\pi} [G_t | S_t = s]
 $$
 
-where, $G_t$ is the return at timestep $t$ and it is defined as
+where $G_t$ is the return at timestep $t$ and it is defined as
 
 $$
 \begin{split}
@@ -193,7 +195,7 @@ G_t &= \sum_{k = 0}^{T} \gamma^{k} r_{t + k + 1} \\
 \end{split}
 $$
 
-if the above $G_t$ equation was substituted in $v_{\pi}(s)$ equation,
+If the above $G_t$ equation is substituted into the $v_{\pi}(s)$ equation,
 
 $$
 \begin{split}
@@ -204,7 +206,7 @@ v_{\pi}(s) &= \mathbb{E}_{\pi}[r_{t + 1} + \gamma G_{t + 1} | s] \\
 \end{split}
 $$
 
-the above equation can be broken down and expressed with the help of transition probabilities as follows:
+The above equation can be broken down and expressed with the help of transition probabilities as follows:
 
 $$
 \begin{split}
@@ -214,13 +216,13 @@ $$
 
 ### bellman equation for action-value function
 
-in MDP, action-value function returns the expected cumulative future rewards if started from state $s$ and action $a$ is performed
+In an MDP, the action-value function returns the expected cumulative future rewards if started from state $s$ and action $a$ is performed.
 
 $$
 q_{\pi}(s, a) = \mathbb{E}_{\pi}[G_t | S_t = s, A_t = a]
 $$
 
-using the expansion of $G_t$ from the above section
+Using the expansion of $G_t$ from the above section,
 
 $$
 \begin{split}
@@ -231,19 +233,19 @@ q_{\pi}(s, a) &= \mathbb{E}_{\pi}[r_{t + 1} + \gamma G_{t + 1} |s, a] \\
 \end{split}
 $$
 
-using law of total probability,
+Using the law of total probability,
 
 $$
 v_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a | s) q_{\pi}(s, a)
 $$
 
-the above equation can be broken down and expressed with the help of transition probabilities as follows:
+The above equation can be broken down and expressed with the help of transition probabilities as follows:
 
 $$
 q_{\pi}(s, a) = \sum_{s' \in \mathcal{S}} P(s' | s, a) [r + \gamma \sum_{a' \in \mathcal{A}} \pi(a'|s') q_{\pi}(s'|a')]
 $$
 
-if the policy is a greedy then $v_{\pi}(s)$ can be expressed in terms of $q_{\pi}(s, a)$ as
+If the policy is greedy, then $v_{\pi}(s)$ can be expressed in terms of $q_{\pi}(s, a)$ as
 
 $$
 v_{\pi}(s) = \max_{a \in \mathcal{A}} q_{\pi}(s, a)
@@ -251,7 +253,7 @@ $$
 
 ### bellman equation for optimal policy
 
-using the above bellman equations for state-value and action-value functions, we can construct the bellman optimality equations
+Using the above Bellman equations for state-value and action-value functions, we can construct the Bellman optimality equations.
 
 $$
 v^{*}(s) = \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma v^{*}_{\pi} (s')]
@@ -261,23 +263,23 @@ $$
 q^{*}(s, a) = \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma \sum_{a' \in \mathcal{A}} \max_{a' \in \mathcal{A}} q^{*}_{\pi}(s' | a')]
 $$
 
-> **NOTE**: in the above equations, $v^{*}$ and $q^{*}$ are present on both sides of the equations i.e. it is recursive in nature
+> **NOTE**: In the above equations, $v^{*}$ and $q^{*}$ are present on both sides of the equations, i.e., they are recursive in nature.
 
 ## value iteration method
 
-value iteration method is a technique to solve bellman optimality equation using dynamic programming. in value iteration method, the bellman optimality equation related to state-value function is converted into an update rule using which $v^{*}(s)$ is continously refined iteratively.
+The value iteration method is a technique to solve the Bellman optimality equation using dynamic programming. In the value iteration method, the Bellman optimality equation related to the state-value function is converted into an update rule using which $v^{*}(s)$ is continuously refined iteratively.
 
 $$
 v_{i+1}(s) \leftarrow \max_{a \in \mathcal{A}} \sum_{s' \in \mathcal{S}} P(s'|s, a)[r + \gamma v_{i} (s')]
 $$
 
-at the start of iteration, value is set to be 0 for all states i.e. $v_{0}(s) = 0$.
+At the start of the iteration, the value is set to 0 for all states, i.e., $v_{0}(s) = 0$.
 
-this method works well when the state space is discrete and small enough to perfom multiple iterations over it. apart from that, in practice, generally we don't have access to the transition probabilities i.e. $P(s' | s, a)$ so instead it is estimated by keeping a track of the history.
+This method works well when the state space is discrete and small enough to perform multiple iterations over it. Apart from that, in practice, we generally do not have access to the transition probabilities, i.e., $P(s' | s, a)$, so instead they are estimated by keeping track of the history.
 
 ## resources
 
-- [Deep Reinforcement Learning Hands-On](https://www.google.co.in/books/edition/Deep_Reinforcement_Learning_Hands_On/814wEQAAQBAJ)
-- [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html)
-- [Dissecting Reinforcement Learning](https://mpatacchiola.github.io/blog/2016/12/09/dissecting-reinforcement-learning.html)
-- [Reinforcement Learning, By the Book](https://youtube.com/playlist?list=PLzvYlJMoZ02Dxtwe-MmH4nOB5jYlMGBjr)
+* [Deep Reinforcement Learning Hands-On](https://www.google.co.in/books/edition/Deep_Reinforcement_Learning_Hands_On/814wEQAAQBAJ)
+* [Reinforcement Learning: An Introduction](http://incompleteideas.net/book/the-book.html)
+* [Dissecting Reinforcement Learning](https://mpatacchiola.github.io/blog/2016/12/09/dissecting-reinforcement-learning.html)
+* [Reinforcement Learning, By the Book](https://youtube.com/playlist?list=PLzvYlJMoZ02Dxtwe-MmH4nOB5jYlMGBjr)
