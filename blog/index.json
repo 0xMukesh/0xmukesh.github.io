@@ -1,0 +1,34 @@
+[
+  {
+    "title": "Attention is all you need",
+    "url": "./attention-is-all-you-need.html",
+    "date": "March 23, 2026",
+    "tags": [
+      "deep-learning"
+    ]
+  },
+  {
+    "title": "Creating art using CNNs",
+    "url": "./creating-art-using-cnns.html",
+    "date": "Jun 13, 2025",
+    "tags": [
+      "deep-learning"
+    ]
+  },
+  {
+    "title": "Exploring different CNNs",
+    "url": "./exploring-different-cnns.html",
+    "date": "Jun 04, 2025",
+    "tags": [
+      "deep-learning"
+    ]
+  },
+  {
+    "title": "CNNs Explained",
+    "url": "./cnns-explained.html",
+    "date": "May 12, 2025",
+    "tags": [
+      "deep-learning"
+    ]
+  }
+]

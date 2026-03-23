@@ -1,0 +1,137 @@
+body {
+    max-width: 700px;
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    margin-bottom: 0.25rem;
+}
+
+header p.subtitle {
+    margin: 0 0 1rem 0;
+    color: #555;
+    font-style: italic;
+}
+
+nav.links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+nav.links a {
+    text-decoration: none;
+    color: #a00000;
+}
+
+nav.links a::after {
+    content: "|";
+    color: #ccc;
+    margin: 0 0.55rem;
+}
+
+nav.links a:last-child::after {
+    content: "";
+    margin: 0;
+}
+
+section {
+    margin-top: 1.25rem;
+}
+
+section h2 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.project-list,
+.blog-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.project-list li,
+.blog-list li {
+    margin-bottom: 1.1rem;
+}
+
+.project-list li strong,
+.blog-list li .date {
+    display: block;
+}
+
+.blog-list li .date {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 0.1rem;
+}
+
+.blog-list li a {
+    font-weight: 600;
+}
+
+.tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 0.05rem 0.4rem;
+    margin-right: 0.25rem;
+    color: #555;
+}
+
+footer {
+    margin-top: 3rem;
+    font-size: 0.82rem;
+    color: #888;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.blog-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+/* dark mode overrides */
+.latex-dark header p.subtitle {
+    color: #aaa;
+}
+
+.latex-dark nav.links a {
+    color: #e06060;
+}
+
+.latex-dark nav.links a::after {
+    color: #555;
+}
+
+.latex-dark section h2 {
+    border-bottom-color: #444;
+}
+
+.latex-dark .blog-list li .date {
+    color: #888;
+}
+
+.latex-dark .tag {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #aaa;
+}
+
+.latex-dark footer {
+    color: #666;
+    border-top-color: #333;
+}
