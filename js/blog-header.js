@@ -4,7 +4,7 @@ async function appendBlogHeader() {
     .filter(Boolean)
     .pop()
 
-  const response = await fetch("/blogs/index.json");
+  const response = await fetch("/blog/index.json");
   const posts = await response.json();
 
   const post = posts.find(p => p.url.endsWith(slug));
@@ -13,7 +13,7 @@ async function appendBlogHeader() {
   const nav = document.createElement("nav");
   nav.className = "blog-nav";
   nav.innerHTML = `
-    <a href="/blogs">← Go back</a>
+    <a href="/blog">← Go back</a>
     <a href="/index.html">Home</a>
   `;
 

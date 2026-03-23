@@ -13,8 +13,8 @@ function appendHeader() {
       <a href="mailto:mukeshreddy.work@gmail.com">email</a>
       <a href="https://github.com/0xmukesh">github</a>
       <a href="https://x.com/0xmukesh">twitter</a>
-      <a href="#blog">blog</a>
-      <a href="#projects">projects</a>
+      <a href="./blog">blog</a>
+      <a href="./projects">projects</a>
     </nav>
   `;
 
