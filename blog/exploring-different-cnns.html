@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<p>Hey there! In this blog post we are going to explore different CNNs and see how did they evolve from the foundational LeNet to much more complex networks like Inception, ResNet and ResNeXt,</p>
+<p>Hey there! In this blog post we are going to explore different CNNs and see how did they evolve from the foundational LeNet to much more complex networks like Inception, ResNet and ResNeXt.</p>
 
 <h3>AlexNet</h3>
 <p>AlexNet was introduced in the paper <a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf" target="_blank">Image Classification with Deep Convolutional Neural Networks</a>, and won 2012 ImageNet challenge by a huge margin. The first foundational CNN, LeNet, was introduced in the year 1995, but CNNs didn’t get picked up that fast by the computer vision community just after that.</p>
@@ -768,6 +768,151 @@ class InceptionResNetC(nn.Module):
         out = self.relu(out)
 
         return out</code></pre>
+
+<h3>ResNeXt</h3>
+<p>A paper titled  <a href="https://arxiv.org/pdf/1611.05431" target="_blank">Aggregated Residual Transformations for Deep Neural Networks</a> proposed a new architecture called “ResNeXt”. The paper mainly focused on developing an architecture which follows the repeating-layer strategy, like the one present in VGGNet and ResNet but also uses the split-transform-merge strategy, like the one present in Inception module. The main issue with Inception is that each module is tailored for a specific transformation (the number of filters and their sizes). Unlike Inception, ResNeXt adopts same transformation in all branches, thus minimizing the need for manual tuning of each branch.</p>
+
+<h4>ResNeXt block</h4>
+<img src="../images/exploring-different-cnns/032_resnext_block.png"/>
+<p>The above image shows the differences between the bottleneck block in ResNet and a basic ResNeXt block. The ResNeXt block has multi-branch setup like Inception, even though the structure for each branch is the same - the weights and biases are the different so they can learn different features. At the end, the results from all of the parallel paths are aggregated via summation. ResNeXt introduces a new dimension known as “cardinality” - the number of parallel paths. The author of the paper argue that cardinality is an essential dimension and can be more effective than depth and width of the network.</p>
+<br/>
+<img src="../images/exploring-different-cnns/033_resnext_block_archs.png"/>
+<p>The paper proposed three block architectures which are mathematically equivalent but one is much more computationally efficient compared to the previous one.</p>
+<ol>
+    <li>In Figure-(a), each of the 32 parallel paths are implemented separately and all of them have to be stored on the memory and for executing the 3x3 convolutional on each of the path, a single kernel call is required.</li>
+    <li>In Figure-(b), a much more computationally efficient tensor operation is used to aggregate the outputs from the residual parallel paths. Instead of summing, concatenation and projection is used.</li>
+    <li>In Figure-(c), all of the parallel paths are replaced by group convolution, which is much more efficient as it is just one single layer so it takes up less memory and a single kernel call is required to execute it in total.</li>
+</ol>
+<p>One of the experiments conducted by the authors was to evaluate the tradeoff between cardinality and width. They chose two types of networks - 50 layered and 101 layered, and evaluated the tradeoff between the traditional ResNet and ResNeXt by increasing the cardinality while keeping the total complexity cost constant.</p>
+<br/>
+<img src="../images/exploring-different-cnns/034_resnext_archs.png"/>
+<br/>
+<img src="../images/exploring-different-cnns/035_resnext_training_curves.png"/>
+<p>It is evident from the above table that as the cardinality increases, the accuracy increases. ResNeXt had lower validation as well training loss - so not only it was able to generalize better, it was also able to fit the data better, but as the width decreases the accuracy gets saturated.</p>
+<p>Cardinality increases the diversity, each branch learns a different feature and overall improves the representational richness while keeping the total capacity fixed, but when width becomes very small, each branch has very few channels to work with.</p>
+
+<h4>Group convolutions</h4>
+<p>The idea of group convolutions was first used in AlexNet. The GPUs during 2012 had very limited memory and the authors were not able the entire AlexNet model on a single GTX 580 so they had to split the model across two GPUs. In each layers, half of the channels were processed by GPU 1 and the other on another GPU.</p>
+<p>The authors of ResNeXt used this idea and replaced the parallel paths with a group convolution, which is better in terms of computational efficiency.</p>
+<p>In group convolution, the channels of the input image is split into different groups and each group has its own set of kernels, and the output from each group is concatenated at the end. The kernels of each group learns a different feature.</p>
+<p>Consider a convolutional layer which takes in a feature map of size \(32 \times 64 \times 64\) and outputs a feature map of size \(64 \times 64 \times 64\) with a kernel of size \(3 \times 3\), then the layer contains 64 kernels and the shape of each kernel would be \(32 \times 3 \times 3\) . If instead of traditional convolutional, group convolution was used and the numbers of groups was set to 4, then each group would process \(\frac{32}{4} = 8\) channels of the input feature map and the output of each group would contain \(\frac{64}{4} = 16\) channels. The size of kernel in each group would be \(8 \times 3 \times 3\).</p>
+
+<h4>Architecture</h4>
+<img src="../images/exploring-different-cnns/036_resnext_arch.png"/>
+<p>The architecture of ResNeXt-50 is quite similar to the architecture of ResNet-50, except for the additional dimension which is introduced to the network - cardinality. The first 1x1 convolutional in each ResNeXt block has double the output feature maps as compared to its corresponding one in ResNet. The reason behind it is to have more number of channels per group. If in the first ResNeXt block, the initial 1x1 convolutional layer output 64 features map then with cardinality of 32, each group would only get 2 channels to process, which is quite less.</p>
+<pre><code class="language-python">import torch
+from torch import nn
+
+class ResNeXtBlock(nn.Module):
+    expansion = 4
+
+    def __init__(self, in_channels, out_channels, stride=1, cardinality=32, use_conv1x1=True):
+        super().__init__()
+
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1)
+        self.bn1 = nn.BatchNorm2d(num_features=out_channels)
+
+        self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, stride=stride, groups=cardinality)
+        self.bn2 = nn.BatchNorm2d(num_features=out_channels)
+
+        self.conv3 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels * self.expansion, kernel_size=1, stride=1)
+        self.bn3 = nn.BatchNorm2d(num_features=out_channels * self.expansion)
+
+        self.relu = nn.ReLU(inplace=True)
+
+        self.dim_reduction = nn.Sequential(
+            nn.Conv2d(in_channels=in_channels, out_channels=out_channels * self.expansion, kernel_size=1, stride=2),
+            nn.BatchNorm2d(num_features=out_channels * self.expansion)
+        ) if use_conv1x1 else None
+
+    def forward(self, x):
+        identity = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+
+        out = self.conv3(out)
+        out = self.bn3(out)
+
+        if self.dim_reduction:
+            identity = self.dim_reduction(identity)
+
+        out += identity
+        out = self.relu(out)
+
+        return out
+
+class ResNeXtNet(nn.Module):
+    def __init__(self, in_channels, block, num_blocks: list[int], base_channels: list[float]):
+        super().__init__()
+
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=64, kernel_size=7, stride=2)
+        self.bn1 = nn.BatchNorm2d(num_features=64)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
+
+        self.in_channels = in_channels
+        self.expansion = 4
+        base_channels = [int(i / self.expansion) for i in base_channels]
+
+        self.layer1 = self._make_layer(block, num_blocks[0], base_channels[0], 1, 32)
+        self.layer2 = self._make_layer(block, num_blocks[1], base_channels[1], 2, 32)
+        self.layer3 = self._make_layer(block, num_blocks[2], base_channels[2], 2, 32)
+        self.layer4 = self._make_layer(block, num_blocks[3], base_channels[3], 2, 32)
+
+        self.relu = nn.ReLU(inplace=True)
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Linear(in_features=512 * block.expansion, out_features=1000)
+
+    def _make_layer(self, block, num_blocks, out_channels, stride, cardinality):
+        use_conv1x1 = self.in_channels != out_channels * self.expansion
+
+        layers = []
+        layers.append(block(self.in_channels, out_channels, stride, cardinality, use_conv1x1))
+
+        self.in_channels = out_channels * self.expansion
+
+        for _ in range(1, num_blocks):
+            layers.append(block(self.in_channels, out_channels, 1, cardinality))
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+
+        x = self.maxpool(x)
+
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.fc(x)</code></pre>
+
+<h3>Wrapping up</h3>
+<p>Well, that’s it for this blog, I hope that it was useful. I’ve tried to explain the key concepts of each architecture in simple language - what were the problems which the authors focused on, how were they resolved, are they any new concepts which were proposed by the authors and if yes, then what are they, and have tried to include PyTorch implementations as well. I have mostly tried to go through the actual papers and have used <a href="https://d2l.ai" target="_blank">d2l.ai</a> as a supplement.</p>
+
+<h3>References</h3>
+<ol>
+    <li><a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf" target="_blank">ImageNet Classification with Deep Convolutional Neural Networks</a></li>
+    <li><a href="https://arxiv.org/pdf/1409.1556" target="_blank">Very deep convolutional networks for large-scale image recognition</a></li>
+    <li><a href="https://arxiv.org/pdf/1312.4400" target="_blank">Network in network</a></li>
+    <li><a href="https://arxiv.org/pdf/1409.4842">Going deeper with convolutions</a></li>
+    <li><a href="https://arxiv.org/pdf/1512.00567" target="_blank">Rethinking the Inception Architecture for Computer Vision</a></li>
+    <li><a href="https://arxiv.org/pdf/1512.03385" target="_blank">Deep Residual Learning for Image Recognition</a></li>
+    <li><a href="https://arxiv.org/pdf/1602.07261" target="_blank">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li>
+    <li><a href="https://arxiv.org/pdf/1611.05431" target="_blank">Aggregated Residual Transformations for Deep Neural Networks</a></li>
+    <li><a href="https://d2l.ai">Dive into Deep Learning</a></li>
+</ol>
 
 </body>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
