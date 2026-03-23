@@ -1,0 +1,32 @@
+[
+  {
+    "title": "tatami",
+    "url": "https://github.com/0xmukesh/tatami",
+    "description": "tiny X11 window manager, written in golang"
+  },
+  {
+    "title": "coco",
+    "url": "https://github.com/0xmukesh/coco",
+    "description": "a statically typed compiled programming language, built using LLVM as backend"
+  },
+  {
+    "title": "brtlang",
+    "url": "https://github.com/0xmukesh/brtlang",
+    "description": "a toy programming language"
+  },
+  {
+    "title": "brainfreeze",
+    "url": "https://github.com/0xmukesh/brainfreeze",
+    "description": "a tiny brainfuck interpreter"
+  },
+  {
+    "title": "chippy",
+    "url": "https://github.com/0xmukesh/chippy",
+    "description": "a simple CHIP-8 emulator, written in golang"
+  },
+  {
+    "title": "raygo",
+    "url": "https://github.com/0xmukesh/raygo",
+    "description": "a tiny path tracer, implemented while reading <a href='https://raytracing.github.io/' target='_blank'>Ray Tracing in One Weekend</a>"
+  }
+]
