@@ -1,7 +1,8 @@
 async function appendBlogList(sectionId, indexPath) {
   const response = await fetch(indexPath);
   const items = (await response.json())
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .filter(a => !a.draft);
 
   const section = document.getElementById(sectionId);
   if (!section) return;
