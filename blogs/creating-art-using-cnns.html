@@ -13,13 +13,13 @@
 </head>
 <body>
 
-<p>Hey there! In this blog post, we will explore how to extract the art style from an image of a painting and then apply it to another image, generating a new image that retains the content of the original but utilizes the art style of the painting. If you are not familiar with CNNs, I would highly recommend you to check out my other blogs on CNNs - <a href="https://0xmukesh.github.io/blogs/cnns-explained.html" target="_blank">CNNs Explained</a> and <a href="https://0xmukesh.github.io/blogs/exploring-different-cnns" target="_blank">Exploring different CNNs</a>.</p>
+<p>Hey there! In this blog post, we will explore how to extract the art style from an image of a painting and then apply it to another image, generating a new image that retains the content of the original but utilizes the art style of the painting. If you are not familiar with CNNs, I would highly recommend you to check out my other blogs on CNNs - <a href="https://0xmukesh.github.io/blogs/cnns-explained.html">CNNs Explained</a> and <a href="https://0xmukesh.github.io/blogs/exploring-different-cnns">Exploring different CNNs</a>.</p>
 <br/>
 <img src="../images/creating-art-using-cnns/001_overview.png" loading="lazy"/>
 <p>In the above image, a silly cat picture is combined with <a href="https://en.wikipedia.org/wiki/The_Starry_Night">The Starry Night</a> painting, resulting in a silly cat picture with a blue-ish tint everywhere and swirls, similar to those present in the Starry Night painting. The final output does look kinda scary tho.</p>
 
 <h3>What is NST?</h3>
-<p>Neural Style Transfer (NST) is a computer vision technique that utilizes deep neural networks to combine the content of one image with the style of another, resulting in a new image that resembles the first image painted in the style of the second image. In this blog post, we will go through the paper titled “<a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf" target="_blank">Image Style Transfer Using Convolutional Neural Networks</a>” which leverages the layer-wise representation of CNN to extract content and style from the image and then combine them.</p>
+<p>Neural Style Transfer (NST) is a computer vision technique that utilizes deep neural networks to combine the content of one image with the style of another, resulting in a new image that resembles the first image painted in the style of the second image. In this blog post, we will go through the paper titled “<a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf">Image Style Transfer Using Convolutional Neural Networks</a>” which leverages the layer-wise representation of CNN to extract content and style from the image and then combine them.</p>
 <p>CNNs consist of layers of small computational units (aka convolutional layers) that process the visual information hierarchically in a feed-forward manner, and each layer consists of a collection of image filters, each of which extracts a certain feature from the input image and the output of these layers is a “differently filtered” version of the input image. The representation of the image at the final layers cares more about the “content” of the image compared to its pixel values.</p>
 <p>In neural style transfer, a pre-trained convolutional neural network (such as VGG19) is used to extract features from three images - the content image (the original photo), the style image (the artistic reference), and the generated image (which is randomly initialized at first). During each iteration, the network performs a forward pass on all three images, and features are extracted from specific layers to capture both content and style.</p>
 <p>For extracting the content, outputs from the deeper layers are used, as these layers capture high-level information while discarding the fine pixel-level details. For extracting the style, we look at how different filters in the network respond together. Instead of using the filters directly, we use the correlations between them across the whole image. These correlations help describe the texture of the image. By doing this across several layers of the network, we get a multi-level summary of the image’s texture, without focusing on the exact layout of objects.</p>
@@ -57,7 +57,7 @@
 \]
 
 <p>There is quite a lot going on over here - let’s break it down.</p>
-<p>\(G^{l}\) represents the gram matrix of feature representations of the generated image at layer \(l\). What is a gram matrix? Gram matrix calculates the co-relation between different filter maps to see how “similar” different features are to each other. The actual mathematics behind it involves kernel functions and maximum mean discrepancy (MMD). If you are interested in diving into the actual mathematics behind it, I would recommend you to read the paper titled “<a href="https://arxiv.org/pdf/1701.01036" target="_blank">Demystifying Neural Style Transfer</a>”, which discusses about how exactly are gram matrices able to represent the artistic style in an image?</p>
+<p>\(G^{l}\) represents the gram matrix of feature representations of the generated image at layer \(l\). What is a gram matrix? Gram matrix calculates the co-relation between different filter maps to see how “similar” different features are to each other. The actual mathematics behind it involves kernel functions and maximum mean discrepancy (MMD). If you are interested in diving into the actual mathematics behind it, I would recommend you to read the paper titled “<a href="https://arxiv.org/pdf/1701.01036">Demystifying Neural Style Transfer</a>”, which discusses about how exactly are gram matrices able to represent the artistic style in an image?</p>
 <p>\(A_l\) also represents a gram matrix but it is calculated on the feature representations of the style image at layer \(l\). \(\mathcal{L}_{\text{style}}^{l}\) represents the style loss for layer \(l\) - it is quite similar to MSE but instead of having 0.5 as the coefficient in front \(0.25N_l^{2}M_l^{2}\) is used. \(\mathcal{L}_{\text{style}}\) represents the total style loss, which is basically sum of all the style losses of each individual layer multiplied with their corresponding weights (\(w_l\)).</p>
 
 <h3>Implementation</h3>
@@ -165,17 +165,20 @@ G^{l}_{i,j} = \sum_{k = 1}^{M_l} F^{l}_{ik} F^{l}_{kj}
         utils.save_image(generated_img, f"/content/outputs/{step}.png")</code></pre>
 
 <h3>Wrapping up</h3>
-<p>Well, that’s it for this blog post - it is quite small but it focuses on showing that CNNs can be used for different tasks other than the traditional classification and regression problems. If you want to check out the entire code, here’s the GitHub repository link - <a href="https://github.com/0xMukesh/neural-style-transfer" target="_blank">https://github.com/0xMukesh/neural-style-transfer</a>.</p>
+<p>Well, that’s it for this blog post - it is quite small but it focuses on showing that CNNs can be used for different tasks other than the traditional classification and regression problems. If you want to check out the entire code, here’s the GitHub repository link - <a href="https://github.com/0xMukesh/neural-style-transfer">https://github.com/0xMukesh/neural-style-transfer</a>.</p>
 
 <h3>References</h3>
 <ol>
-    <li><a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf" target="_blank">Image Style Transfer Using Convolutional Neural Networks</a></li>
-    <li><a href="https://arxiv.org/pdf/1508.06576" target="_blank">A Neural Algorithm of Artistic Style</a></li>
-    <li><a href="https://arxiv.org/pdf/1701.01036" target="_blank">Demystifying Neural Style Transfer</a></li>
+    <li><a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Gatys_Image_Style_Transfer_CVPR_2016_paper.pdf">Image Style Transfer Using Convolutional Neural Networks</a></li>
+    <li><a href="https://arxiv.org/pdf/1508.06576">A Neural Algorithm of Artistic Style</a></li>
+    <li><a href="https://arxiv.org/pdf/1701.01036">Demystifying Neural Style Transfer</a></li>
 </ol>
 
 </body>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="../js/blog-header.js"></script>
 <script src="../js/footer.js"></script>
+<script>
+appendBlogHeader("./blogs.json", "/blogs")
+</script>
 </html>

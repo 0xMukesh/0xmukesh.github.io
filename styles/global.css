@@ -52,30 +52,28 @@ section h2 {
     margin-bottom: 1rem;
 }
 
-.project-list,
-.blog-list {
+.list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.project-list li,
-.blog-list li {
+.list li {
     margin-bottom: 1.1rem;
 }
 
-.project-list li strong,
-.blog-list li .date {
+li strong,
+.list li .date {
     display: block;
 }
 
-.blog-list li .date {
+.list li .date {
     font-size: 0.8rem;
     color: #888;
     margin-bottom: 0.1rem;
 }
 
-.blog-list li a {
+.list li a {
     font-weight: 600;
 }
 
@@ -104,7 +102,6 @@ footer {
     margin-bottom: 1rem;
 }
 
-/* dark mode overrides */
 .latex-dark header p.subtitle {
     color: #aaa;
 }
@@ -121,7 +118,7 @@ footer {
     border-bottom-color: #444;
 }
 
-.latex-dark .blog-list li .date {
+.latex-dark .list li .date {
     color: #888;
 }
 

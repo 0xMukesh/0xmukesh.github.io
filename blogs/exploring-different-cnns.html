@@ -16,7 +16,7 @@
 <p>Hey there! In this blog post we are going to explore different CNNs and see how did they evolve from the foundational LeNet to much more complex networks like Inception, ResNet and ResNeXt.</p>
 
 <h3>AlexNet</h3>
-<p>AlexNet was introduced in the paper <a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf" target="_blank">Image Classification with Deep Convolutional Neural Networks</a>, and won 2012 ImageNet challenge by a huge margin. The first foundational CNN, LeNet, was introduced in the year 1995, but CNNs didn’t get picked up that fast by the computer vision community just after that.</p>
+<p>AlexNet was introduced in the paper <a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf">Image Classification with Deep Convolutional Neural Networks</a>, and won 2012 ImageNet challenge by a huge margin. The first foundational CNN, LeNet, was introduced in the year 1995, but CNNs didn’t get picked up that fast by the computer vision community just after that.</p>
 <p>LeNet achieved good results on small datasets but the performance and feasibility of training CNNs on larger datasets had yet to be established. The major bottleneck was compute power, the CPUs which were available around 1995 didn’t have enough compute power to apply CNNs in large scale i.e. on high resolution images.</p>
 <p>AlexNet is sorta-like an extension of LeNet, but with quite a few optimizations and changes:</p>
 
@@ -31,7 +31,7 @@
         \]
     </p>
     <br/>
-    <p>The main idea of LRN is to boost neurons with strong activations while suppressing the nearby neurons with lower activations. It is very similar to the biological idea called <a href="https://en.wikipedia.org/wiki/Lateral_inhibition" target="_blank">lateral inhibition</a>, which is the capacity of an excited neuron to reduce the activity of its neighboring neurons. LRN goes through each neuron present in each feature map of the output, in such a way that it goes through all the neurons present at \((x, y)\) position in all the adjacent \(n\) feature maps and boosts the neuron with strong activation and suppresses the others in those adjacent \(n\) feature maps.</p>
+    <p>The main idea of LRN is to boost neurons with strong activations while suppressing the nearby neurons with lower activations. It is very similar to the biological idea called <a href="https://en.wikipedia.org/wiki/Lateral_inhibition">lateral inhibition</a>, which is the capacity of an excited neuron to reduce the activity of its neighboring neurons. LRN goes through each neuron present in each feature map of the output, in such a way that it goes through all the neurons present at \((x, y)\) position in all the adjacent \(n\) feature maps and boosts the neuron with strong activation and suppresses the others in those adjacent \(n\) feature maps.</p>
     <p>According to the AlexNet paper, the values of \(n, \; k, \; \alpha, \; \beta\) where were used are \(k = 2, \; n = 5, \; \alpha = 10^{-4} , \; \beta = 0.75\).</p>
     <li>Overlapping pooling layers were used in AlexNet — the stride is less than the kernel size in the pooling layer.</li>
 </ol>
@@ -96,7 +96,7 @@ class AlexNet(nn.Module):
         return x</code></pre>
 
 <h3>VGGNet</h3>
-<p>VGGNet was introduced in the paper <a href="https://arxiv.org/pdf/1409.1556" target="_blank">Very Deep Convolutional Networks For Large-Scale Image Recognition</a>, and won 2014 ImageNet challenge. Around this time, the researchers have moved from thinking about individual neuron to layers and now to blocks - repeating patterns of layers. VGGNet was the first CNN which proposed this idea of using blocks.</p>
+<p>VGGNet was introduced in the paper <a href="https://arxiv.org/pdf/1409.1556">Very Deep Convolutional Networks For Large-Scale Image Recognition</a>, and won 2014 ImageNet challenge. Around this time, the researchers have moved from thinking about individual neuron to layers and now to blocks - repeating patterns of layers. VGGNet was the first CNN which proposed this idea of using blocks.</p>
 <p>The common pattern in CNNs until now was convolutional layer → ReLU + normalization layer → pooling layer but this reduces the spatial dimension of the image rapidly. In case of ImageNet dataset which contains images of size 224x224, then within 8 layers it would reach a size of 1x1 i.e. all the dimensions would have been used up until that point.</p>
 <p>VGGNet majorly focused on the depth of the network i.e. how the network performs as its depth increases and it used multiple convolutional layers before using a pooling layer to down-sample the feature maps. In VGGNet, mostly 3x3 kernels are used in the convolutional layers and the reason behind is related to receptive fields and performance.</p>
 
@@ -160,7 +160,7 @@ class VGGNet(nn.Module):
         return x</code></pre>
 
 <h3>Network in Network (NiN)</h3>
-<p>Network in Network or NiN was introduced in the paper <a href="https://arxiv.org/pdf/1312.4400" target="_blank">Network In Network</a>. As compared to AlexNet and VGG, which focused on improving the performance of the feature extractor portion of CNN, NiN focused on improving the performance of the classifier portion of CNN i.e. the series of fully-connected layers at the end of the CNN.</p>
+<p>Network in Network or NiN was introduced in the paper <a href="https://arxiv.org/pdf/1312.4400">Network In Network</a>. As compared to AlexNet and VGG, which focused on improving the performance of the feature extractor portion of CNN, NiN focused on improving the performance of the classifier portion of CNN i.e. the series of fully-connected layers at the end of the CNN.</p>
 <p>In LeNet, AlexNet and VGG, the connection between the last convolutional/pooling layer and the first fully-connected layer involves a lot of parameters.</p>
 <ol>
     <li>For LeNet, it is 16x5x5x120 = ~48k</li>
@@ -181,7 +181,7 @@ class VGGNet(nn.Module):
 <img src="../images/exploring-different-cnns/006_nin_mlpconv.png"/>
 <br/>
 <img src="../images/exploring-different-cnns/007_nin_linear_vs_mlpconv.png"/>
-<p><a href="https://arxiv.org/pdf/1302.4389" target="_blank">Maxout networks</a> is another type of network which focused on improving the level of abstraction. The core idea of maxout networks was instead of applying one linear transformation followed by a non-linearity, it applied multiple linear transformations and picked the maximum one. The issue with maxout networks is that it was capable of modeling only convex functions, but mlpconv uses MLP which is an universal function approximator.</p>
+<p><a href="https://arxiv.org/pdf/1302.4389">Maxout networks</a> is another type of network which focused on improving the level of abstraction. The core idea of maxout networks was instead of applying one linear transformation followed by a non-linearity, it applied multiple linear transformations and picked the maximum one. The issue with maxout networks is that it was capable of modeling only convex functions, but mlpconv uses MLP which is an universal function approximator.</p>
 
 <h3>Global average pooling layer</h3>
 <p>Instead of having a fully-connected layer, which is used to classify the features, a global average pooling layer is used which outputs the spatial average of the last mlpconv layer which is then fed into a softmax layer to get the final probabilities. An advantage of using the global average pooling layer instead of fully-connected layer is that it doesn’t have any parameters to learn. Furthermore, the fully-connected layer is prone to overfitting and depends heavily on regularization, while the global average pooling layer itself depends as a structural regularizer, which prevents overfitting. The number of feature maps returned by the last mlpconv layer must be equal to the number of classes present in the dataset.</p>
@@ -223,7 +223,7 @@ class NiN(nn.Module):
         )</code></pre>
 
 <h3>GoogleLeNet (Inception)</h3>
-<p>GoogLeNet was introduced in the paper <a href="https://arxiv.org/pdf/1409.4842" target="_blank">Going deeper with convolutions</a>, and it majorly focused on increasing the depth and width of the network while keeping the network highly performant. GoogLeNet is a 22 layer deep CNN (which uses the “Inception” module), in total it uses 12 times less number of parameters as compared to AlexNet while also being more accurate.</p>
+<p>GoogLeNet was introduced in the paper <a href="https://arxiv.org/pdf/1409.4842">Going deeper with convolutions</a>, and it majorly focused on increasing the depth and width of the network while keeping the network highly performant. GoogLeNet is a 22 layer deep CNN (which uses the “Inception” module), in total it uses 12 times less number of parameters as compared to AlexNet while also being more accurate.</p>
 <p>Until this point, the most straightforward way to improve the performance of a deep neural networks is to further increase their size, but it has a few major drawbacks:</p>
 <ol>
     <li>If the size of the neural network is increased then number of parameters increases then it generally becomes more prone to overfitting.</li>
@@ -241,7 +241,7 @@ class NiN(nn.Module):
 <p>The above layer is similar to the previous one but the main difference is addition of 1x1 convolutional layers which are used to changing the number of feature maps. Before moving to computational expensive layers like 3x3 convolutional and 5x5 convolutional, the 1x1 convolutional layer reduces the number of features map. After the pooling layer, the 1x1 convolutional increases the number of feature maps so that the pooling results can be concatenated along with other branch results.</p>
 
 <h4>Inception v3</h4>
-<p>The above architecture was originally presented in the paper and it is often called as Inception V1. Later, a follow-up paper titled <a href="https://arxiv.org/pdf/1512.00567" target="_blank">Rethinking the Inception Architecture for Computer Vision</a> proposed quite a few improvements to the original Inception module architecture.</p>
+<p>The above architecture was originally presented in the paper and it is often called as Inception V1. Later, a follow-up paper titled <a href="https://arxiv.org/pdf/1512.00567">Rethinking the Inception Architecture for Computer Vision</a> proposed quite a few improvements to the original Inception module architecture.</p>
 <p>The first part of the paper discusses about how to break down larger convolutionals like 5x5 and 7x7 into series of smaller convolutionals using 3x3. Instead of using 5x5 convolutional layer, it has been replaced with series of two 3x3 convolutional layer with a non-linear activation function like ReLU in between them. Similar ideas were proposed in VGGNet’s paper.</p>
 <br/>
 <img src="../images/exploring-different-cnns/012_inception_v3_conv_layer_split.png"/>
@@ -457,7 +457,7 @@ y_{\text{smooth}} = (1 - \alpha) \cdot y + \frac{\alpha}{K}
         return outputs</code></pre>
 
 <h3>Residual Networks</h3>
-<p>Residual Network or ResNet was introduced in the paper <a href="https://arxiv.org/pdf/1512.03385" target="_blank">Deep Residual Learning for Image Recognition</a>, and it primarily focused on developing a framework which simplifies the process of training deep neural networks. It is one of the most important papers in the context of deep learning, as the core idea of the paper (residual connections) is used everywhere nowadays to train deep neural networks efficiently.</p>
+<p>Residual Network or ResNet was introduced in the paper <a href="https://arxiv.org/pdf/1512.03385">Deep Residual Learning for Image Recognition</a>, and it primarily focused on developing a framework which simplifies the process of training deep neural networks. It is one of the most important papers in the context of deep learning, as the core idea of the paper (residual connections) is used everywhere nowadays to train deep neural networks efficiently.</p>
 <p>It’s 2015 and until this point, it was obvious to the researchers that deeper the network, better the results but the issue was how to train these networks efficiently? The below image shows the training and test loss between two networks. The 56-layer network performs worse compared to the 20-layer network on both training and test loss, but what could be the reason? It isn’t overfitting as it performs worse on both training and test loss and it isn’t vanishing gradient as well as this issue was persistent even after adding batch normalization layers to the deeper network. The reason was that it is hard to train deep neural networks.</p>
 <br/>
 <img src="../images/exploring-different-cnns/021_resnet_training_comp.png"/>
@@ -577,7 +577,7 @@ class ResNet50(nn.Module):
         return x</code></pre>
 
 <h3>Inception-ResNet</h3>
-<p>A paper titled <a href="https://arxiv.org/pdf/1602.07261" target="_blank">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a> proposed a new Inception module which combines the powers of both multi-branch networks like Inception v1 and v2 and residual connections. The paper also proposes a new Inception network design, which is much more optimization and has a different design for the Inception module for each grid size. In this section, we will mainly discuss about Inception-ResNet.</p>
+<p>A paper titled <a href="https://arxiv.org/pdf/1602.07261">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a> proposed a new Inception module which combines the powers of both multi-branch networks like Inception v1 and v2 and residual connections. The paper also proposes a new Inception network design, which is much more optimization and has a different design for the Inception module for each grid size. In this section, we will mainly discuss about Inception-ResNet.</p>
 
 <h4>Architecture</h4>
 <p>The high level difference between a plain Inception block and a Inception-ResNet block is that instead of concatenation, summation operation is used and a skip connection is present. The paper proposed two network designs - Inception-ResNet-v1 (roughly the computational cost of Inception-v3) and Inception-ResNet-v2 (roughly the computational cost of Inception-v4) . Let’s go through the Inception-ResNet-v1.</p>
@@ -767,7 +767,7 @@ class InceptionResNetC(nn.Module):
         return out</code></pre>
 
 <h3>ResNeXt</h3>
-<p>A paper titled  <a href="https://arxiv.org/pdf/1611.05431" target="_blank">Aggregated Residual Transformations for Deep Neural Networks</a> proposed a new architecture called “ResNeXt”. The paper mainly focused on developing an architecture which follows the repeating-layer strategy, like the one present in VGGNet and ResNet but also uses the split-transform-merge strategy, like the one present in Inception module. The main issue with Inception is that each module is tailored for a specific transformation (the number of filters and their sizes). Unlike Inception, ResNeXt adopts same transformation in all branches, thus minimizing the need for manual tuning of each branch.</p>
+<p>A paper titled  <a href="https://arxiv.org/pdf/1611.05431">Aggregated Residual Transformations for Deep Neural Networks</a> proposed a new architecture called “ResNeXt”. The paper mainly focused on developing an architecture which follows the repeating-layer strategy, like the one present in VGGNet and ResNet but also uses the split-transform-merge strategy, like the one present in Inception module. The main issue with Inception is that each module is tailored for a specific transformation (the number of filters and their sizes). Unlike Inception, ResNeXt adopts same transformation in all branches, thus minimizing the need for manual tuning of each branch.</p>
 
 <h4>ResNeXt block</h4>
 <img src="../images/exploring-different-cnns/032_resnext_block.png"/>
@@ -896,18 +896,18 @@ class ResNeXtNet(nn.Module):
         x = self.fc(x)</code></pre>
 
 <h3>Wrapping up</h3>
-<p>Well, that’s it for this blog, I hope that it was useful. I’ve tried to explain the key concepts of each architecture in simple language - what were the problems which the authors focused on, how were they resolved, are they any new concepts which were proposed by the authors and if yes, then what are they, and have tried to include PyTorch implementations as well. I have mostly tried to go through the actual papers and have used <a href="https://d2l.ai" target="_blank">d2l.ai</a> as a supplement.</p>
+<p>Well, that’s it for this blog, I hope that it was useful. I’ve tried to explain the key concepts of each architecture in simple language - what were the problems which the authors focused on, how were they resolved, are they any new concepts which were proposed by the authors and if yes, then what are they, and have tried to include PyTorch implementations as well. I have mostly tried to go through the actual papers and have used <a href="https://d2l.ai">d2l.ai</a> as a supplement.</p>
 
 <h3>References</h3>
 <ol>
-    <li><a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf" target="_blank">ImageNet Classification with Deep Convolutional Neural Networks</a></li>
-    <li><a href="https://arxiv.org/pdf/1409.1556" target="_blank">Very deep convolutional networks for large-scale image recognition</a></li>
-    <li><a href="https://arxiv.org/pdf/1312.4400" target="_blank">Network in network</a></li>
+    <li><a href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf">ImageNet Classification with Deep Convolutional Neural Networks</a></li>
+    <li><a href="https://arxiv.org/pdf/1409.1556">Very deep convolutional networks for large-scale image recognition</a></li>
+    <li><a href="https://arxiv.org/pdf/1312.4400">Network in network</a></li>
     <li><a href="https://arxiv.org/pdf/1409.4842">Going deeper with convolutions</a></li>
-    <li><a href="https://arxiv.org/pdf/1512.00567" target="_blank">Rethinking the Inception Architecture for Computer Vision</a></li>
-    <li><a href="https://arxiv.org/pdf/1512.03385" target="_blank">Deep Residual Learning for Image Recognition</a></li>
-    <li><a href="https://arxiv.org/pdf/1602.07261" target="_blank">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li>
-    <li><a href="https://arxiv.org/pdf/1611.05431" target="_blank">Aggregated Residual Transformations for Deep Neural Networks</a></li>
+    <li><a href="https://arxiv.org/pdf/1512.00567">Rethinking the Inception Architecture for Computer Vision</a></li>
+    <li><a href="https://arxiv.org/pdf/1512.03385">Deep Residual Learning for Image Recognition</a></li>
+    <li><a href="https://arxiv.org/pdf/1602.07261">Inception-v4, Inception-ResNet and the Impact of Residual Connections on Learning</a></li>
+    <li><a href="https://arxiv.org/pdf/1611.05431">Aggregated Residual Transformations for Deep Neural Networks</a></li>
     <li><a href="https://d2l.ai">Dive into Deep Learning</a></li>
 </ol>
 
@@ -915,4 +915,7 @@ class ResNeXtNet(nn.Module):
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="../js/blog-header.js"></script>
 <script src="../js/footer.js"></script>
+<script>
+appendBlogHeader("./blogs.json", "/blogs")
+</script>
 </html>

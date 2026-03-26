@@ -1,10 +1,10 @@
-async function appendBlogHeader() {
+async function appendBlogHeader(jsonFilePath, goBackPath) {
   const slug = window.location.pathname
     .split("/")
     .filter(Boolean)
     .pop()
 
-  const response = await fetch("/blog/index.json");
+  const response = await fetch(jsonFilePath);
   const posts = await response.json();
 
   const post = posts.find(p => p.url.endsWith(slug));
@@ -13,7 +13,7 @@ async function appendBlogHeader() {
   const nav = document.createElement("nav");
   nav.className = "blog-nav";
   nav.innerHTML = `
-    <a href="/blog">← Go back</a>
+    <a href=${goBackPath}>← Go back</a>
     <a href="/index.html">Home</a>
   `;
 
@@ -28,5 +28,3 @@ async function appendBlogHeader() {
   document.body.prepend(header);
   document.body.prepend(nav);
 }
-
-appendBlogHeader()

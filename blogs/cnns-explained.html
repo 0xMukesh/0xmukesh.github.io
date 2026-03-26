@@ -299,7 +299,7 @@ class ConvLayer:
 <p>By adding an extra row row and extra column on both the sides, the top-left corner pixel is now involved in 4 different cross-correlation operation.</p>
 <br/>
 <img src="../images/cnns-explained/008_padding.png"/>
-<p>In PyTorch, a tensor could you padded by using <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.pad.html" target="_blank"><code>torch.nn.functional.pad</code></a> function</p>
+<p>In PyTorch, a tensor could you padded by using <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.pad.html"><code>torch.nn.functional.pad</code></a> function</p>
 <pre><code class="language-python">import torch
 import torch.nn.functional as F
 
@@ -438,7 +438,7 @@ def pooling_layer(x: torch.Tensor, pool_size: int, mode: str) -> torch.Tensor:
 <p>In each of multiple channels, the pooling operation is applied on each channel and at the end all the layers are concatenated</p>
 
 <h3>LeNet</h3>
-<p>As we have gone through almost all the basics of CNN, let's try to implement LeNet (specifically LeNet-5) using PyTorch. LeNet was one of the first CNNs which captured wide attention for its performance in computer vision tasks. It was introduced in the paper named <a href="https://www.researchgate.net/publication/216792820_Convolutional_Networks_for_Images_Speech_and_Time-Series" target="_blank">Convolutional Networks for Images, Speech, and Time-Series</a>.</p>
+<p>As we have gone through almost all the basics of CNN, let's try to implement LeNet (specifically LeNet-5) using PyTorch. LeNet was one of the first CNNs which captured wide attention for its performance in computer vision tasks. It was introduced in the paper named <a href="https://www.researchgate.net/publication/216792820_Convolutional_Networks_for_Images_Speech_and_Time-Series">Convolutional Networks for Images, Speech, and Time-Series</a>.</p>
 <br/>
 <img src="../images/cnns-explained/014_lenet_arch.png"/>
 <p>LeNet-5 comprises of two parts - feature extractor which contains two convolutional blocks and a classifier which contains a dense block of fully connected linear layers.</p>
@@ -455,7 +455,7 @@ def pooling_layer(x: torch.Tensor, pool_size: int, mode: str) -> torch.Tensor:
     <li>The 5x5 feature maps with 16 channels are flattened, which gives a 1D vector of size 400</li>
     <li>The flattened 1D vector is then passed into a series of fully connected layers which uses sigmoid as the activation function</li>
 </ol>
-<p>Using PyTorch’s <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Sequential.html" target="_blank"><code>nn.Sequential</code></a> API, we can easily implement the model’s architecture</p>
+<p>Using PyTorch’s <a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Sequential.html"><code>nn.Sequential</code></a> API, we can easily implement the model’s architecture</p>
 <pre><code class="language-python">import torch
 import torch.nn as nn
 
@@ -570,9 +570,13 @@ for epoch in range(NUM_EPOCHS):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.model(x)</code></pre>
 
+<h3>Wrapping up</h3>
 <p>Well, that’s it for this blog. I’ve tried to cover almost all the basics related to CNNs while trying to keep the explanation simple and easy-to-understand. The final implementation of LeNet can be obviously more optimized by adding some padding, using batch normalization and using max pooling instead of average pooling. I might go through the modern CNNs like VGG and ResNet in some other blog post.</p>
 </body>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script src="../js/blog-header.js"></script>
 <script src="../js/footer.js"></script>
+<script>
+appendBlogHeader("./blogs.json", "/blogs")
+</script>
 </html>

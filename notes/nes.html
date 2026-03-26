@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" class="latex-dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NES | Mukesh</title>
+
+  <link rel="stylesheet" href="https://latex.vercel.app/style.css" />
+  <link rel="stylesheet" href="https://latex.vercel.app/prism/prism.css">
+  <link rel="stylesheet" href="../styles/global.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+</head>
+<body>
+    <p><b>NOTE:</b> This is not a complete technical overview of the NES. These are personal notes on the NES and its technical specifications, updated as my understanding improves and as development on my NES emulator progresses.</p>
+    <p>I have recently started working on a NES emulator in Go. This led me to explore multiple different resources to understand how the NES works under the hood. The following content serves as an aggregated view of all those resources. All references material are linked at the end.</p>
+
+    <h3>CPU</h3>
+    <p>The NES used a variant of the <a href="https://en.wikipedia.org/wiki/MOS_Technology_6502">standard 6502</a> processor; it was the <a href="https://en.wikipedia.org/wiki/Ricoh_2A03">Ricoh 2A03</a>. It is an 8-bit processor and follows little-endian format, i.e., the least significant byte is stored at the lowest memory address. Some of the major differences between the standard 6502 and the Ricoh 2A03 are that the latter could serve as both a pseudo APU (audio processing unit) and a CPU, and it did not support <a href="https://en.wikipedia.org/wiki/Binary-coded_decimal">binary-coded decimal</a>.</p>
+    <p>The CPU accesses memory through buses. The memory within the NES can be split into three major parts:</p>
+    <ol>
+        <li>cartridge ROM</li>
+        <li>internal RAM of the CPU</li>
+        <li>I/O registers - the NES uses memory-mapped I/O, i.e., data can be transferred among devices by writing to a particular address in memory</li>
+    </ol>
+    <img src="../images/nes/001_processor_diagram.png"/>
+    <p>The above diagram shows that the processor system has three buses via which different components communicate with each other. Here is what each one of them does in brief:</p>
+    <ol>
+        <li>8-bit data bus - carries the data which is being read or written. It is bidirectional in nature</li>
+        <li>16-bit address bus - carries the 16-bit address where the CPU is trying to read/write</li>
+        <li>8-bit control bus - carries signals like <code>READ</code>, <code>WRITE</code>, <code>RESET</code>, <code>IRQ</code> (interrupt requests). It is used to determine what kind of operation is being executed</li>
+    </ol>
+    <p>As the NES used a 16-bit address bus, it could support 64 KB of memory with addresses from 0x0000 to 0xFFFF. The following image shows the memory map of the CPU, which shows how the 64 KB is split and how various information is laid out in memory.</p>
+
+    <h4>Memory map</h4>
+    <img src="../images/nes/002_cpu_memory_map.png"/>
+
+    <h5>RAM</h5>
+    <p><b>0x0000 to 0x1FFF</b> contains the CPU's RAM. 0x2000 in decimal is 8192, which would translate to 8 KiB, but an interesting part regarding this is that the NES has only 2 KiB. The usable RAM is present from 0x0000 to 0x07FF, which is then mirrored three times to create 8 KiB in the memory map. The reason for this is <b>mirroring</b>. If 0x0000 and 0x1FFF are represented in binary:</p>
+    <ul>
+        <li>0x0000 = 0000 0000 0000 0000</li>
+        <li>0x1FFF = 0001 1111 1111 1111</li>
+    </ul>
+    <p>The address decoder logic to determine whether the RAM was being accessed was just a simple 3-input NOR gate to check whether the upper three bits (A15, A14, and A13) of the address are all zero or not. This leaves 13 bits to work with, and \(2^{13}\) = 8 KiB. The CPU has 2 KiB of internal RAM because A12 and A11 are ignored. If <b>0x0000 to 0x0800</b> had been chosen for RAM in the memory map, then the address decoder logic to determine whether RAM was being accessed would require checking whether A15, A14, A13, A12, and A11 are all zero. At the time when the NES was being developed, only 3-input and 4-input NOR gates were available. Due to technology constraints and to keep the product's cost low, A12 and A11 are simply ignored, which causes mirroring.</p>
+    <p>The RAM memory map is divided into multiple sub-regions as follows:</p>
+    <ol>
+        <li><b>0x0000 to 0x00FF</b> refers to the zero page, as they represent the first 256 bytes, and some instructions use zero-page addressing modes for quicker reads and writes</li>
+        <li><b>0x0100 to 0x01FF</b> contains the stack of the CPU</li>
+        <li><b>0x0200 to 0x07FF</b> contains the actual RAM, which is 1.5 KiB</li>
+        <li><b>0x0800 to 0x1FFF</b> contains mirrors of <b>0x0000 to 0x07FF</b></li>
+    </ol>
+
+    <h5>I/O Registers</h5>
+    <p><b>0x2000 to 0x401F</b> contains memory-mapped I/O registers. PPU (picture processing unit, more on this in later sections) related registers are present in <b>0x2000 to 0x2008</b>, and a similar mirroring effect can be seen here as well. The remaining I/O registers are present in <b>0x4000 to 0x4020</b>.</p>
+
+    <h5>Expansion ROM</h5>
+    <p><b>0x4020 to 0x5FFF</b> contains cartridge hardware extensions such as additional program ROM, extra sound hardware (extra sound channels), custom registers, etc.</p>
+
+    <h5>SRAM</h5>
+    <p><b>0x6000 to 0x7FFF</b> refers to SRAM, which was generally used to save game state.</p>
+
+    <h5>PRGROM</h5>
+    <p><b>0x8000 to 0xFFFF</b> contains the game's actual code, i.e., raw CPU instructions which are iterated and executed by the CPU at each step. This region is memory-mapped with the cartridge's ROM. It is split into two 16 KiB banks (similar wording appears in the iNES file format). If there is a game whose code is more than 32 KiB in size, then the MMC comes into play. MMC, or memory management controller, swaps different chunks of ROM into the CPU's addressable window on the fly and determines which banks are to be loaded into memory. It sits between the CPU and ROM, intercepting the signals and remapping them.</p>
+
+    <h4>Registers</h4>
+    <p>The 6502 has three special-purpose registers (program counter, stack pointer, processor status) and three general-purpose registers (accumulator, X register, Y register).</p>
+    <ol>
+        <li><b>program counter (PC)</b> - it holds the 16-bit address of the next instruction which is to be executed</li>
+        <li><b>stack pointer (SP)</b> - it holds an 8-bit value which acts like an offset from 0x0100. The initial value is 0x01FF, and when a byte is pushed to the stack, the stack pointer is decreased and vice versa</li>
+        <li><b>accumulator (A)</b> - it is an 8-bit register which stores the value of arithmetic and logic operations</li>
+        <li><b>index register X/Y (X/Y)</b> - these are 8-bit registers which are typically used as counters or offsets for certain addressing modes</li>
+        <li><b>processor status (P)</b> - it is an 8-bit register which contains eight single-bit status flags</li>
+    </ol>
+    <img src="../images/nes/003_processor_status.png"/>
+    <ol>
+        <li><b>bit 7 (negative, N)</b> - set if the result of an operation is negative, i.e., bit 7 of the result is 1</li>
+        <li><b>bit 6 (overflow, V)</b> - set if the result of a signed arithmetic operation overflowed, i.e., the result is too large for a signed byte. It is determined by looking at the carry between bits 6 and 7 and between bit 7 and the carry flag, i.e., whether the carry-in bit and carry-out bit for bit 7 are different or not</li>
+        <li><b>bit 5 (unused)</b> - always set to 1</li>
+        <li><b>bit 4 (break, B)</b> - it acts like a transient signal in the CPU. If the flags were pushed while processing an interrupt, then it is 0 and 1 when it is pushed by instructions (<code>BRK</code>, <code>PHP</code>)</li>
+        <li><b>bit 3 (decimal mode, D)</b> - when the decimal mode flag is set, the processor will obey the rules of <a href="https://en.wikipedia.org/wiki/Binary-coded_decimal">binary-coded decimal</a> during arithmetic operations. It is not used in the Ricoh 2A03 as it does not support binary-coded decimal</li>
+        <li><b>bit 2 (interrupt disable, I)</b> - set when the <a href="https://www.nesdev.org/obelisk-6502-guide/reference.html#SEI"><code>SEI</code></a> instruction is executed</li>
+        <li><b>bit 1 (zero, Z)</b> - set if the result of the operation was 0</li>
+        <li><b>bit 0 (carry, C)</b> - set if an operation produced a carry/borrow</li>
+    </ol>
+
+    <h4>Addressing modes</h4>
+    <p>The 6502 provides multiple different ways to address particular locations present in memory.</p>
+    <ol>
+        <li><b>Zero page</b> - zero page addressing takes a single operand which acts like a pointer to an address in the zero page where the data to be operated on can be found</li>
+        <li><b>Indexed zero page</b> - indexed zero page addressing takes a single operand and adds the value of an index register (X register for <code>zero page, X</code> and Y register for <code>zero page, Y</code>) to it to give an address in (0x0000 to 0x00FF), i.e., the addition wraps around</li>
+        <li><b>Absolute</b> - absolute addressing takes two operands which combine to form a full 16-bit address that contains the data to be operated on. The sequence of operands follows little-endian format, i.e., least significant byte first</li>
+        <li><b>Indexed absolute</b> - similar to indexed zero page, indexed absolute takes two operands and the address is then added to the value of the index register to obtain the final address</li>
+        <li><b>Indirect</b> - indirect addressing takes two operands which combine to form a 16-bit address which stores the least significant byte of another 16-bit address where the data to be operated on is stored</li>
+        <li><b>Implied</b> - instructions which do not require access to operands stored in memory</li>
+        <li><b>Accumulator</b> - instructions which directly operate on the accumulator register use this addressing mode</li>
+        <li><b>Immediate</b> - immediate addressing mode takes a single operand which is an 8-bit constant</li>
+        <li><b>Relative</b> - relative addressing mode takes a single operand which is a signed 8-bit constant used to update the value of the program counter if a certain condition is met. The condition is dependent on the instruction, and the program counter increments by 2 (one for the opcode and one for the operand) regardless of whether the condition is met</li>
+        <li><b>Indexed indirect</b> - indexed indirect (or pre-indexed) addressing mode takes a single operand and then adds it to the X register (with wraparound) to give the address of the least significant byte of the target 16-bit address</li>
+        <li><b>Indirect indexed</b> - indirect indexed (or post-indexed) addressing mode takes a single operand which gives the zero-page address of the least significant byte of another 16-bit address, which is then added to the Y register to give the target address</li>
+    </ol>
+
+    <h3>References</h3>
+    <ol>
+        <li><a href="https://www.nesdev.org/NESDoc.pdf">NESDoc</a></li>
+        <li><a href="https://www.nesdev.org/obelisk-6502-guide/">Obelisk's 6502 guide</a></li>
+        <li><a href="https://bugzmanov.github.io/nes_ebook/">Writing NES Emulator in Rust</a></li>
+        <li><a href="https://www.youtube.com/playlist?list=PLrOv9FMX8xJHqMvSGB_9G9nZZ_4IgteYf">NES Emulator from Scratch - javidx9</a></li>
+    </ol>
+
+</body>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../js/blog-header.js"></script>
+<script src="../js/footer.js"></script>
+<script>
+appendBlogHeader("./notes.json", "/notes")
+</script>
+</html>
