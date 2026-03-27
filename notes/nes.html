@@ -50,6 +50,15 @@
         <li><b>0x0800 to 0x1FFF</b> contains mirrors of <b>0x0000 to 0x07FF</b></li>
     </ol>
 
+    <h5>Stack</h5>
+    <p>6502 processor has a stack which acts similar to any other stack based on LIFO (last in, first out) principle. On every push, the value of stack pointer is decreased and on every pop, the value of stack pointer is increased. The initial value of stack pointer in NES emulators is <code>0xFD</code>. It is used to the three phantom stack pushes done during the reset sequence. Over here, phantom push means that the data isn't actually written to memory.</p>
+    <ol>
+        <li>Power-on: SP = <code>0x00</code></li>
+        <li>Phantom push #1 (PC high byte): SP = <code>0xFF</code></li>
+        <li>Phantom push #2 (PC low byte): SP = <code>0xFE</code></li>
+        <li>Phantom push #3 (processor status): SP = <code>0xFD</code></li>
+    </ol>
+
     <h5>I/O Registers</h5>
     <p><b>0x2000 to 0x401F</b> contains memory-mapped I/O registers. PPU (picture processing unit, more on this in later sections) related registers are present in <b>0x2000 to 0x2008</b>, and a similar mirroring effect can be seen here as well. The remaining I/O registers are present in <b>0x4000 to 0x4020</b>.</p>
 
