@@ -21,7 +21,7 @@
     <h3>Brief about NES</h3>
     <figure>
         <img src="../images/nes/001_motherboard_labelled.png" />
-        <figcaption>Labelled NES motherboard figure. Credits to <a
+        <figcaption>Labelled NES motherboard figure. Credits: <a
                 href="https://www.copetti.org/writings/consoles/nes/">Rodrigo Copetti</a></figcaption>
     </figure>
     <br />
@@ -194,40 +194,9 @@
     <h3>PPU</h3>
     <p> NES' PPU is one of the most interesting component, as it'll show how much data can be stored in such a small memory space and how to efficiently use it as well. The instructions present in the game's code (PRGROM) can only communicate with the CPU, so to draw the graphics, the CPU communicates with the PPU such a set of registers present in between <code>$2000</code> to <code>$2007</code>.
     </p>
-    <p>Before diving into the actual technicalities, it'd be better to understand how the graphical data is organized in PPU and how each frame is constructed.</p>
-
-    <h4>Frame construction</h4>
-    <p>The resolution of screen on NES is 256x240 pixels and the image is rendered on the fly using <a href="https://en.wikipedia.org/wiki/Scanline_rendering">scanline rendering</a>, which is used in CRT TVs i.e. the PPU renders the image step-by-step with the CRT's beam, hence in the original NES PPU there is no framebuffer. Most of the modern day emulators instead use a framebuffer equivalent for rendering the graphics, as it is much simpler in terms of development.</p>
-    <p>Each frame is built on top of tiles which are 8x8 pixel maps, which is stored in the character memory (CHRROM) chip in cartridge. It is also referred as pattern tables. The below image is visualization of one of the pattern tables of PacMan, you can notice some of the parts of the player and the text glyphs:</p>
-    <br />
-    <img src="../images/nes/004_pacman_pattern_table1.png" />
-    <img src="../images/nes/005_pacman_pattern_table2.png" />
-
-    <p>Each pixel in a tile is made up of 2 bits, so a tile is made up of 8 * 8 * 2 bits = 16 bytes per tile. The CHRROM is mapped to $0000-$2000 address range on the PPU memory map i.e. 8 KiB worth of CHRROM. If each tile takes up 16 bytes then maximum number of tiles which can be packaged with a game are (8 * 1024)/16 = 512 tiles. The 2-bit value per pixel is used to encode its color.</p>
-
-    <p>Consider a single row of a tile i.e. 16 / 8 = 2 bytes. The 2 bytes are split up into upper and lower halves respectively where byte at the lower position is the upper halve. This doesn't follow little-endian format.</p>
-
-    <p>
-        Row = <code>0b1011_1001_0011_1001</code>
-        <br />
-        Upper = <code>0b1011_1001</code>
-        <br />
-        Lower = <code>0b0011_1001</code>
-    </p>
-
-    <p>The way color of a pixel is determined for the nth pixel from left on that row is by combining the nth highest bits of upper and lower halves. For the leftmost pixel, it would be <code>0b10</code>. This could be represented using the following logical expression, which would be ran per row:
-    </p>
-
-    <pre><code class="language-python">color = (((upper >> 7) & 1) << 1) | ((lower >> 7) & 1)
-upper <<= 1
-lower <<= 1</code></pre>
-
-    <p>It might seem that only 4 possible colors are supported by NES because for every pixel 2 bits are used to encode its color, but a much wider range of colors are supported.</p>
-    <p></p>
 
     <h4>PPU registers</h4>
     <ol>
-        <li><code>PPUCTRL ($2000)</code> - </li>
     </ol>
 
 
@@ -290,6 +259,71 @@ lower <<= 1</code></pre>
             <td>Mirrors of $3F00-$3F1F</td>
         </tr>
     </table>
+
+    <h4>Frame construction</h4>
+    <p>The resolution of screen on NES is 256x240 pixels and the image is rendered on the fly using <a href="https://en.wikipedia.org/wiki/Scanline_rendering">scanline rendering</a>, which is used in CRT TVs i.e. the PPU renders the image step-by-step with the CRT's beam, hence in the original NES PPU there is no framebuffer. Most of the modern day emulators instead use a framebuffer equivalent for rendering the graphics, as it is much simpler in terms of development.</p>
+    <p>Each frame is built on top of tiles which are 8x8 pixel maps, which is stored in the character memory (CHRROM) chip in cartridge. It is also referred as pattern tables. The below image is visualization of one of the pattern tables of PacMan, you can notice some of the parts of the player and the text glyphs:</p>
+    <p>One half of the CHRROM is used for storing the background tiles whereas the other half is used to store the character sprites. To know the offsets for both of them, check the 3rd bit (character sprites' offset) and 4th bit (background tiles' offset) in <code>PPUCTRL</code> status flag. If the value of those bits are 1 then it is $1000 else 0.</p>
+    <br />
+    <img src="../images/nes/004_pacman_pattern_table1.png" />
+    <img src="../images/nes/005_pacman_pattern_table2.png" />
+
+    <p>Each pixel in a tile is made up of 2 bits, so a tile is made up of 8 * 8 * 2 bits = 16 bytes per tile. The CHRROM is mapped to $0000-$2000 address range on the PPU memory map i.e. 8 KiB worth of CHRROM. If each tile takes up 16 bytes then maximum number of tiles which can be packaged with a game are (8 * 1024)/16 = 512 tiles. The 2-bit value per pixel is used to encode its color.</p>
+
+    <p>Consider a single row of a tile i.e. 16 / 8 = 2 bytes. The 2 bytes are split up into upper and lower halves respectively where byte at the lower position is the upper halve. This doesn't follow little-endian format.</p>
+
+    <p>
+        Row = <code>0b1011_1001_0011_1001</code>
+        <br />
+        Upper = <code>0b1011_1001</code>
+        <br />
+        Lower = <code>0b0011_1001</code>
+    </p>
+
+    <p>The way color of a pixel is determined for the nth pixel from left on that row is by combining the nth highest bits of upper and lower halves. For the leftmost pixel, it would be <code>0b10</code>. This could be represented using the following logical expression, which would be ran per row:</p>
+
+    <pre><code class="language-golang">color := (((upper >> 7) & 1) << 1) | ((lower >> 7) & 1)
+upper <<= 1
+lower <<= 1</code></pre>
+
+    <p>It might seem that only 4 possible colors are supported by NES because for every pixel 2 bits are used to encode its color, but a much wider range of colors are supported.</p>
+    <p>The below figure shows the all the NES supported colors with the corresponding values using which the color is referred to in code/memory. In total, NES supports 52 colors but a single screen can only use 25 colors simultaneously. The colors which are currently being used are stored in the palette table/RAM in the PPU.</p>
+    <br/>
+    <img src="../images/nes/006_supported_colors.png"/>
+
+    <p>In palette table, 4 palettes are dedicated for background and 4 for sprites i.e. 13 colors for background and 12 colors for sprites. The way the colors are laid in the palette RAM is in a linear fashion, where $3F00 contains the value of the universal background color, and after that group of every 4 four bytes is a palette. The last byte in every palette is dedicated for the background, which is connected to the $3F00.</p>
+    <br/>
+    <img src="../images/nes/007_palette_ram.png"/>
+
+    <p>So, if we know the palette index then it shouldn't be hard to compute the RGB value of every pixel in the frame. If palette index is known then set of the four colors would be:</p>
+    <pre><code class="language-golang">start := 1 + (paletteIdx * 4)
+palette := [4]uint8{
+    paletteTable[0],
+    paletteTable[start],
+    paletteTable[start+1],
+    paletteTable[start+2]
+}</code></pre>
+
+    <p>If it was character sprite then <code>start</code> would have been <code>0x11 + (paletteIdx * 4)</code>, to skip the universal background color + 4 background palette groups.</p>
+
+    <p>The missing component now is how to find out palette index?</p>
+    <p>Once the palette is computed, assigning which color to use from the palette is again pretty simple as it depends on the value of <code>color</code>, from the previous code snippet. If it is 0, then use the first color from the slice. If it is 1, then use the second color from the slice and so on. It is also important to note that a single tile can be drawn using only one palette.</p>
+    <p>The missing piece right now how to get the palette index? And this is where the graphics rendering pipeline splits and it becomes different for background tiles and character sprites.</p>
+
+    <p>In case of background tiles, the palette index for a metatile is present within the attribute table, the series of 64 bytes after each nametable. A metatile is 2x2 tile. The palette indices for a group of 2x2 metatiles is managed by a single byte present in attribute table. In the below figure, the first value in attribute table 0 is <code>0b11_01_10_00</code> and it starts assigning the palette indices for each metatile from bottom right and traveling to top left.</p>
+
+    <figure>
+        <img src="../images/nes/008_metatiles_attribute_table.png"/>
+        <figcaption>How palette index is assigned for background tiles. Credits: <a href="https://bugzmanov.github.io/nes_ebook/chapter_6_4.html">@bugzmanov</a></figcaption>
+    </figure>
+
+    <p>But in case of character sprites' whose graphical data is stored within OAM data, the palette index is directly mentioned. OAM data is a 256-byte long array where each tile is assigned 4 bytes:</p>
+    <ol>
+        <li><b>Byte 0</b> - Y position of the top left corner of the sprite</li>
+        <li><b>Byte 1</b> - Tile index, referring to the tiles stored in CHRROM</li>
+        <li><b>Byte 2</b> - Attributes, where 0th and 1th bit combined gives the palette index and 6th and 7th bit are used to flip the sprite horizontally/vertically respectively</li>
+        <li><b>Byte 3</b> - X position of the top left corner of the sprite</li>
+    </ol>
 
     <h3>References</h3>
     <ol>
