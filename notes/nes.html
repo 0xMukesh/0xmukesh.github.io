@@ -195,8 +195,19 @@
     <p> NES' PPU is one of the most interesting component, as it'll show how much data can be stored in such a small memory space and how to efficiently use it as well. The instructions present in the game's code (PRGROM) can only communicate with the CPU, so to draw the graphics, the CPU communicates with the PPU such a set of registers present in between <code>$2000</code> to <code>$2007</code>.
     </p>
 
+    <p>The way rendering takes place in PPU is very closely related to how scanline rendering works in CRT TVs. PPU produces 262 scanlines per frame and upon entering 241 scanline, NMI interrupt is triggered marking the start of vblank. During this period, the program updates graphics data for next frame, while rendering itself occurs outside of the NMI during the visible scanlines.</p>
+
     <h4>PPU registers</h4>
     <ol>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUCTRL_-_Miscellaneous_settings_($2000_write)"><code>PPUCTRL ($2000, write)</code></a> - It is the control register of PPU which contains the settings related to rendering, scroll position and vblank NMI etc.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUMASK_-_Rendering_settings_($2001_write)"><code>PPUMASK ($2001, write)</code></a> - It controls the settings related to rendering of sprites and background.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUSTATUS_-_Rendering_events_($2002_read)"><code>PPUSTATUS ($2002, read)</code></a> - It is the status register of PPU and it stores the state of rendering-related events, such as whether it is vblank right now.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#OAMADDR_-_Sprite_RAM_address_($2003_write)"><code>OAMADDR ($2003, write)</code></a> - It is used to write the address of OAM (object attribute memory) which is to be accessed. PPU contains OAM in its internal memory which stores the state of sprites which is to be rendering. More about layout of OAM in the later sections.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#OAMDATA_-_Sprite_RAM_data_($2004_read/write)"><code>OAMDATA ($2004, read/write)</code></a> - It is used to write and read data from OAM. On writes, <code>OAMADDR</code> is incremented. Generally <code>OAMDATA</code> isn't used as OAM is meant to be updated during vblank and it would be very slow to update OAM via <code>OAMDATA</code> as it updates one byte at a time and a single vblank period wouldn't be sufficient</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUSCROLL_-_X_and_Y_scroll_($2005_write)"><code>PPUSCROLL ($2005, write)</code></a> - It is used to change the scroll position, telling PPU which pixel of the nametable is to be selected.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUADDR_-_VRAM_address_($2006_write)"><code>PPUADDR ($2006, write)</code></a> - CPU writes to VRAM by first loading the VRAM address into <code>PPUADDR</code> and then writing data repeatedly to <code>PPUDATA</code>.</li>
+        <li><a href="https://www.nesdev.org/wiki/PPU_registers#PPUDATA_-_VRAM_data_($2007_read/write)"><code>PPUDATA ($2007, read/write)</code></a> - Upon each read/write to <code>PPUDATA</code>, <code>PPUADDR</code> is incremented and the amount of increment is present within <code>PPUCTRL</code>.</li>
+        <li><code><a href="https://www.nesdev.org/wiki/PPU_registers#OAMDMA_-_Sprite_DMA_($4014_write)"><code>OAMDMA ($4014, write)</code></a></code> - OAMDMA (object attribute memory direct memory access) is used to quickly copy a page from CPU memory to OAM using DMA technique. While writing to OAMDMA, the CPU is suspended.</li>
     </ol>
 
 
@@ -311,11 +322,12 @@ palette := [4]uint8{
     <p>The missing piece right now how to get the palette index? And this is where the graphics rendering pipeline splits and it becomes different for background tiles and character sprites.</p>
 
     <p>In case of background tiles, the palette index for a metatile is present within the attribute table, the series of 64 bytes after each nametable. A metatile is 2x2 tile. The palette indices for a group of 2x2 metatiles is managed by a single byte present in attribute table. In the below figure, the first value in attribute table 0 is <code>0b11_01_10_00</code> and it starts assigning the palette indices for each metatile from bottom right and traveling to top left.</p>
-
+    <br/>
     <figure>
         <img src="../images/nes/008_metatiles_attribute_table.png"/>
         <figcaption>How palette index is assigned for background tiles. Credits: <a href="https://bugzmanov.github.io/nes_ebook/chapter_6_4.html">@bugzmanov</a></figcaption>
     </figure>
+    <br/>
 
     <p>But in case of character sprites' whose graphical data is stored within OAM data, the palette index is directly mentioned. OAM data is a 256-byte long array where each tile is assigned 4 bytes:</p>
     <ol>
