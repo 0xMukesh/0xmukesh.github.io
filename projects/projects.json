@@ -1,32 +1,42 @@
 [
   {
+    "title": "tiny.nes",
+    "url": "https://github.com/0xmukesh/tiny.nes",
+    "description": "A tiny NES emulator, which was my next emudev project after CHIP-8"
+  },
+  {
     "title": "tatami",
     "url": "https://github.com/0xmukesh/tatami",
-    "description": "tiny X11 window manager, written in golang"
+    "description": "A minimal X11 tabbed-layout window manager, written in Go"
   },
   {
     "title": "coco",
     "url": "https://github.com/0xmukesh/coco",
-    "description": "a statically typed compiled programming language, built using LLVM as backend"
+    "description": "A statically typed compiled programming language which I made to learn more about LLVM in general"
   },
   {
     "title": "brtlang",
     "url": "https://github.com/0xmukesh/brtlang",
-    "description": "a toy programming language"
+    "description": "A toy programming language, which I made while following Thorsten Ball's <a href='https://interpreterbook.com/'>Writing An Interpreter In Go</a> book"
   },
   {
     "title": "brainfreeze",
     "url": "https://github.com/0xmukesh/brainfreeze",
-    "description": "a tiny brainfuck interpreter"
+    "description": "A teeny-tiny brainfuck interpreter"
   },
   {
     "title": "chippy",
     "url": "https://github.com/0xmukesh/chippy",
-    "description": "a simple CHIP-8 emulator, written in golang"
+    "description": "A simple CHIP-8 emulator, which got me further interested in the entire <a href='https://emudev.org'>emudev</a> rabbit hole"
   },
   {
     "title": "raygo",
     "url": "https://github.com/0xmukesh/raygo",
-    "description": "a tiny path tracer, implemented while reading <a href='https://raytracing.github.io/' target='_blank'>Ray Tracing in One Weekend</a>"
+    "description": "A tiny path tracer, which I made while reading through <a href='https://raytracing.github.io/' target='_blank'>Ray Tracing in One Weekend</a> book"
+  },
+  {
+    "title": "askanon",
+    "url": "https://x.com/search?q=askanon.fun",
+    "description": "Send anonymous messages to crypto influencers on Twitter, 14k+ messages sent"
   }
 ]
