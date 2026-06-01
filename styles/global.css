@@ -145,3 +145,40 @@ table td {
     padding: 0.4rem 0.6rem;
     text-align: left;
 }
+
+.webring-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.webring-links a {
+  text-decoration: none;
+  color: var(--link-visited);
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.webring-links a::after {
+  content: "·";
+  color: #555;
+  margin-left: 0.5rem;
+}
+
+.webring-links a:last-child::after {
+  content: "";
+  margin: 0;
+}
+
+.latex-dark .webring-links a::after {
+  color: #777;
+}
+
+#webring {
+  margin-top: 2.5rem;
+}

@@ -1,14 +1,5 @@
 [
   {
-    "title": "Attention is all you need",
-    "url": "./attention-is-all-you-need.html",
-    "date": "March 23, 2026",
-    "draft": true,
-    "tags": [
-      "deep-learning"
-    ]
-  },
-  {
     "title": "Creating art using CNNs",
     "url": "./creating-art-using-cnns.html",
     "date": "Jun 13, 2025",
