@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="latex-dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A primer on lambda calculus | Mukesh</title>
+
+    <link rel="stylesheet" href="https://latex.vercel.app/style.css" />
+    <link rel="stylesheet" href="https://latex.vercel.app/prism/prism.css">
+    <link rel="stylesheet" href="../styles/global.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+</head>
+<body>
+    <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
+
+    <p>I was always kinda curious about functional programming. A couple of my friends used to participate in <a href="https://adventofcode.com/">Advent of Code</a> (AoC), and we used to try picking different languages every year. This was one of the ways I learned new programming languages. I remember very well when one of my friends was using Haskell for one of the AoCs, and when I tried to understand his code, it just felt <i>complicated</i>. There were a lot of words - monads, monoid, thunks, bifunctor, etc. This was one of the main reasons why I never tried out functional programming earlier due to <i>word soup</i> and jargon-heavy terminology.</p>
+
+    <p>I took some time out last weekend to <i>try out</i>
+        <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
+        <input type="checkbox" id="sn-1" class="sidenote-toggle" />
+        <span class="sidenote">Not really sure if I can call building an untyped lambda calculus interpreter as "trying" out FP</span>
+
+        functional programming, but with the lowest number of abstractions. So I decided to build a small untyped lambda calculus interpreter in Go. This blog post would act like an introduction to lambda calculus rather than a "How to build an untyped lambda calculus interpreter" hand-held guide.</p>
+
+    <h2>What is lambda calculus?</h2>
+    <p>Firstly, don't get confused by the word "calculus". It is not related to integrals or derivatives in any way. The word calculus just means a formal system of calculation. The part of calculus that deals with integrals and derivatives was mainly developed by Newton and Leibniz, and it became so dominant that people nowadays directly associate calculus with it.</p>
+    <p>In computer science, there are two major mathematical models of computation - turing machines and lambda calculus. Both are very primitive machines capable of executing any computer algorithm.</p>
+    <p>In the case of turing machines, it involves an infinite memory tape which is divided into cells that hold a symbol and a pointer that points to one of those cells. At each step, the pointer reads the symbol from the cell, performs some executation based on it like updating the symbol at the current cell, moving left/right, or halting the machine.</p>
+
+    <h3>Syntatic verse of lambda calculus</h3>
+    <p>In case of lambda calculus, all you have are functions. Yep, just using functions and function calls, it is possible to build a universal machine.
+        <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
+        <input type="checkbox" id="sn-1" class="sidenote-toggle" />
+        <span class="sidenote"><s>Attention</s> Functions are all you need! Specifically higher order functions</span>
+
+        Syntactically, it consists of three things: variables, abstractions (functions), and applications (function calls).
+    </p>
+
+    <p>The way you define a function in lambda calculus is as follows:</p>
+    \[\lambda x.M\]
+    <p>where \(\lambda\) is used to indicate the start of a function which is then followed by a variable (in this case \(x\)) and . (dot) is used as a divider between the function argument and body</p>
+    <p>If you notice the function doesn't really have any "name" to it. It's similar to anonymous functions in modern day programming languages. The keyword <code>lambda</code> in Python refers to this exactly.</p>
+
+    <p>This is how you execute the functions:</p>
+    \[(\lambda x.M) \; y = M[x := y]\]
+    <p>The above operation would replace all the mentions of \(x\) in \(M\) with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how the actual function evaluation takes place in depth in \(\beta\)-reduction section.</p>
+    <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones and hence it is used by researchers working on computer algorithms, where as lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program i.e., how do you organize your program?</p>
+    <p>Lambda calculus is the most minimal language which is also turing complete in nature as it just consists three different production states. Here is the entire BNF grammar of lambda calculus:</p>
+
+    \[
+        \begin{align}
+        e ::= \; & x & &(\text{Variable}) \\
+            \mid \; & \lambda x . e & &(\text{Abstraction}) \\
+            \mid \; & e \; e & &(\text{Application})
+        \end{align}
+    \]
+
+    <h3>Semantic verse of lambda calculus</h3>
+    <p>Before diving into the semantics of lambda calculus, I would want to go over free and bound variables in prior as the formal definations of the semantics utilize them.</p>
+    <h4>Free and Bound variables</h4>
+    <p>In lambda calculus, all variables are local to its definitions. In the expression \(\lambda x.x\), \(x\) is said to be "bound" as its occurrence in the function body is preceded by \(\lambda x\). In the expression \(\lambda x.xy\), \(y\) is said to be "free".</p>
+    <p>Here is another interesting example:</p>
+
+    \[(\lambda x.x) (\lambda y.yx)\]
+
+    <p>Over here the first occurance of \(x\) is bound whereas the other occurance of \(x\) is free. The reason behind is the other occurance of \(x\) is local to the function where \(y\) is the binder.</p>
+
+    <p>Mathematically, free variables for a lambda term \(t\) is denoted as \(FV(t)\), where:</p>
+    <ul>
+        <li>\(FV(x)\) = {x}</li>
+        <li>\(FV(t_1 \; t_2) = FV(t_1) \; \cup \; FV(t_2)\)</li>
+        <li>\(FV(\lambda x.t_1) = FV(t_1) \; \backslash \; \{x\}\) i.e. compute all the free variables in \(t_1\) and remove \(x\) from it at the end as \(x\) is the binder over here</li>
+        <li>\(FV(t) = \phi\), then \(t\) is said to be closed term</li>
+    </ul>
+
+    <h4>\(\alpha\)-conversion</h4>
+    <p>\(\alpha\)-conversion is a mechanism to renaming the bound variables in a function consisently so that the meaning is preserved i.e. \(y \notin FV(M)\) then \(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to \(\alpha\)-equivalent to each other. If \(t_1\) and \(t_2\) are \(\alpha\)-equivalent to each other then it is written as \(\lambda x.M \; \equiv_{\alpha} \; \lambda y.M[x := y]\).</p>
+    <p>The condition that \(y\) is not part of free variables is very important. If it isn't present then something called "<i>variable capture</i>" can take part. Consider the following example where both \(y\) and \(z\) are free variables:</p>
+    \[\lambda x.yz\]
+    <p>If a substitution rule of \(x := y\) is applied on the above lambda expression then the \(y\) would turn into a bound variable and this would change the meaning of the lambda expression</p>
+    \[\lambda x.yz \xrightarrow{\text{substitute } x \to y} \lambda y.yz\]
+
+    <h3>References</h3>
+    <ol>
+        <li><a href="https://arxiv.org/pdf/1503.09060">A Tutorial Introduction to the Lambda Calculus</a></li>
+        <li><a href="https://www.youtube.com/playlist?list=PLt0HgEXFOHdkE-NTs87s7QjwYwqeihb-D">CS3100 Paradigms of Programming @ IITM</a></li>
+        <li><a href="https://jonathanlorimer.dev/posts/motivating-laziness.html">Intro to FP Through λ-Calculus - Motivating Laziness</a></li>
+    </ol>
+
+</body>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../js/blog-header.js"></script>
+<script src="../js/footer.js"></script>
+<script>
+  appendBlogHeader("./blogs.json", "/blog")
+</script>
+</html>

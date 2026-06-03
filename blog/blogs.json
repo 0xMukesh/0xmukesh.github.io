@@ -1,5 +1,14 @@
 [
   {
+    "title": "A primer on lambda calculus",
+    "url": "./lambda-calculus.html",
+    "date": "Jun 04, 2026",
+    "draft": true,
+    "tags": [
+      "functional-programming"
+    ]
+  },
+  {
     "title": "Creating art using CNNs",
     "url": "./creating-art-using-cnns.html",
     "date": "Jun 13, 2025",
