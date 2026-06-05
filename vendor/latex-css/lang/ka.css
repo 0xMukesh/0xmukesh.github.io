@@ -1,0 +1,6 @@
+:lang(ka) .theorem::before { content: 'თეორემა ' counter(theorem) '. ' !important; }
+:lang(ka) .lemma::before { content: 'ლემა ' counter(theorem) '. ' !important; }
+:lang(ka) .proof::before { content: 'დემონსტრაცია ' attr(title) !important; }
+:lang(ka) .definition::before { content: 'განმარტება ' counter(definition) '. ' !important; }
+:lang(ka) caption::before { content: 'ცხრილი ' counter(caption) '. ' !important; }
+:lang(ka) figcaption::before { content: 'ნახაზი ' counter(figcaption) '. ' !important; }

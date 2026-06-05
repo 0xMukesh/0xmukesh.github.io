@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A primer on lambda calculus | Mukesh</title>
 
-    <link rel="stylesheet" href="https://latex.vercel.app/style.css" />
-    <link rel="stylesheet" href="https://latex.vercel.app/prism/prism.css">
+    <link rel="stylesheet" href="../vendor/latex-css/style.css" />
+    <link rel="stylesheet" href="../vendor/latex-css/prism/prism.css">
     <link rel="stylesheet" href="../styles/global.css">
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
 </head>
 <body>
-    <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
+    <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in field of functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
 
-    <p>I was always kinda curious about functional programming. A couple of my friends used to participate in <a href="https://adventofcode.com/">Advent of Code</a> (AoC), and we used to try picking different languages every year. This was one of the ways I learned new programming languages. I remember very well when one of my friends was using Haskell for one of the AoCs, and when I tried to understand his code, it just felt <i>complicated</i>. There were a lot of words - monads, monoid, thunks, bifunctor, etc. This was one of the main reasons why I never tried out functional programming earlier due to <i>word soup</i> and jargon-heavy terminology.</p>
+    <p>I was always kinda curious about functional programming. Me and a couple of my friends used to participate in <a href="https://adventofcode.com/">Advent of Code</a> (AoC), and we used to try picking different languages every year. This was one of the ways I learned new programming languages. I remember very well when one of my friends was using Haskell for one of the AoCs, and when I tried to understand his code, and it just felt <i>complicated</i>. There were a lot of words - monads, monoid, thunks, bifunctor, etc. This was one of the main reasons why I never tried out functional programming earlier due to <i>word soup</i> and jargon-heavy terminology.</p>
 
     <p>I took some time out last weekend to <i>try out</i>
         <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
@@ -28,14 +28,14 @@
     <p>In computer science, there are two major mathematical models of computation - turing machines and lambda calculus. Both are very primitive machines capable of executing any computer algorithm.</p>
     <p>In the case of turing machines, it involves an infinite memory tape which is divided into cells that hold a symbol and a pointer that points to one of those cells. At each step, the pointer reads the symbol from the cell, performs some executation based on it like updating the symbol at the current cell, moving left/right, or halting the machine.</p>
 
-    <h3>Syntatic verse of lambda calculus</h3>
     <p>In case of lambda calculus, all you have are functions. Yep, just using functions and function calls, it is possible to build a universal machine.
         <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
         <input type="checkbox" id="sn-1" class="sidenote-toggle" />
         <span class="sidenote"><s>Attention</s> Functions are all you need! Specifically higher order functions</span>
-
-        Syntactically, it consists of three things: variables, abstractions (functions), and applications (function calls).
     </p>
+
+    <h2>Syntatic verse of lambda calculus</h2>
+    <p>Syntactically, it consists of three things: variables, abstractions (functions), and applications (function calls).</p>
 
     <p>The way you define a function in lambda calculus is as follows:</p>
     \[\lambda x.M\]
@@ -44,9 +44,9 @@
 
     <p>This is how you execute the functions:</p>
     \[(\lambda x.M) \; y = M[x := y]\]
-    <p>The above operation would replace all the mentions of \(x\) in \(M\) with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how the actual function evaluation takes place in depth in \(\beta\)-reduction section.</p>
-    <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones and hence it is used by researchers working on computer algorithms, where as lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program i.e., how do you organize your program?</p>
-    <p>Lambda calculus is the most minimal language which is also turing complete in nature as it just consists three different production states. Here is the entire BNF grammar of lambda calculus:</p>
+    <p>The above operation would replace all the mentions of \(x\) in \(M\) with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how the actual function evaluation takes place in depth in substitutions section.</p>
+    <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones and hence it is used by researchers working on computer algorithms, where as lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program i.e., how do you organize your program.</p>
+    <p>Lambda calculus is the most minimal turing complete language as it just consists three different production states. Here is the entire BNF grammar of lambda calculus:</p>
 
     \[
         \begin{align}
@@ -56,8 +56,9 @@
         \end{align}
     \]
 
-    <h3>Semantic verse of lambda calculus</h3>
-    <p>Before diving into the semantics of lambda calculus, I would want to go over free and bound variables in prior as the formal definations of the semantics utilize them.</p>
+    <h2>Semantic verse of lambda calculus</h2>
+    <p>Semantically, it consists of majorly two things - \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into them, I would live to go over a couple of other topics as they are utilized to formally define the aforementioned semantic rules.</p>
+
     <h4>Free and Bound variables</h4>
     <p>In lambda calculus, all variables are local to its definitions. In the expression \(\lambda x.x\), \(x\) is said to be "bound" as its occurrence in the function body is preceded by \(\lambda x\). In the expression \(\lambda x.xy\), \(y\) is said to be "free".</p>
     <p>Here is another interesting example:</p>
@@ -74,17 +75,69 @@
         <li>\(FV(t) = \phi\), then \(t\) is said to be closed term</li>
     </ul>
 
-    <h4>\(\alpha\)-conversion</h4>
-    <p>\(\alpha\)-conversion is a mechanism to renaming the bound variables in a function consisently so that the meaning is preserved i.e. \(y \notin FV(M)\) then \(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to \(\alpha\)-equivalent to each other. If \(t_1\) and \(t_2\) are \(\alpha\)-equivalent to each other then it is written as \(\lambda x.M \; \equiv_{\alpha} \; \lambda y.M[x := y]\).</p>
-    <p>The condition that \(y\) is not part of free variables is very important. If it isn't present then something called "<i>variable capture</i>" can take part. Consider the following example where both \(y\) and \(z\) are free variables:</p>
-    \[\lambda x.yz\]
-    <p>If a substitution rule of \(x := y\) is applied on the above lambda expression then the \(y\) would turn into a bound variable and this would change the meaning of the lambda expression</p>
-    \[\lambda x.yz \xrightarrow{\text{substitute } x \to y} \lambda y.yz\]
+    <h3>Substitution</h3>
+    <p>Substitution is a mechanism via free occurrences of a variable is replaced with another lambda term. It is generally represented as \(M[x := N]\) which means "replace all the free occurrences of \(x\) in \(M\) with another lambda term \(N\)". The point that replacing of variables via substitution is only done for free variables is a very important point, because if substitution is applied on bounded variables then the meaning of the lambda function can be completely changed.</p>
+
+    <p>If \(x := y\) substitution rule is applied on \(\lambda x.x\) (identity function):</p>
+
+    \[
+        (\lambda x.x)[x := y] = \lambda x.y
+    \]
+
+    <p>If you see the identity function got changed into a constant function i.e. the lambda function's meaning has been completely changed.</p>
+
+    <h4>Variable capture</h4>
+    <p>Apart from above issue, there could be another problem which might arise during substitution which is often referred as "<i>variable capture</i>". Consider the following example</p>
+
+    <p>If \(y := x\) substitution rule is applied on \(\lambda x.y\):</p>
+
+    \[
+        (\lambda x.y)[y := x] = \lambda x.x
+    \]
+
+    <p>In the above reduction, we replaced all the free occurrences of variable \(y\) in the lambda function with \(x\) but still it changed the meaning of the function. The reason behind this is that the binder \(x\) and the \(x\) with which we have to replace both of them need to be treated differently. Over here, the free variable \(x\) gets captured by the binder \(x\).</p>
+
+    <p>One way to resolve this issue is via using a technique called \(\alpha\)-renaming, where the bound variables of a lambda function are renamed in a consistent manner such that the meaning is quite preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\) all refer to the exact same function even though the binders have different names.</p>
+
+    <p>So considering a bit more generalized version of the above example: \((\lambda x.y)[y := N]\). Over here, first it needs to be checked whether \(x\) belongs to the set of free variables of \(N\). If yes, then \(\alpha\)-rename must be done. The binder \(x\) needs to be renamed into a different binder \(z\) such that \(z \notin FV(N)\).</p>
+
+    \[
+        (\lambda x.y)[y := x] = (\lambda z.y)[y := x] = \lambda z.x
+    \]
+
+    <p>Mathematically, substitution can be defined as follows:</p>
+    <ul>
+        <li>\(x[x := s] = s\)</li>
+        <li>\(y[x := s] = y, \text{where} \;x \neq y\)</li>
+        <li>\((t_1 \; t_2)[x := s] = (t_1[x := s] \; t_2[x := s])\)</li>
+        <li>\((\lambda x.M)[x := s] = \lambda x.M\)</li>
+        <li>\((\lambda y.M)[x := s] = \lambda y.M[x := s], \text{where} \;x \neq y \; \text{and} \; y \notin FV(s)\)</li>
+        <li>\((\lambda y.M)[x := s] = \lambda w.M[y := w][w := s], \text{where} \;x \neq y \; \text{and} \; y \in FV(s)\)</li>
+    </ul>
+
+    <p>It might be a bit difficult to grasp the core intuition directly from the above mathematical expressions. Here is a breakdown of each case:</p>
+    <ul>
+        <li>If the term is just the variable \(x\) itself, replacing \(x\) with \(s\) simply gives back \(s\).</li>
+        <li>If the term is some other variable \(y\), the substitution has nothing to act on and the term is left unchanged.</li>
+        <li>If the term is an application \((t_1 \; t_2)\), the substitution is pushed into both sides independently and the results are applied together.</li>
+        <li>If the term is an abstraction whose binder is \(x\) itself, the very variable being substituted, then \(x\) is locally rebound and has no free occurrences inside the body. There is nothing to replace, so the abstraction is left untouched.</li>
+        <li>If the term is an abstraction with a different binder \(y\), the substitution needs to descend into the body. Over here there can be two possible sub-cases:</li>
+        <ul>
+            <li>If \(y\) does not appear free in the replacement term \(s\), there is no risk of capture and the substitution is applied to the body directly.</li>
+            <li>If \(y\) does appear free in \(s\), substitution would cause \(y\) to be captured by the binder, changing its meaning. To avoid this, the binder is first \(\alpha\)-renamed to a fresh variable \(w\), and then the substitution proceeds safely.</li>
+        </ul>
+    </ul>
+
+    <h3>\(\alpha\)-conversion</h3>
+    <p>In the previous section, I have covered a bit about \(\alpha\)-renaming. Within this section, we'll try to properly get an intution of what \(\alpha\)-conversion is. It is one of the two major semantic rules within lambda calculus.</p>
+    <p>\(\alpha\)-conversion is a mechanism to rename the bound variables of a lambda function consistently such that its meaning is preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\) all refer to the same function even though their binder variable have different names. Two lambda terms are said to be \(\alpha\)-equivalent if one can be transformed into the other via some finite series of \(\alpha\)-conversions.</p>
+    <p>\(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to be \(\alpha\)-equivalent, if \(y \notin FV(M)\). \(\alpha\)-equivalence between two lambda terms is commonly represented as \(\lambda x.M \equiv_{\alpha} \lambda y.M[x := y]\)</p>
+
 
     <h3>References</h3>
     <ol>
         <li><a href="https://arxiv.org/pdf/1503.09060">A Tutorial Introduction to the Lambda Calculus</a></li>
-        <li><a href="https://www.youtube.com/playlist?list=PLt0HgEXFOHdkE-NTs87s7QjwYwqeihb-D">CS3100 Paradigms of Programming @ IITM</a></li>
+        <li><a href="https://www.youtube.com/playlist?list=PLt0HgEXFOHdkE-NTs87s7QjwYwqeihb-D">CS3100 Paradigms of Programming @ IIT Madras</a></li>
         <li><a href="https://jonathanlorimer.dev/posts/motivating-laziness.html">Intro to FP Through λ-Calculus - Motivating Laziness</a></li>
     </ol>
 
