@@ -57,13 +57,15 @@
     <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones, and hence it is used by researchers working on computer algorithms, whereas lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program, i.e., how you organize your program.</p>
     <p>Lambda calculus is the most minimal turing complete language as it just consists of three different production states. Here is the entire BNF grammar of lambda calculus:</p>
 
-    \[
-        \begin{align}
-        e ::= \; & x & &(\text{Variable}) \\
-            \mid \; & \lambda x . e & &(\text{Abstraction}) \\
-            \mid \; & e \; e & &(\text{Application})
-        \end{align}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{align}
+            e ::= \; & x & &(\text{Variable}) \\
+                \mid \; & \lambda x . e & &(\text{Abstraction}) \\
+                \mid \; & e \; e & &(\text{Application})
+            \end{align}
+        \]
+    </div>
 
     <h2>Semantic verse of lambda calculus</h2>
     <p>Semantically, it consists of majorly two things - \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into them, I would like to go over a couple of other topics, as they are utilized to formally define the aforementioned semantic rules. There is something called \(\eta\)-conversion as well but it is often omitted.</p>
@@ -77,7 +79,7 @@
     <p>Over here the first occurance of \(x\) is bound whereas the other occurance of \(x\) is free. The reason behind is the other occurance of \(x\) is local to the function where \(y\) is the binder.</p>
 
     <p>Mathematically, free variables for a lambda term \(t\) is denoted as \(FV(t)\), where:</p>
-    <ul>
+    <ul class="scroll-wrapper">
         <li>\(FV(x)\) = {x}</li>
         <li>\(FV(t_1 \; t_2) = FV(t_1) \; \cup \; FV(t_2)\)</li>
         <li>\(FV(\lambda x.t_1) = FV(t_1) \; \backslash \; \{x\}\) i.e. compute all the free variables in \(t_1\) and remove \(x\) from it at the end as \(x\) is the binder over here</li>
@@ -115,7 +117,7 @@
     \]
 
     <p>Mathematically, substitution can be defined as follows:</p>
-    <ul>
+    <ul class="scroll-wrapper">
         <li>\(x[x := s] = s\)</li>
         <li>\(y[x := s] = y, \text{where} \;x \neq y\)</li>
         <li>\((t_1 \; t_2)[x := s] = (t_1[x := s] \; t_2[x := s])\)</li>
@@ -125,7 +127,7 @@
     </ul>
 
     <p>It might be a bit difficult to grasp the core intuition directly from the above mathematical expressions. Here is a breakdown of each case:</p>
-    <ul>
+    <ul class="scroll-wrapper">
         <li>If the term is just the variable \(x\) itself, replacing \(x\) with \(s\) simply gives back \(s\).</li>
         <li>If the term is some other variable \(y\), the substitution has nothing to act on, and the term is left unchanged.</li>
         <li>If the term is an application \((t_1 \; t_2)\), the substitution is pushed into both sides independently, and the results are applied together.</li>
@@ -141,7 +143,6 @@
     <p>In the previous section, I have covered a bit about \(\alpha\)-renaming. Within this section, we'll try to properly get an intuition of what \(\alpha\)-conversion is. It is one of the two major semantic rules within lambda calculus.</p>
     <p>\(\alpha\)-conversion is a mechanism to rename the bound variables of a lambda function consistently such that its meaning is preserved, i.e., \(\lambda x.x\), \(\lambda y.y\), and \(\lambda z.z\) all refer to the same function even though their binder variable have different names. Two lambda terms are said to be \(\alpha\)-equivalent if one can be transformed into the other via some finite series of \(\alpha\)-conversions.</p>
     <p>\(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to be \(\alpha\)-equivalent, if \(y \notin FV(M)\). \(\alpha\)-equivalence between two lambda terms is commonly represented as \(\lambda x.M \equiv_{\alpha} \lambda y.M[x := y]\).</p>
-
 
     <h3>\(\beta\)-reduction</h3>
     <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus consists of variables, functions, and function calls, the only way a program can be built is via executing the functions, i.e., layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred to as “<i>redex</i>”. The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
@@ -393,44 +394,52 @@
     <h4>Numbers</h4>
     <p>The way numbers are defined in church encoding is very interesting. A number is defined as a function that takes in two arguments - \(x\), which is a starting point for all the numbers, and \(f\), which is a function that returns the successor of any number.</p>
 
-    \[
-        \begin{aligned}
-        n &= \lambda f.\lambda x.f^{n}(x) \\
-        \text{succ} &= \lambda n.\lambda f.\lambda x.f \; n \;  f \; x
-        \end{aligned}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{aligned}
+            n &= \lambda f.\lambda x.f^{n}(x) \\
+            \text{succ} &= \lambda n.\lambda f.\lambda x.f \; n \;  f \; x
+            \end{aligned}
+        \]
+    </div>
 
-    \[
-        \begin{aligned}
-        0 &= \lambda f.\lambda x.x \\
-        1 &= \lambda f.\lambda x.f \; x \\
-        2 &= \lambda f.\lambda x.f \; f \; x \\
-        3 &= \lambda f.\lambda x.f \; f \; f \; x
-        \end{aligned}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{aligned}
+            0 &= \lambda f.\lambda x.x \\
+            1 &= \lambda f.\lambda x.f \; x \\
+            2 &= \lambda f.\lambda x.f \; f \; x \\
+            3 &= \lambda f.\lambda x.f \; f \; f \; x
+            \end{aligned}
+        \]
+    </div>
 
     <p>The definition of a number and the successor function in church encoding are kind of intertwined with each other. Let's try to get a better intuitive understanding by trying to evaluate <code>succ one</code>:</p>
 
-    \[
-        \begin{aligned}
-        \text{succ one} &= (\lambda n.\lambda f.\lambda x.f \; n \; f \; x) \; \text{one} \\
-        &= \lambda f.\lambda x.f \; \text{one} \; f \; x \\
-        \text{one} \; f \; x &= (\lambda f.\lambda x.f \; x) \; (f \; x) = f \; x \\
-        \text{succ one} &= \lambda f.\lambda x.f \; f \; x = \text{two} \\
-        \end{aligned}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{aligned}
+            \text{succ one} &= (\lambda n.\lambda f.\lambda x.f \; n \; f \; x) \; \text{one} \\
+            &= \lambda f.\lambda x.f \; \text{one} \; f \; x \\
+            \text{one} \; f \; x &= (\lambda f.\lambda x.f \; x) \; (f \; x) = f \; x \\
+            \text{succ one} &= \lambda f.\lambda x.f \; f \; x = \text{two} \\
+            \end{aligned}
+        \]
+    </div>
 
     <p>If you've ever used partial functions in Python (<a href="https://docs.python.org/3/library/functools.html#functools.partial"><code>functools.partial</code></a>) then that's exactly what we've done with <code>succ one</code>. <code>succ</code> function in total takes in three arguments, but we've passed one of them, and it generated a partial function out of it.</p>
 
     <p>If you wanted to perform 1 + 2 in lambda calculus, it would be equivalent to replacing the "starting point" (\(x\)) in 1 with 2 </p>
 
-    \[
-        \begin{aligned}
-        1 &= \lambda f.\lambda x.f \; x \\
-        2 &= \lambda f.\lambda x.f \; f \; x \\
-        1 + 2 &= 3 = \lambda f.\lambda x.f \; f \; f \; x = \lambda f.\lambda x.f \; (f \; f \; x)
-        \end{aligned}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{aligned}
+            1 &= \lambda f.\lambda x.f \; x \\
+            2 &= \lambda f.\lambda x.f \; f \; x \\
+            1 + 2 &= 3 = \lambda f.\lambda x.f \; f \; f \; x = \lambda f.\lambda x.f \; (f \; f \; x)
+            \end{aligned}
+        \]
+    </div>
 
     <p>So performing \(m\) + \(n\) is equivalent to equivalent \(x\) in \(m\) with \(n \; f \; x\)</p>
 
@@ -440,13 +449,15 @@
 
     <p>If you wanted to perform 2 * 3 in lambda calculus</p>
 
-    \[
-        \begin{aligned}
-        2 &= \lambda f.\lambda x.f \; f \; x \\
-        3 &= \lambda f.\lambda x.f \; f \; f \; x \\
-        2 \times 3 &= 6 = \lambda f.\lambda x.f \; f \; f \; f \; f \; f \; x  = \lambda f.\lambda x.(f \; f \; f) \; (f \; f \; f) \; x
-        \end{aligned}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \begin{aligned}
+            2 &= \lambda f.\lambda x.f \; f \; x \\
+            3 &= \lambda f.\lambda x.f \; f \; f \; x \\
+            2 \times 3 &= 6 = \lambda f.\lambda x.f \; f \; f \; f \; f \; f \; x  = \lambda f.\lambda x.(f \; f \; f) \; (f \; f \; f) \; x
+            \end{aligned}
+        \]
+    </div>
 
     <p>So in case of multiplication, rather than replacing the "starting point", you replace the successor function (\(f\)) with \(n \; f\) in case of \(m \times n\). The idea is very similar to how multiplication is basically repeated addition.</p>
 
