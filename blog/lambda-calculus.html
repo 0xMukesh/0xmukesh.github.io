@@ -43,13 +43,17 @@
         <span class="sidenote"><s>Attention</s> Functions are all you need! Specifically higher-order functions</span>
     </p>
 
-    <h2>Syntatic verse of lambda calculus</h2>
-    <p>Syntactically, it consists of three things: variables, abstractions (functions), and applications (function calls).</p>
+    <h2>Syntactic Structure of Lambda Calculus</h2>
+    <p>Lambda calculus has three syntactic constructs:</p>
+    <ul>
+        <li>Variables: \(x\), \(y\), \(z\)</li>
+        <li>Abstraction: \(\lambda x.M\), where \(x\) is the function parameter and \(M\) is the function body</li>
+        <li>Application: \((\lambda x.M)\, N\), where \(N\) is the argument passed to the function</li>
+    </ul>
 
     <p>The way you define a function in lambda calculus is as follows:</p>
     \[\lambda x.M\]
-    <p>where \(\lambda\) is used to indicate the start of a function which is then followed by a variable (in this case \(x\)) and . (dot) is used as a divider between the function argument and body</p>
-    <p>If you notice, the function doesn't really have any "name" to it. It's similar to anonymous functions in modern-day programming languages. The keyword <code>lambda</code> in Python refers to this exactly.</p>
+    <p>where \(\lambda\) is used to indicate the start of a function which is then followed by a variable (in this case \(x\)) and . (dot) is used as a divider between the function argument and body. It is very similar to how you define annoymous functions in modern-day programming languages. \(\lambda x.x\) is equivalent to <code class="language-py">lambda x: x</code> in Python.</p>
 
     <p>This is how you execute the functions:</p>
     \[(\lambda x.M) \; y = M[x := y]\]
@@ -70,29 +74,40 @@
     <h2>Semantic verse of lambda calculus</h2>
     <p>Semantically, it consists of majorly two things - \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into them, I would like to go over a couple of other topics, as they are utilized to formally define the aforementioned semantic rules. There is something called \(\eta\)-conversion as well but it is often omitted.</p>
 
-    <h4>Free and Bound variables</h4>
-    <p>In lambda calculus, all variables are local to their definitions. In the expression \(\lambda x.x\), \(x\) is said to be "bound" as its occurrence in the function body is preceded by \(\lambda x\). In the expression \(\lambda x.xy\), \(y\) is said to be "free".</p>
-    <p>Here is another interesting example:</p>
+    <h4>Free and Bound Variables</h4>
+    <p>In lambda calculus, a variable is either <i>bound</i> or <i>free</i> depending on whether it appears within the scope of a corresponding \(\lambda\). A \(\lambda x\) term introduces \(x\) into the scope immediately after the dot, and \(x\) remains in the scope until the end of the term that \(\lambda x\) governs, which is determined by the parentheses.</p>
 
-    \[(\lambda x.x) (\lambda y.yx)\]
+    <p>For example, in \(\lambda x.\lambda y.xy\), \(x\) comes into scope after the first dot and spans throughout the entire body, whereas \(y\) only comes into scope after the second dot. The lifetime of each of the local variables can be visually understood through the parentheses around their corresponding \(\lambda\) terms.</p>
 
-    <p>Over here the first occurance of \(x\) is bound whereas the other occurance of \(x\) is free. The reason behind is the other occurance of \(x\) is local to the function where \(y\) is the binder.</p>
+    \[
+        (\lambda x.(\lambda y.xy))
+    \]
 
-    <p>Mathematically, free variables for a lambda term \(t\) is denoted as \(FV(t)\), where:</p>
+    <p>In the lambda expression \(\lambda x.xy\), \(x\) is said to be bound variable because it was brought into scope right after the first dot whereas \(y\) is said to be free variable because there is no corresponding \(\lambda y\) term in the expression via which \(y\) would have been brought into scope.</p>
+
+    <p>In the lambda expression \((\lambda x.x) (\lambda y.yx)\), \(x\) is both a bound and free variable</p>
+
+    \[
+        (\lambda x.x) (\lambda y.yx)
+    \]
+
+    <p>Over here, the first \(x\) is brought into scope after the first dot, i.e., right after \(\lambda x\), and it goes out of scope when it encounters the first closing parentheses. In the second lambda term, only \(y\) was brought into scope, due to which the second \(x\) is a free variable, whereas \(y\) is a bound variable.</p>
+
+    <p>Formally, the set of free variables for a lambda term \(t\) is written as \(FV(t)\) and is defined as:</p>
     <ul class="scroll-wrapper">
-        <li>\(FV(x)\) = {x}</li>
-        <li>\(FV(t_1 \; t_2) = FV(t_1) \; \cup \; FV(t_2)\)</li>
-        <li>\(FV(\lambda x.t_1) = FV(t_1) \; \backslash \; \{x\}\) i.e. compute all the free variables in \(t_1\) and remove \(x\) from it at the end as \(x\) is the binder over here</li>
-        <li>\(FV(t) = \phi\), then \(t\) is said to be closed term</li>
+        <li>\(FV(x) = \{x\}\)</li>
+        <li>\(FV(t_1 \; t_2) = FV(t_1) \cup FV(t_2)\)</li>
+        <li>\(FV(\lambda x.t_1) = FV(t_1) \setminus \ \{x\}\) i.e. from all the free variables of \(t_1\), remove \(x\) from it as \(x\) becomes a bounded variable due to \(\lambda x\) term.</li>
+        <li>\(FV(t) = \emptyset\), then \(t\) is said to be a closed term.</li>
     </ul>
 
     <h3>Substitution</h3>
-    <p>Substitution is a mechanism by which free occurrences of a variable are replaced with another lambda term. It is generally represented as \(M[x := N]\), which means "replace all the free occurrences of \(x\) in \(M\) with another lambda term \(N\)". The point that replacing of variables via substitution is only done for free variables is a very important point, because if substitution is applied on bounded variables then the meaning of the lambda function can be completely changed.</p>
+    <p>Substitution is a mechanism by which free occurrences of a variable are replaced with another lambda term. it is generally represented as \(M[x := N]\), which means “replace all the free occurrences of \(x\) in \(M\) with another lambda term \(N\)”. It is very important to note that replacing of variables via substitution is only done for free variables, because replacing bounded variables completely alters the meaning of the lambda function.</p>
 
-    <p>If \(x := y\) substitution rule is applied on \(\lambda x.x\) (identity function):</p>
+    <p>If \(x := y\) substitution rule was applied on \(\lambda x.x\) which is then identity function then it changes into a constant function:</p>
 
     \[
-        (\lambda x.x)[x := y] = \lambda x.y
+      \lambda x.x[x := y] = \lambda x.y
     \]
 
     <p>If you see the identity function has been changed into a constant function, i.e., the lambda function's meaning has been completely changed.</p>
@@ -103,7 +118,7 @@
     <p>If \(y := x\) substitution rule is applied on \(\lambda x.y\):</p>
 
     \[
-        (\lambda x.y)[y := x] = \lambda x.x
+        \lambda x.y[y := x] = \lambda x.x
     \]
 
     <p>In the above reduction, we replaced all the free occurrences of variable \(y\) in the lambda function with \(x\), but still, it changed the meaning of the function. The reason behind this is that the binder \(x\) and the \(x\) with which we have to replace both of them need to be treated differently. Over here, the free variable \(x\) gets captured by the binder \(x\).</p>
@@ -113,7 +128,7 @@
     <p>So, considering a bit more generalized version of the above example: \((\lambda x.y)[y := N]\). Over here, first it needs to be checked whether \(x\) belongs to the set of free variables of \(N\). If yes, then \(\alpha\)-rename must be done. The binder \(x\) needs to be renamed into a different binder \(z\) such that \(z \notin FV(N)\).</p>
 
     \[
-        (\lambda x.y)[y := x] = (\lambda z.y)[y := x] = \lambda z.x
+        \lambda x.y[y := x] = \lambda z.y[y := x] = \lambda z.x
     \]
 
     <p>Mathematically, substitution can be defined as follows:</p>
@@ -121,9 +136,9 @@
         <li>\(x[x := s] = s\)</li>
         <li>\(y[x := s] = y, \text{where} \;x \neq y\)</li>
         <li>\((t_1 \; t_2)[x := s] = (t_1[x := s] \; t_2[x := s])\)</li>
-        <li>\((\lambda x.M)[x := s] = \lambda x.M\)</li>
-        <li>\((\lambda y.M)[x := s] = \lambda y.M[x := s], \text{where} \;x \neq y \; \text{and} \; y \notin FV(s)\)</li>
-        <li>\((\lambda y.M)[x := s] = \lambda w.M[y := w][w := s], \text{where} \;x \neq y \; \text{and} \; y \in FV(s)\)</li>
+        <li>\(\lambda x.M[x := s] = \lambda x.M\)</li>
+        <li>\(\lambda y.M[x := s] = \lambda y.M[x := s], \text{where} \;x \neq y \; \text{and} \; y \notin FV(s)\)</li>
+        <li>\(\lambda y.M[x := s] = \lambda w.M[y := w][w := s], \text{where} \;x \neq y \; \text{and} \; y \in FV(s)\)</li>
     </ul>
 
     <p>It might be a bit difficult to grasp the core intuition directly from the above mathematical expressions. Here is a breakdown of each case:</p>
@@ -482,6 +497,26 @@
         \text{Second} &= \lambda p.p \; \text{False}
         \end{aligned}
     \]
+
+    <h3>Demo</h3>
+    <p>Here's a small demo of my untyped lambda calculus interpreter computing \(\text{fib}(n=3)\) (3rd term in fibonacci sequence) which is 2 (or) \(\lambda f.\lambda x.f \; f \; x\) in church encoding. Over here <code>=</code> is an assignment operator for defining macros, which are just short snippets of reusable lambda expressions.</p>
+
+    <pre><code>true = \a.\b.a
+false = \a.\b.b
+zero = \f.\x.x
+succ = \n.\f.\x.f (n f x)
+
+is_zero = \n.n (\x.false) true
+plus = \m.\n.\f.\x.m f (n f x)
+pred = \n.\f.\x.n (\g.\h.h (g f)) (\u.x) (\u.u)
+
+yy = \f.(\x.f (x x)) (\x.f (x x))
+
+fib = yy (\f.\n.(is_zero n) zero ((is_zero (pred n)) (succ zero) (plus (f (pred n)) (f (pred (pred n))))))
+fib (succ (succ (succ zero)))</code></pre>
+
+    <img src="../images/lambda-calculus/008_interpreter_demo.png"/>
+
 
     <h3>Wrapping up</h3>
     <p>Phew! This ended up being a bit too long, but I have enjoyed every single part while researching and studying about lambda calculus, and also while building the interpreter for it. It was such a fun rabbit hole, especially the church encoding part, it sorta introducted me to this new methodology on <i>how to think</i> about writing programs.</p>
