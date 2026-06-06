@@ -21,7 +21,7 @@
         <input type="checkbox" id="sn-1" class="sidenote-toggle" />
         <span class="sidenote">Not really sure if I can call building an untyped lambda calculus interpreter as "trying" out FP</span>
 
-        functional programming, but with the lowest number of abstractions. So I decided to build a small untyped lambda calculus interpreter in Go. This blog post would act like an introduction to lambda calculus rather than a "How to build an untyped lambda calculus interpreter" hand-held guide.</p>
+    functional programming, but with the lowest number of abstractions. So I decided to build a small untyped lambda calculus interpreter in Go. This blog post would act like an introduction to lambda calculus rather than a "How to build an untyped lambda calculus interpreter" hand-held guide. If you're curious about the untyped lambda calculus interpreter which I made, you can check it out over <a href="https://github.com/0xmukesh/lambda">here</a>.</p>
 
     <h2>What is lambda calculus?</h2>
     <p>Firstly, don't get confused by the word "calculus". It is not related to integrals or derivatives in any way. The word calculus just means a formal system of calculation. The part of calculus that deals with integrals and derivatives was mainly developed by Newton and Leibniz, and it became so dominant that people nowadays directly associate calculus with it.</p>
@@ -131,8 +131,29 @@
     <h3>\(\alpha\)-conversion</h3>
     <p>In the previous section, I have covered a bit about \(\alpha\)-renaming. Within this section, we'll try to properly get an intution of what \(\alpha\)-conversion is. It is one of the two major semantic rules within lambda calculus.</p>
     <p>\(\alpha\)-conversion is a mechanism to rename the bound variables of a lambda function consistently such that its meaning is preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\) all refer to the same function even though their binder variable have different names. Two lambda terms are said to be \(\alpha\)-equivalent if one can be transformed into the other via some finite series of \(\alpha\)-conversions.</p>
-    <p>\(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to be \(\alpha\)-equivalent, if \(y \notin FV(M)\). \(\alpha\)-equivalence between two lambda terms is commonly represented as \(\lambda x.M \equiv_{\alpha} \lambda y.M[x := y]\)</p>
+    <p>\(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to be \(\alpha\)-equivalent, if \(y \notin FV(M)\). \(\alpha\)-equivalence between two lambda terms is commonly represented as \(\lambda x.M \equiv_{\alpha} \lambda y.M[x := y]\).</p>
 
+
+    <h3>\(\beta\)-reduction</h3>
+    <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus, just consists of variables, functions and function calls, the only way a program can be built is via executing the functions i.e. layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred as "<i>redex</i>". The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
+
+    \[
+        (\lambda x.M) N = M[x := N]
+    \]
+
+    <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the other is in its most simplified form and it can't be reduced down further. A lambda term which can't further reduced down is said to be in "<i>normal form</i>". It is important to note that not all terms have normal form. For example \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to be a normal form as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
+
+    <p>Let's take an example lambda expression and try to evaluate it - \((\lambda x.x \; x) ((\lambda x.y) z)\)</p>
+    <br/>
+    <img src="../images/lambda-calculus/001_term_red_graph.png"/>
+
+    <p>The above reduction graph shows all the possible ways to reduce the example lambda expression down to its normal form. There are different styles of evaluation used. In the right branch of the reduction graph, the inner redex is first evaluated as compared to evaluating the outer redex in the left branch. Over here, it didn't matter which path was chosen as all of them lead to the same answer but there are cases where depend on evaluation method, the result changes.</p>
+
+    <p>Consider another example lambda expression - \((\lambda x.y) ((\lambda x.x x)(\lambda x.x x))\)</p>
+    <br/>
+    <img src="../images/lambda-calculus/002_non_term_red_graph.png"/>
+
+    <p>Over here if the outer redex was evaluated first then \(y\) would be the output as there are no free occurrences of \(x\) in \(y\) for substitution to occur. But if the inner redex was chosen to be evaluated first then it gets stuck in this recursive loop.</p>
 
     <h3>References</h3>
     <ol>
