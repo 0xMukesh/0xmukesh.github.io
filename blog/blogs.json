@@ -2,7 +2,7 @@
   {
     "title": "A primer on lambda calculus",
     "url": "./lambda-calculus.html",
-    "date": "Jun 06, 2026",
+    "date": "June 06, 2026",
     "draft": true,
     "tags": [
       "functional-programming"
@@ -11,7 +11,7 @@
   {
     "title": "Creating art using CNNs",
     "url": "./creating-art-using-cnns.html",
-    "date": "Jun 13, 2025",
+    "date": "June 13, 2025",
     "draft": false,
     "tags": [
       "deep-learning"
@@ -20,7 +20,7 @@
   {
     "title": "Exploring different CNNs",
     "url": "./exploring-different-cnns.html",
-    "date": "Jun 04, 2025",
+    "date": "June 04, 2025",
     "draft": false,
     "tags": [
       "deep-learning"

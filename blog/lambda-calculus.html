@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="../styles/global.css">
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <style>
+      figure {
+        counter-increment: example-counter;
+      }
+
+      figcaption::before {
+        content: "Example " counter(example-counter) ": ";
+      }
+    </style>
 </head>
 <body>
     <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in field of functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
@@ -144,16 +153,100 @@
     <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the other is in its most simplified form and it can't be reduced down further. A lambda term which can't further reduced down is said to be in "<i>normal form</i>". It is important to note that not all terms have normal form. For example \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to be a normal form as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
 
     <p>Let's take an example lambda expression and try to evaluate it - \((\lambda x.x \; x) ((\lambda x.y) z)\)</p>
-    <br/>
-    <img src="../images/lambda-calculus/001_term_red_graph.png"/>
+    <figure>
+      <img src="../images/lambda-calculus/001_term_red_graph.png" />
+      <figcaption>Reduction graph for a terminating lambda expression</figcaption>
+    </figure>
 
     <p>The above reduction graph shows all the possible ways to reduce the example lambda expression down to its normal form. There are different styles of evaluation used. In the right branch of the reduction graph, the inner redex is first evaluated as compared to evaluating the outer redex in the left branch. Over here, it didn't matter which path was chosen as all of them lead to the same answer but there are cases where depend on evaluation method, the result changes.</p>
 
     <p>Consider another example lambda expression - \((\lambda x.y) ((\lambda x.x x)(\lambda x.x x))\)</p>
-    <br/>
-    <img src="../images/lambda-calculus/002_non_term_red_graph.png"/>
+    <figure id="example-2">
+      <img src="../images/lambda-calculus/002_non_term_red_graph.png" />
+      <figcaption>Reduction graph for a non terminating lambda expression</figcaption>
+    </figure>
 
     <p>Over here if the outer redex was evaluated first then \(y\) would be the output as there are no free occurrences of \(x\) in \(y\) for substitution to occur. But if the inner redex was chosen to be evaluated first then it gets stuck in this recursive loop.</p>
+
+    <p>If you notice the naïve \(\beta\)-reduction (aka \(\beta\)-reduction) is very non-deterministic, to make it a bit more clear, here is how \(\beta\)-reduction can be described formally using inference rules:</p>
+
+    \[
+        \frac{}{(\lambda x.M) N \rightarrow_{\beta} \lambda x.M[x := N]}
+        \qquad
+        \frac{M \rightarrow_{\beta} M'}{\lambda x.M \rightarrow_{\beta} \lambda x.M'}
+    \]
+
+    \[
+        \frac{M \rightarrow_{\beta} M'}{M N \rightarrow_{\beta} M' N}
+        \qquad
+        \frac{N \rightarrow_{\beta} N'}{M N \rightarrow_{\beta} M N'}
+    \]
+
+    <p>The way an inference rule \(\frac{P}{Q}\) is read is "if \(P\) is true then \(Q\) happens". Over here, \(P\) is said to be the premise and \(Q\) is said to be the conclusion. Keeping that in mind, let's now go through each of the above inference rules and understand them in a simpler language, going from top left to right.</p>
+
+    <ul>
+        <li>If \((\lambda x.M) N\) is \(\beta\)-reduced then it will always be equal to \(\lambda x.M[x := N]\). The empty premise means that it is always true.</li>
+        <li>In regular programming languages, the body of a function is not evaluated unless it is called/executed but in full-\(\beta\) reduction if there is a redex inside an abstraction then it can be \(\beta\)-reduced.</li>
+        <li>If either of sides (left or right) in an application has a redex then it can be \(\beta\)-reduced.</li>
+    </ul>
+
+    <p>The goal of full-\(\beta\) reduction is "if there is a redex then reduce it down". There is no hierarchical structure, in terms of the reduction order. Due to this nature of full-\(\beta\) reduction, the non-determinism arises, which can be clearly seen in <a href="#example-2">example 2</a>.</p>
+
+    <h3>Reduction strategies</h3>
+    <p>Until now, we have only checked at full-\(\beta\) reduction which is a non-deterministic reduction strategy. There are other reduction strategy which attempts to fix the issues with full-\(\beta\) reduction. For the scope of this blog, we would mainly focus on these following reduction strategies:</p>
+
+    <ul>
+        <li>Normal order</li>
+        <li>Call-by-name</li>
+        <li>Call-by-need (Lazy evaluation)</li>
+        <li>Call-by-value (Strict evaluation)</li>
+    </ul>
+
+    <h4>Normal order</h4>
+    <p>The core idea of normal order is to reduce the leftmost, outermost redex first. The most important property of normal order is that if a term has a normal form, then normal order reduction will find it. This is what the "Church-Rosser" theorem is all about. I wouldn't be going too deep into that theorem within this blog, but if you are interested in reading more about it, I would suggest reading this paper titled "<a href="https://www.cs.cornell.edu/~kozen/Papers/ChurchRosser.pdf">Church–Rosser Made Easy</a>".</p>
+
+    <p>To get a better intuition of normal order, let's try to evaluate a lambda expression using it - \((\lambda x.x) ((\lambda x.x) (\lambda z.(\lambda x.x) z))\).</p>
+    <figure id="example-3">
+      <img src="../images/lambda-calculus/003_normal_order_01.png" />
+      <figcaption>Reduction using normal order</figcaption>
+    </figure>
+
+    <p>Here is the \(\beta\)-reduction of the same lambda expression but using full-\(\beta\) reduction. Over here, the innermost redex is reduced first.</p>
+    <figure>
+      <img src="../images/lambda-calculus/004_full_beta_01.png" />
+      <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
+    </figure>
+
+    <p>Let's take another example where full-\(\beta\) reduction fails due to its nature of evaluating the innermost redexes first.</p>
+    <figure>
+      <img src="../images/lambda-calculus/005_normal_order_02.png" />
+      <figcaption>Reduction using normal order</figcaption>
+    </figure>
+    <br/>
+    <figure>
+      <img src="../images/lambda-calculus/006_full_beta_02.png" />
+      <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
+    </figure>
+
+    <p>In the above example, consider the recursive lambda term \((\lambda z.z \; z) (\lambda z.z \; z)\) as \(\Omega\).In case of normal order, it evaluated the outermost redex right and as there were no free \(x\) in \(\lambda y.y\), the evaluated output was \(\lambda y.y\). In case of full-\(\beta\) reduction, the inner redex was attempted to be evaluated first and as the inner redex was a recursive lambda term, the evaluation got stuck in a loop.</p>
+
+    <h4>Call-by-name</h4>
+    <p>Call-by-name reduction strategy is very much similar to normal order except for one part i.e. it doesn't reduce within lambda bodies. In last step of <a href="#example-3">example 3</a>, the body of \(\lambda z.(\lambda x.x) z\) was reduced to finally get \(\lambda z.z\). The functionality of reducing a lambda's bodies without an application might feel unintuitive as in regular programming languages, a function's body is evaluated only when it is executed. To avoid this confusion, call-by-name reduction strategy is used which is exactly like normal order except it doesn't allow to reduction within lambda bodies.</p>
+
+    <figure>
+      <img src="../images/lambda-calculus/007_call_by_name.png" />
+      <figcaption>Reduction using call-by-name</figcaption>
+    </figure>
+
+    <h4>Call-by-need</h4>
+    <p>In call-by-name, the function arguments are passed unevaluated and only reduced if they end up in a function position i.e. left hand side of an application. This avoids evaluating arguments that are never used. However, if an argument is used multiple times then call-by-name re-evaluates it each time. Call-by-need solves this issue using a cache mechanism. Call-by-need memoizes the result of the first evaluation and it is reused in other places, due to this mechanism any argument is reduced at most once. This is also known as "<i>lazy-evaluation</i>" and it is the evaluation/reduction strategy which Haskell uses.</p>
+
+    <h4>Call-by-value</h4>
+    <p>Call-by-value is <i>kind of</i> like on the other end of the spectrum while comparing it to call-by-name and call-by-need. In call-by-value, before applying a function, the arguments are fully evaluated first and then proceed forward with the substitution. The benfits of call-by-value over call-by-name (or call-by-need) is that its predictable and cheap per step as all the arguments are fully evaluated before the function is executed. The cons of it are:</p>
+    <ol>
+        <li>It can diverge on terms which have recursive arguments like \((\lambda x.\lambda y.y) ((\lambda z.z \; z) (\lambda z.z \; z))\)</li>
+        <li>It is only cheap when the argument is being utilized by the function. If the argument isn't utilized by the function then it wastes compute to evaluate the argument beforehand.</li>
+    </ol>
 
     <h3>References</h3>
     <ol>

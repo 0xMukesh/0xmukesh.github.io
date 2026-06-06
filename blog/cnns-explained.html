@@ -340,7 +340,7 @@
     \]
     </div>
 
-    <h4>Multiple inputu channels</h4>
+    <h4>Multiple input channels</h4>
     <p>Until now, we have only gone through the case where the image has only 1 channel. Let’s take a look at how the convolutional layer processes the input image when it has more than 1 channel. Most of the images have 3 channels - one for red, green and blue respectively, so the shape of the image can be represented as \(3 \times h \times w\), where \(h\) is the height of the image and \(w\) is the width of the image.</p>
     <p>When the input data contains more than 1 channels, the kernel must be constructed with the same number of channels as the input data, so that it can perform cross-correlation with the entire input data. If shape of the kernel is \(k_h \times k_w\) and the number of channels of the input data is \(c_i\) then there must be a \(k_h \times k_w\) kernel for every input channel, concatenating all of them together gives a kernel of shape \(c_i \times k_h \times k_w\).</p>
     <p>The convolutional layer performs cross-correlation operation on the two-dimensional tensor of the input data and the two-dimensional tensor of the kernel for each channel and summing all of the results together to return a two-dimensional tensor as the output.</p>
