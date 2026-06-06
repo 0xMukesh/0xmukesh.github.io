@@ -96,7 +96,7 @@
     <p>If you see the identity function has been changed into a constant function, i.e., the lambda function's meaning has been completely changed.</p>
 
     <h4>Variable capture</h4>
-    <p>Apart from the above issue, there could be another problem that might arise during substitution, which is often referred to as "<i>variable capture</i>". Consider the following example</p>
+    <p>Apart from the above issue, there could be another problem that might arise during substitution, which is often referred to as “<i>variable capture</i>”. Consider the following example</p>
 
     <p>If \(y := x\) substitution rule is applied on \(\lambda x.y\):</p>
 
@@ -144,13 +144,13 @@
 
 
     <h3>\(\beta\)-reduction</h3>
-    <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus consists of variables, functions, and function calls, the only way a program can be built is via executing the functions, i.e., layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred to as "<i>redex</i>". The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
+    <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus consists of variables, functions, and function calls, the only way a program can be built is via executing the functions, i.e., layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred to as “<i>redex</i>”. The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
 
     \[
         (\lambda x.M) N = M[x := N]
     \]
 
-    <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the latter is in its most simplified form, and it can't be reduced down further. A lambda term that can't be further reduced is said to be in "<i>normal form</i>". It is important to note that not all terms have a normal form. For example, \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to a normal form, as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
+    <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the latter is in its most simplified form, and it can't be reduced down further. A lambda term that can't be further reduced is said to be in “<i>normal form</i>”. It is important to note that not all terms have a normal form. For example, \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to a normal form, as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
 
     <p>Let's take an example lambda expression and try to evaluate it - \((\lambda x.x \; x) ((\lambda x.y) z)\)</p>
     <br/>
@@ -244,7 +244,7 @@
     </figure>
 
     <h4>Call-by-need</h4>
-    <p>In call-by-name, the function arguments are passed unevaluated and only reduced if they end up in a function position, i.e., the left-hand side of an application. This avoids evaluating arguments that are never used. However, if an argument is used multiple times, then call-by-name re-evaluates it each time. Call-by-need solves this issue using a cache mechanism. Call-by-need memoizes the result of the first evaluation, and it is reused in other places; due to this mechanism, any argument is reduced at most once. This is also known as "<i>lazy-evaluation</i>," and it is exactly what <a href="https://wiki.haskell.org/Thunk">Thunk</a> in Haskell means.</p>
+    <p>In call-by-name, the function arguments are passed unevaluated and only reduced if they end up in a function position, i.e., the left-hand side of an application. This avoids evaluating arguments that are never used. However, if an argument is used multiple times, then call-by-name re-evaluates it each time. Call-by-need solves this issue using a cache mechanism. Call-by-need memoizes the result of the first evaluation, and it is reused in other places; due to this mechanism, any argument is reduced at most once. This is also known as “<i>lazy-evaluation</i>," and it is exactly what <a href="https://wiki.haskell.org/Thunk">Thunk</a> in Haskell means.</p>
 
     <h4>Call-by-value</h4>
     <p>Call-by-value is <i>kind of</i> like on the other end of the spectrum, while comparing it to call-by-name and call-by-need. In call-by-value, before applying a function, the arguments are fully evaluated first, and then proceed forward with the substitution. The benefits of call-by-value over call-by-name (or call-by-need) are that it's predictable and cheap per step, as all the arguments are fully evaluated before the function is executed. The cons of it are:</p>
@@ -254,7 +254,7 @@
     </ol>
 
     <h3>Church encodings</h3>
-    <p>Until now, we have seen how functions can be evaluated using \(\beta\)-reduction and how two functions are equivalent to each other using \(\alpha\)-conversion. Lambda calculus by itself doesn't have any data structures, i.e., there are no booleans, numbers, floats, lists, tuples, etc. It only has functions. To <i> mimic</i> the behaviour of actual data structures in lambda calculus, church encodings are used. The list of all possible encodings is very huge, so instead of this blog, we'll mainly blog on the church encodings of booleans, numbers, logical operators (AND, OR, NOT), and arithmetic operators (addition and multiplication).</p>
+    <p>Until now, we have seen how functions can be evaluated using \(\beta\)-reduction and how two functions are equivalent to each other using \(\alpha\)-conversion. Lambda calculus by itself doesn't have any data structures, i.e., there are no booleans, numbers, floats, lists, tuples, etc. It only has functions. To <i> mimic</i> the behaviour of actual data structures in lambda calculus, church encodings are used. The list of all possible encodings is very huge, so instead of this blog, we'll mainly blog on the church encodings of booleans, numbers, logical operators (AND, OR, NOT), arithmetic operators (successor, addition, and multiplication), and pairs. I've tried to restrict the number of encodings so that the blog doesn't end up being about church encodings rather than being a primer about untyped lambda calculus.</p>
 
     <h4>Booleans</h4>
     <p>The way <code>true</code> is defined in lambda calculus is that it is a function that takes in two arguments and returns the first one, whereas <code>false</code> is a function that also takes in two arguments and returns the second one.</p>
@@ -453,6 +453,25 @@
     \[
         \text{Mult} = \lambda m.\lambda n.\lambda f.\lambda x.m \; (n \; f) \; x
     \]
+
+    <h4>Pairs</h4>
+    <p>Pairs are basically equivalent to a tuple with two elements in this case, and the way this can be thought of in the context of functions is that it is a function that takes in two arguments, which correspond to the first and second elements of the pair.</p>
+
+    \[
+        \text{ConstructPair} = \lambda m.\lambda n.\lambda b.b \; m \; n
+    \]
+
+    <p>When both of the elements are passed, the constructor returns a partial function \(\lambda b.b \; m \; n\). This partial function is later used by the accessor functions to retrieve the individual elements.</p>
+
+    \[
+        \begin{aligned}
+        \text{First} &= \lambda p.p \; \text{True} \\
+        \text{Second} &= \lambda p.p \; \text{False}
+        \end{aligned}
+    \]
+
+    <h3>Wrapping up</h3>
+    <p>Phew! This ended up being a bit too long, but I have enjoyed every single part while researching and studying about lambda calculus, and also while building the interpreter for it. It was such a fun rabbit hole, especially the church encoding part, it sorta introducted me to this new methodology on <i>how to think</i> about writing programs.</p>
 
     <h3>References</h3>
     <ol>
