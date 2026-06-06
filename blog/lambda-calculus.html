@@ -173,17 +173,19 @@
 
     <p>If you notice, the naïve \(\beta\)-reduction (aka \(\beta\)-reduction) is very non-deterministic. To make it a bit clearer, here is how \(\beta\)-reduction can be described formally using inference rules:</p>
 
-    \[
-        \frac{}{(\lambda x.M) N \rightarrow_{\beta} \lambda x.M[x := N]}
-        \qquad
-        \frac{M \rightarrow_{\beta} M'}{\lambda x.M \rightarrow_{\beta} \lambda x.M'}
-    \]
+    <div class="scroll-wrapper">
+        \[
+            \frac{}{(\lambda x.M) N \rightarrow_{\beta} \lambda x.M[x := N]}
+            \qquad
+            \frac{M \rightarrow_{\beta} M'}{\lambda x.M \rightarrow_{\beta} \lambda x.M'}
+        \]
 
-    \[
-        \frac{M \rightarrow_{\beta} M'}{M N \rightarrow_{\beta} M' N}
-        \qquad
-        \frac{N \rightarrow_{\beta} N'}{M N \rightarrow_{\beta} M N'}
-    \]
+        \[
+            \frac{M \rightarrow_{\beta} M'}{M N \rightarrow_{\beta} M' N}
+            \qquad
+            \frac{N \rightarrow_{\beta} N'}{M N \rightarrow_{\beta} M N'}
+        \]
+    </div>
 
     <p>The way an inference rule \(\frac{P}{Q}\) is read is "if \(P\) is true then \(Q\) happens". Over here, \(P\) is said to be the premise and \(Q\) is said to be the conclusion. Keeping that in mind, let's now go through each of the above inference rules and understand them in a simpler language, going from top left to right.</p>
 
