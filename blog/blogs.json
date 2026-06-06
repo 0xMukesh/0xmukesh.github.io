@@ -3,7 +3,7 @@
     "title": "A primer on lambda calculus",
     "url": "./lambda-calculus.html",
     "date": "June 06, 2026",
-    "draft": true,
+    "draft": false,
     "tags": [
       "functional-programming"
     ]

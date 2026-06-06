@@ -21,9 +21,9 @@
     </style>
 </head>
 <body>
-    <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in field of functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
+    <p>Hey there! It's been a while since I've written a technical blog post. Last month, I came across <a href="https://fplaunchpad.org">FP Launchpad</a>, a research center at <a href="https://www.iitm.ac.in">IIT Madras</a> that aims to build long-term research and educational capacity in the field of functional programming in India. After digging a bit deeper, I came across their <a href="https://youtube.com/playlist?list=PLvhoCCkcBeAv4fgWRw5o1q2IpTEAIZBXP">kickoff event talks</a> and after watching a couple of them and going through <a href="https://kcsrk.info/blog/">Prof. KC Sivaramakrishnan</a>'s blog posts, I kinda got hooked onto functional programming in a way.</p>
 
-    <p>I was always kinda curious about functional programming. Me and a couple of my friends used to participate in <a href="https://adventofcode.com/">Advent of Code</a> (AoC), and we used to try picking different languages every year. This was one of the ways I learned new programming languages. I remember very well when one of my friends was using Haskell for one of the AoCs, and when I tried to understand his code, and it just felt <i>complicated</i>. There were a lot of words - monads, monoid, thunks, bifunctor, etc. This was one of the main reasons why I never tried out functional programming earlier due to <i>word soup</i> and jargon-heavy terminology.</p>
+    <p>I was always kinda curious about functional programming. A couple of my friends used to participate in <a href="https://adventofcode.com/">Advent of Code</a> (AoC), and we would try picking different languages each year. This was one of the ways I learned new programming languages. I remember very well when one of my friends was using Haskell for one of the AoCs, and when I tried to understand his code, it just felt <i>complicated</i>. There were a lot of words - monads, monoid, thunks, bifunctor, etc. This was one of the main reasons I never tried functional programming earlier: the <i>word soup</i> and jargon-heavy terminology.</p>
 
     <p>I took some time out last weekend to <i>try out</i>
         <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
@@ -35,12 +35,12 @@
     <h2>What is lambda calculus?</h2>
     <p>Firstly, don't get confused by the word "calculus". It is not related to integrals or derivatives in any way. The word calculus just means a formal system of calculation. The part of calculus that deals with integrals and derivatives was mainly developed by Newton and Leibniz, and it became so dominant that people nowadays directly associate calculus with it.</p>
     <p>In computer science, there are two major mathematical models of computation - turing machines and lambda calculus. Both are very primitive machines capable of executing any computer algorithm.</p>
-    <p>In the case of turing machines, it involves an infinite memory tape which is divided into cells that hold a symbol and a pointer that points to one of those cells. At each step, the pointer reads the symbol from the cell, performs some executation based on it like updating the symbol at the current cell, moving left/right, or halting the machine.</p>
+    <p>In the case of turing machines, it involves an infinite memory tape which is divided into cells that hold a symbol and a pointer that points to one of those cells. At each step, the pointer reads the symbol from the cell, performs some execution based on it, like updating the symbol at the current cell, moving left/right, or halting the machine.</p>
 
-    <p>In case of lambda calculus, all you have are functions. Yep, just using functions and function calls, it is possible to build a universal machine.
+    <p>In the case of lambda calculus, all you have are functions. Yep, just using functions and function calls, it is possible to build a universal machine.
         <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
         <input type="checkbox" id="sn-1" class="sidenote-toggle" />
-        <span class="sidenote"><s>Attention</s> Functions are all you need! Specifically higher order functions</span>
+        <span class="sidenote"><s>Attention</s> Functions are all you need! Specifically higher-order functions</span>
     </p>
 
     <h2>Syntatic verse of lambda calculus</h2>
@@ -49,13 +49,13 @@
     <p>The way you define a function in lambda calculus is as follows:</p>
     \[\lambda x.M\]
     <p>where \(\lambda\) is used to indicate the start of a function which is then followed by a variable (in this case \(x\)) and . (dot) is used as a divider between the function argument and body</p>
-    <p>If you notice the function doesn't really have any "name" to it. It's similar to anonymous functions in modern day programming languages. The keyword <code>lambda</code> in Python refers to this exactly.</p>
+    <p>If you notice, the function doesn't really have any "name" to it. It's similar to anonymous functions in modern-day programming languages. The keyword <code>lambda</code> in Python refers to this exactly.</p>
 
     <p>This is how you execute the functions:</p>
     \[(\lambda x.M) \; y = M[x := y]\]
-    <p>The above operation would replace all the mentions of \(x\) in \(M\) with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how the actual function evaluation takes place in depth in substitutions section.</p>
-    <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones and hence it is used by researchers working on computer algorithms, where as lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program i.e., how do you organize your program.</p>
-    <p>Lambda calculus is the most minimal turing complete language as it just consists three different production states. Here is the entire BNF grammar of lambda calculus:</p>
+    <p>The above operation would replace all the mentions of \(x\) in \(M\) with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how the actual function evaluation takes place in depth in the substitutions section.</p>
+    <p>Even though both turing machines and lambda calculus refer to the same thing, i.e., a universal machine, both of them are adopted by different communities within the field of computer science research. The design of turing machines is much more low-level/bare bones, and hence it is used by researchers working on computer algorithms, whereas lambda calculus is used by programming language researchers. Lambda calculus focuses more on the <i>structure</i> of your program, i.e., how you organize your program.</p>
+    <p>Lambda calculus is the most minimal turing complete language as it just consists of three different production states. Here is the entire BNF grammar of lambda calculus:</p>
 
     \[
         \begin{align}
@@ -66,10 +66,10 @@
     \]
 
     <h2>Semantic verse of lambda calculus</h2>
-    <p>Semantically, it consists of majorly two things - \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into them, I would live to go over a couple of other topics as they are utilized to formally define the aforementioned semantic rules.</p>
+    <p>Semantically, it consists of majorly two things - \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into them, I would like to go over a couple of other topics, as they are utilized to formally define the aforementioned semantic rules. There is something called \(\eta\)-conversion as well but it is often omitted.</p>
 
     <h4>Free and Bound variables</h4>
-    <p>In lambda calculus, all variables are local to its definitions. In the expression \(\lambda x.x\), \(x\) is said to be "bound" as its occurrence in the function body is preceded by \(\lambda x\). In the expression \(\lambda x.xy\), \(y\) is said to be "free".</p>
+    <p>In lambda calculus, all variables are local to their definitions. In the expression \(\lambda x.x\), \(x\) is said to be "bound" as its occurrence in the function body is preceded by \(\lambda x\). In the expression \(\lambda x.xy\), \(y\) is said to be "free".</p>
     <p>Here is another interesting example:</p>
 
     \[(\lambda x.x) (\lambda y.yx)\]
@@ -85,7 +85,7 @@
     </ul>
 
     <h3>Substitution</h3>
-    <p>Substitution is a mechanism via free occurrences of a variable is replaced with another lambda term. It is generally represented as \(M[x := N]\) which means "replace all the free occurrences of \(x\) in \(M\) with another lambda term \(N\)". The point that replacing of variables via substitution is only done for free variables is a very important point, because if substitution is applied on bounded variables then the meaning of the lambda function can be completely changed.</p>
+    <p>Substitution is a mechanism by which free occurrences of a variable are replaced with another lambda term. It is generally represented as \(M[x := N]\), which means "replace all the free occurrences of \(x\) in \(M\) with another lambda term \(N\)". The point that replacing of variables via substitution is only done for free variables is a very important point, because if substitution is applied on bounded variables then the meaning of the lambda function can be completely changed.</p>
 
     <p>If \(x := y\) substitution rule is applied on \(\lambda x.x\) (identity function):</p>
 
@@ -93,10 +93,10 @@
         (\lambda x.x)[x := y] = \lambda x.y
     \]
 
-    <p>If you see the identity function got changed into a constant function i.e. the lambda function's meaning has been completely changed.</p>
+    <p>If you see the identity function has been changed into a constant function, i.e., the lambda function's meaning has been completely changed.</p>
 
     <h4>Variable capture</h4>
-    <p>Apart from above issue, there could be another problem which might arise during substitution which is often referred as "<i>variable capture</i>". Consider the following example</p>
+    <p>Apart from the above issue, there could be another problem that might arise during substitution, which is often referred to as "<i>variable capture</i>". Consider the following example</p>
 
     <p>If \(y := x\) substitution rule is applied on \(\lambda x.y\):</p>
 
@@ -104,11 +104,11 @@
         (\lambda x.y)[y := x] = \lambda x.x
     \]
 
-    <p>In the above reduction, we replaced all the free occurrences of variable \(y\) in the lambda function with \(x\) but still it changed the meaning of the function. The reason behind this is that the binder \(x\) and the \(x\) with which we have to replace both of them need to be treated differently. Over here, the free variable \(x\) gets captured by the binder \(x\).</p>
+    <p>In the above reduction, we replaced all the free occurrences of variable \(y\) in the lambda function with \(x\), but still, it changed the meaning of the function. The reason behind this is that the binder \(x\) and the \(x\) with which we have to replace both of them need to be treated differently. Over here, the free variable \(x\) gets captured by the binder \(x\).</p>
 
     <p>One way to resolve this issue is via using a technique called \(\alpha\)-renaming, where the bound variables of a lambda function are renamed in a consistent manner such that the meaning is quite preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\) all refer to the exact same function even though the binders have different names.</p>
 
-    <p>So considering a bit more generalized version of the above example: \((\lambda x.y)[y := N]\). Over here, first it needs to be checked whether \(x\) belongs to the set of free variables of \(N\). If yes, then \(\alpha\)-rename must be done. The binder \(x\) needs to be renamed into a different binder \(z\) such that \(z \notin FV(N)\).</p>
+    <p>So, considering a bit more generalized version of the above example: \((\lambda x.y)[y := N]\). Over here, first it needs to be checked whether \(x\) belongs to the set of free variables of \(N\). If yes, then \(\alpha\)-rename must be done. The binder \(x\) needs to be renamed into a different binder \(z\) such that \(z \notin FV(N)\).</p>
 
     \[
         (\lambda x.y)[y := x] = (\lambda z.y)[y := x] = \lambda z.x
@@ -127,10 +127,10 @@
     <p>It might be a bit difficult to grasp the core intuition directly from the above mathematical expressions. Here is a breakdown of each case:</p>
     <ul>
         <li>If the term is just the variable \(x\) itself, replacing \(x\) with \(s\) simply gives back \(s\).</li>
-        <li>If the term is some other variable \(y\), the substitution has nothing to act on and the term is left unchanged.</li>
-        <li>If the term is an application \((t_1 \; t_2)\), the substitution is pushed into both sides independently and the results are applied together.</li>
+        <li>If the term is some other variable \(y\), the substitution has nothing to act on, and the term is left unchanged.</li>
+        <li>If the term is an application \((t_1 \; t_2)\), the substitution is pushed into both sides independently, and the results are applied together.</li>
         <li>If the term is an abstraction whose binder is \(x\) itself, the very variable being substituted, then \(x\) is locally rebound and has no free occurrences inside the body. There is nothing to replace, so the abstraction is left untouched.</li>
-        <li>If the term is an abstraction with a different binder \(y\), the substitution needs to descend into the body. Over here there can be two possible sub-cases:</li>
+        <li>If the term is an abstraction with a different binder \(y\), the substitution needs to descend into the body. Over here, there can be two possible sub-cases:</li>
         <ul>
             <li>If \(y\) does not appear free in the replacement term \(s\), there is no risk of capture and the substitution is applied to the body directly.</li>
             <li>If \(y\) does appear free in \(s\), substitution would cause \(y\) to be captured by the binder, changing its meaning. To avoid this, the binder is first \(\alpha\)-renamed to a fresh variable \(w\), and then the substitution proceeds safely.</li>
@@ -138,37 +138,39 @@
     </ul>
 
     <h3>\(\alpha\)-conversion</h3>
-    <p>In the previous section, I have covered a bit about \(\alpha\)-renaming. Within this section, we'll try to properly get an intution of what \(\alpha\)-conversion is. It is one of the two major semantic rules within lambda calculus.</p>
-    <p>\(\alpha\)-conversion is a mechanism to rename the bound variables of a lambda function consistently such that its meaning is preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\) all refer to the same function even though their binder variable have different names. Two lambda terms are said to be \(\alpha\)-equivalent if one can be transformed into the other via some finite series of \(\alpha\)-conversions.</p>
+    <p>In the previous section, I have covered a bit about \(\alpha\)-renaming. Within this section, we'll try to properly get an intuition of what \(\alpha\)-conversion is. It is one of the two major semantic rules within lambda calculus.</p>
+    <p>\(\alpha\)-conversion is a mechanism to rename the bound variables of a lambda function consistently such that its meaning is preserved, i.e., \(\lambda x.x\), \(\lambda y.y\), and \(\lambda z.z\) all refer to the same function even though their binder variable have different names. Two lambda terms are said to be \(\alpha\)-equivalent if one can be transformed into the other via some finite series of \(\alpha\)-conversions.</p>
     <p>\(\lambda x.M\) and \(\lambda y.M[x := y]\) are said to be \(\alpha\)-equivalent, if \(y \notin FV(M)\). \(\alpha\)-equivalence between two lambda terms is commonly represented as \(\lambda x.M \equiv_{\alpha} \lambda y.M[x := y]\).</p>
 
 
     <h3>\(\beta\)-reduction</h3>
-    <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus, just consists of variables, functions and function calls, the only way a program can be built is via executing the functions i.e. layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred as "<i>redex</i>". The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
+    <p>\(\beta\)-reduction is all about how to evaluate the applications. As lambda calculus consists of variables, functions, and function calls, the only way a program can be built is via executing the functions, i.e., layers of applications. An application is generally represented as \((\lambda x.M) N\) and an unapplied application is often referred to as "<i>redex</i>". The way \((\lambda x.M) N\) is evaluated is using substitutions:</p>
 
     \[
         (\lambda x.M) N = M[x := N]
     \]
 
-    <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the other is in its most simplified form and it can't be reduced down further. A lambda term which can't further reduced down is said to be in "<i>normal form</i>". It is important to note that not all terms have normal form. For example \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to be a normal form as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
+    <p>While applying \(\beta\)-reduction to a lambda function, one would come across different forms of a lambda term, and all of them mathematically have the same meaning. \((\lambda x.(\lambda y.y) x) z\) and \(z\) both are mathematically equivalent to one another, but the former is an intermediate form (i.e., it can be reduced further down), whereas the latter is in its most simplified form, and it can't be reduced down further. A lambda term that can't be further reduced is said to be in "<i>normal form</i>". It is important to note that not all terms have a normal form. For example, \((\lambda x.x \; x) (\lambda x.x \; x)\) can't be reduced down to a normal form, as on reduction you keep getting itself, it is equivalent to calling a function within itself.</p>
 
     <p>Let's take an example lambda expression and try to evaluate it - \((\lambda x.x \; x) ((\lambda x.y) z)\)</p>
+    <br/>
     <figure>
       <img src="../images/lambda-calculus/001_term_red_graph.png" />
       <figcaption>Reduction graph for a terminating lambda expression</figcaption>
     </figure>
 
-    <p>The above reduction graph shows all the possible ways to reduce the example lambda expression down to its normal form. There are different styles of evaluation used. In the right branch of the reduction graph, the inner redex is first evaluated as compared to evaluating the outer redex in the left branch. Over here, it didn't matter which path was chosen as all of them lead to the same answer but there are cases where depend on evaluation method, the result changes.</p>
+    <p>The above reduction graph shows all the possible ways to reduce the example lambda expression down to its normal form. There are different styles of evaluation used. In the right branch of the reduction graph, the inner redex is first evaluated, as compared to evaluating the outer redex in the left branch. Over here, it didn't matter which path was chosen as all of them led to the same answer, but there are cases where, depending on the evaluation method, the result changes.</p>
 
     <p>Consider another example lambda expression - \((\lambda x.y) ((\lambda x.x x)(\lambda x.x x))\)</p>
+    <br/>
     <figure id="example-2">
       <img src="../images/lambda-calculus/002_non_term_red_graph.png" />
-      <figcaption>Reduction graph for a non terminating lambda expression</figcaption>
+      <figcaption>Reduction graph for a non-terminating lambda expression</figcaption>
     </figure>
 
-    <p>Over here if the outer redex was evaluated first then \(y\) would be the output as there are no free occurrences of \(x\) in \(y\) for substitution to occur. But if the inner redex was chosen to be evaluated first then it gets stuck in this recursive loop.</p>
+    <p>Over here, if the outer redex was evaluated first, then \(y\) would be the output, as there are no free occurrences of \(x\) in \(y\) for substitution to occur. But if the inner redex was chosen to be evaluated first, then it gets stuck in this recursive loop.</p>
 
-    <p>If you notice the naïve \(\beta\)-reduction (aka \(\beta\)-reduction) is very non-deterministic, to make it a bit more clear, here is how \(\beta\)-reduction can be described formally using inference rules:</p>
+    <p>If you notice, the naïve \(\beta\)-reduction (aka \(\beta\)-reduction) is very non-deterministic. To make it a bit clearer, here is how \(\beta\)-reduction can be described formally using inference rules:</p>
 
     \[
         \frac{}{(\lambda x.M) N \rightarrow_{\beta} \lambda x.M[x := N]}
@@ -186,14 +188,14 @@
 
     <ul>
         <li>If \((\lambda x.M) N\) is \(\beta\)-reduced then it will always be equal to \(\lambda x.M[x := N]\). The empty premise means that it is always true.</li>
-        <li>In regular programming languages, the body of a function is not evaluated unless it is called/executed but in full-\(\beta\) reduction if there is a redex inside an abstraction then it can be \(\beta\)-reduced.</li>
-        <li>If either of sides (left or right) in an application has a redex then it can be \(\beta\)-reduced.</li>
+        <li>In regular programming languages, the body of a function is not evaluated unless it is called/executed, but in full-\(\beta\) reduction, if there is a redex inside an abstraction, then it can be \(\beta\)-reduced.</li>
+        <li>If either of the sides (left or right) in an application has a redex, then it can be \(\beta\)-reduced.</li>
     </ul>
 
-    <p>The goal of full-\(\beta\) reduction is "if there is a redex then reduce it down". There is no hierarchical structure, in terms of the reduction order. Due to this nature of full-\(\beta\) reduction, the non-determinism arises, which can be clearly seen in <a href="#example-2">example 2</a>.</p>
+    <p>The goal of full-\(\beta\) reduction is "if there is a redex, then reduce it down". There is no hierarchical structure in terms of the reduction order. Due to this nature of full-\(\beta\) reduction, the non-determinism arises, which can be clearly seen in <a href="#example-2">example 2</a>.</p>
 
     <h3>Reduction strategies</h3>
-    <p>Until now, we have only checked at full-\(\beta\) reduction which is a non-deterministic reduction strategy. There are other reduction strategy which attempts to fix the issues with full-\(\beta\) reduction. For the scope of this blog, we would mainly focus on these following reduction strategies:</p>
+    <p>Until now, we have only checked at full-\(\beta\) reduction which is a non-deterministic reduction strategy. There are other reduction strategy which attempts to fix the issues with full-\(\beta\) reduction. For the scope of this blog, we would mainly focus on the following reduction strategies:</p>
 
     <ul>
         <li>Normal order</li>
@@ -206,18 +208,21 @@
     <p>The core idea of normal order is to reduce the leftmost, outermost redex first. The most important property of normal order is that if a term has a normal form, then normal order reduction will find it. This is what the "Church-Rosser" theorem is all about. I wouldn't be going too deep into that theorem within this blog, but if you are interested in reading more about it, I would suggest reading this paper titled "<a href="https://www.cs.cornell.edu/~kozen/Papers/ChurchRosser.pdf">Church–Rosser Made Easy</a>".</p>
 
     <p>To get a better intuition of normal order, let's try to evaluate a lambda expression using it - \((\lambda x.x) ((\lambda x.x) (\lambda z.(\lambda x.x) z))\).</p>
+    <br/>
     <figure id="example-3">
       <img src="../images/lambda-calculus/003_normal_order_01.png" />
       <figcaption>Reduction using normal order</figcaption>
     </figure>
 
     <p>Here is the \(\beta\)-reduction of the same lambda expression but using full-\(\beta\) reduction. Over here, the innermost redex is reduced first.</p>
+    <br/>
     <figure>
       <img src="../images/lambda-calculus/004_full_beta_01.png" />
       <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
     </figure>
 
     <p>Let's take another example where full-\(\beta\) reduction fails due to its nature of evaluating the innermost redexes first.</p>
+    <br/>
     <figure>
       <img src="../images/lambda-calculus/005_normal_order_02.png" />
       <figcaption>Reduction using normal order</figcaption>
@@ -228,25 +233,226 @@
       <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
     </figure>
 
-    <p>In the above example, consider the recursive lambda term \((\lambda z.z \; z) (\lambda z.z \; z)\) as \(\Omega\).In case of normal order, it evaluated the outermost redex right and as there were no free \(x\) in \(\lambda y.y\), the evaluated output was \(\lambda y.y\). In case of full-\(\beta\) reduction, the inner redex was attempted to be evaluated first and as the inner redex was a recursive lambda term, the evaluation got stuck in a loop.</p>
+    <p>In the above example, consider the recursive lambda term \((\lambda z.z \; z) (\lambda z.z \; z)\) as \(\Omega\).In case of normal order, it evaluated the outermost redex right and as there were no free \(x\) in \(\lambda y.y\), the evaluated output was \(\lambda y.y\). In case of full-\(\beta\) reduction, the inner redex was attempted to be evaluated first, and as the inner redex was a recursive lambda term, the evaluation got stuck in a loop.</p>
 
     <h4>Call-by-name</h4>
-    <p>Call-by-name reduction strategy is very much similar to normal order except for one part i.e. it doesn't reduce within lambda bodies. In last step of <a href="#example-3">example 3</a>, the body of \(\lambda z.(\lambda x.x) z\) was reduced to finally get \(\lambda z.z\). The functionality of reducing a lambda's bodies without an application might feel unintuitive as in regular programming languages, a function's body is evaluated only when it is executed. To avoid this confusion, call-by-name reduction strategy is used which is exactly like normal order except it doesn't allow to reduction within lambda bodies.</p>
-
+    <p>Call-by-name reduction strategy is very much similar to normal order, except for one part, i.e., it doesn't reduce within lambda bodies. In last step of <a href="#example-3">example 3</a>, the body of \(\lambda z.(\lambda x.x) z\) was reduced to finally get \(\lambda z.z\). The functionality of reducing a lambda's bodies without an application might feel unintuitive, as in regular programming languages, a function's body is evaluated only when it is executed. To avoid this confusion, call-by-name reduction strategy is used, which is exactly like normal order, except it doesn't allow reduction within lambda bodies.</p>
+    <br/>
     <figure>
       <img src="../images/lambda-calculus/007_call_by_name.png" />
       <figcaption>Reduction using call-by-name</figcaption>
     </figure>
 
     <h4>Call-by-need</h4>
-    <p>In call-by-name, the function arguments are passed unevaluated and only reduced if they end up in a function position i.e. left hand side of an application. This avoids evaluating arguments that are never used. However, if an argument is used multiple times then call-by-name re-evaluates it each time. Call-by-need solves this issue using a cache mechanism. Call-by-need memoizes the result of the first evaluation and it is reused in other places, due to this mechanism any argument is reduced at most once. This is also known as "<i>lazy-evaluation</i>" and it is the evaluation/reduction strategy which Haskell uses.</p>
+    <p>In call-by-name, the function arguments are passed unevaluated and only reduced if they end up in a function position, i.e., the left-hand side of an application. This avoids evaluating arguments that are never used. However, if an argument is used multiple times, then call-by-name re-evaluates it each time. Call-by-need solves this issue using a cache mechanism. Call-by-need memoizes the result of the first evaluation, and it is reused in other places; due to this mechanism, any argument is reduced at most once. This is also known as "<i>lazy-evaluation</i>," and it is exactly what <a href="https://wiki.haskell.org/Thunk">Thunk</a> in Haskell means.</p>
 
     <h4>Call-by-value</h4>
-    <p>Call-by-value is <i>kind of</i> like on the other end of the spectrum while comparing it to call-by-name and call-by-need. In call-by-value, before applying a function, the arguments are fully evaluated first and then proceed forward with the substitution. The benfits of call-by-value over call-by-name (or call-by-need) is that its predictable and cheap per step as all the arguments are fully evaluated before the function is executed. The cons of it are:</p>
+    <p>Call-by-value is <i>kind of</i> like on the other end of the spectrum, while comparing it to call-by-name and call-by-need. In call-by-value, before applying a function, the arguments are fully evaluated first, and then proceed forward with the substitution. The benefits of call-by-value over call-by-name (or call-by-need) are that it's predictable and cheap per step, as all the arguments are fully evaluated before the function is executed. The cons of it are:</p>
     <ol>
         <li>It can diverge on terms which have recursive arguments like \((\lambda x.\lambda y.y) ((\lambda z.z \; z) (\lambda z.z \; z))\)</li>
-        <li>It is only cheap when the argument is being utilized by the function. If the argument isn't utilized by the function then it wastes compute to evaluate the argument beforehand.</li>
+        <li>It is only cheap when the argument is being utilized by the function. If the argument isn't utilized by the function, then it wastes computation to evaluate the argument beforehand.</li>
     </ol>
+
+    <h3>Church encodings</h3>
+    <p>Until now, we have seen how functions can be evaluated using \(\beta\)-reduction and how two functions are equivalent to each other using \(\alpha\)-conversion. Lambda calculus by itself doesn't have any data structures, i.e., there are no booleans, numbers, floats, lists, tuples, etc. It only has functions. To <i> mimic</i> the behaviour of actual data structures in lambda calculus, church encodings are used. The list of all possible encodings is very huge, so instead of this blog, we'll mainly blog on the church encodings of booleans, numbers, logical operators (AND, OR, NOT), and arithmetic operators (addition and multiplication).</p>
+
+    <h4>Booleans</h4>
+    <p>The way <code>true</code> is defined in lambda calculus is that it is a function that takes in two arguments and returns the first one, whereas <code>false</code> is a function that also takes in two arguments and returns the second one.</p>
+
+    \[
+        \begin{aligned}
+        \text{True} &= \lambda x.\lambda y.x \\
+        \text{False} &= \lambda x.\lambda y.y
+        \end{aligned}
+    \]
+
+    <p>Using the above definitions of booleans, we can structure a function which mimics the behaviour of <code>if</code>/<code>else</code> branch as follows:</p>
+
+    \[
+        \text{IfElse} = \lambda b.\lambda m.\lambda n.b \; m \; n
+    \]
+
+    <p>Over here, the first argument is the "boolean function", the second argument is equivalent to the <code>if</code> branch, and the third argument is equivalent to the <code>else</code> branch. So, if the boolean function is <code>true</code> then it'll return the first option, i.e., the <code>if</code> branch will be executed and vice versa.</p>
+
+    \[
+        \begin{aligned}
+        \text{IfElse} \; \text{True} \; v \; w &\rightarrow_{\beta} v \\
+        \text{IfElse} \; \text{False} \; v \; w &\rightarrow_{\beta} w
+        \end{aligned}
+    \]
+
+    <h4>Logical operators</h4>
+    <p>After understanding how boolean church encoding works, the encoding for logical operators would look much more intuitive. Let's try to walk through the process of creating an encoding for the <code>AND</code> logical operator.</p>
+    <p>The signature of the <code>AND</code> function would take in two arguments, which would be boolean functions and return a boolean function as output. Let's take a look at the truth table of the <code>AND</code> gate.</p>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>A (Input)</th>
+                <th>B (Input)</th>
+                <th>Y (Output = A & B)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>F</td>
+                <td>F</td>
+                <td>F</td>
+            </tr>
+            <tr>
+                <td>F</td>
+                <td>T</td>
+                <td>F</td>
+            </tr>
+            <tr>
+                <td>T</td>
+                <td>F</td>
+                <td>F</td>
+            </tr>
+            <tr>
+                <td>T</td>
+                <td>T</td>
+                <td>T</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Now treating the above truth table as a function input/output table, we can see that the output of the function is always <code>F</code> if either one of them is <code>F</code> and if either one of them is <code>T</code> then output is equal to the value of other argument.</p>
+
+    \[
+        \text{And} = \lambda b.\lambda c.b \; c \; \text{False}
+    \]
+
+    <p>Similarly for <code>OR</code> operator, we'll first analyze the truth table as a function input/output table and understand the patterns.</p>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>A (Input)</th>
+                <th>B (Input)</th>
+                <th>Y (Output = A | B)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>F</td>
+                <td>F</td>
+                <td>F</td>
+            </tr>
+            <tr>
+                <td>F</td>
+                <td>T</td>
+                <td>T</td>
+            </tr>
+            <tr>
+                <td>T</td>
+                <td>F</td>
+                <td>T</td>
+            </tr>
+            <tr>
+                <td>T</td>
+                <td>T</td>
+                <td>T</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>Over here, we can see that if either one of the arguments is <code>T</code> then the output is <code>T</code> and if either one of them is <code>F</code> then the output is equal to the value of the other argument.</p>
+
+    \[
+        \text{Or} = \lambda b.\lambda c.\lambda b \; \text{True} \; c
+    \]
+
+    <p>And finally for <code>NOT</code> operator</p>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>A (Input)</th>
+                <th>Y (Output = !A)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>F</td>
+                <td>T</td>
+            </tr>
+            <tr>
+                <td>T</td>
+                <td>F</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>In the case of <code>NOT</code> function, it would only take in a single argument. If the argument is <code>T</code> then return <code>F</code> and if it is <code>F</code> then return <code>T</code>.</p>
+
+    \[
+        \text{Not} = \lambda b.b \; \text{False} \; \text{True}
+    \]
+
+    <h4>Numbers</h4>
+    <p>The way numbers are defined in church encoding is very interesting. A number is defined as a function that takes in two arguments - \(x\), which is a starting point for all the numbers, and \(f\), which is a function that returns the successor of any number.</p>
+
+    \[
+        \begin{aligned}
+        n &= \lambda f.\lambda x.f^{n}(x) \\
+        \text{succ} &= \lambda n.\lambda f.\lambda x.f \; n \;  f \; x
+        \end{aligned}
+    \]
+
+    \[
+        \begin{aligned}
+        0 &= \lambda f.\lambda x.x \\
+        1 &= \lambda f.\lambda x.f \; x \\
+        2 &= \lambda f.\lambda x.f \; f \; x \\
+        3 &= \lambda f.\lambda x.f \; f \; f \; x
+        \end{aligned}
+    \]
+
+    <p>The definition of a number and the successor function in church encoding are kind of intertwined with each other. Let's try to get a better intuitive understanding by trying to evaluate <code>succ one</code>:</p>
+
+    \[
+        \begin{aligned}
+        \text{succ one} &= (\lambda n.\lambda f.\lambda x.f \; n \; f \; x) \; \text{one} \\
+        &= \lambda f.\lambda x.f \; \text{one} \; f \; x \\
+        \text{one} \; f \; x &= (\lambda f.\lambda x.f \; x) \; (f \; x) = f \; x \\
+        \text{succ one} &= \lambda f.\lambda x.f \; f \; x = \text{two} \\
+        \end{aligned}
+    \]
+
+    <p>If you've ever used partial functions in Python (<a href="https://docs.python.org/3/library/functools.html#functools.partial"><code>functools.partial</code></a>) then that's exactly what we've done with <code>succ one</code>. <code>succ</code> function in total takes in three arguments, but we've passed one of them, and it generated a partial function out of it.</p>
+
+    <p>If you wanted to perform 1 + 2 in lambda calculus, it would be equivalent to replacing the "starting point" (\(x\)) in 1 with 2 </p>
+
+    \[
+        \begin{aligned}
+        1 &= \lambda f.\lambda x.f \; x \\
+        2 &= \lambda f.\lambda x.f \; f \; x \\
+        1 + 2 &= 3 = \lambda f.\lambda x.f \; f \; f \; x = \lambda f.\lambda x.f \; (f \; f \; x)
+        \end{aligned}
+    \]
+
+    <p>So performing \(m\) + \(n\) is equivalent to equivalent \(x\) in \(m\) with \(n \; f \; x\)</p>
+
+    \[
+        \text{Add} = \lambda m.\lambda n.\lambda f.\lambda x.m \; f\; (n \; f \; x)
+    \]
+
+    <p>If you wanted to perform 2 * 3 in lambda calculus</p>
+
+    \[
+        \begin{aligned}
+        2 &= \lambda f.\lambda x.f \; f \; x \\
+        3 &= \lambda f.\lambda x.f \; f \; f \; x \\
+        2 \times 3 &= 6 = \lambda f.\lambda x.f \; f \; f \; f \; f \; f \; x  = \lambda f.\lambda x.(f \; f \; f) \; (f \; f \; f) \; x
+        \end{aligned}
+    \]
+
+    <p>So in case of multiplication, rather than replacing the "starting point", you replace the successor function (\(f\)) with \(n \; f\) in case of \(m \times n\). The idea is very similar to how multiplication is basically repeated addition.</p>
+
+    \[
+        \text{Mult} = \lambda m.\lambda n.\lambda f.\lambda x.m \; (n \; f) \; x
+    \]
 
     <h3>References</h3>
     <ol>
