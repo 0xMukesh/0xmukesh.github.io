@@ -145,3 +145,31 @@ table td {
     padding: 0.4rem 0.6rem;
     text-align: left;
 }
+
+.webring-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.webring-row img {
+    display: block;
+}
+
+.webring-row a:not(:has(img)) {
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+    transition: transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+}
+
+.webring-row a:not(:has(img)):hover {
+    transform: translateX(-3px);
+}
+
+.webring-row a:not(:has(img)):last-child:hover {
+    transform: translateX(3px);
+}
