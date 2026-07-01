@@ -25,6 +25,11 @@
     "description": "A teeny-tiny brainfuck interpreter"
   },
   {
+    "title": "lambda",
+    "url": "https://github.com/0xmukesh/lambda",
+    "description": "A very minimal untyped lambda calculus interpreter"
+  },
+  {
     "title": "chippy",
     "url": "https://github.com/0xmukesh/chippy",
     "description": "A simple CHIP-8 emulator, which got me further interested in the entire <a href='https://emudev.org'>emudev</a> rabbit hole"

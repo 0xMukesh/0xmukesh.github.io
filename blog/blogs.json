@@ -1,5 +1,14 @@
 [
   {
+    "title": "A look into sequence alignment",
+    "url": "./sequence-alignment.html",
+    "date": "June 20, 2026",
+    "draft": true,
+    "tags": [
+      "bioinformatics"
+    ]
+  },
+  {
     "title": "A primer on lambda calculus",
     "url": "./lambda-calculus.html",
     "date": "June 06, 2026",
