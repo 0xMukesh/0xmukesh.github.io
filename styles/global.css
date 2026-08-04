@@ -96,6 +96,23 @@ footer {
     padding-top: 1rem;
 }
 
+footer .webring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+footer .webring a {
+    text-decoration: none;
+    color: inherit;
+}
+
+footer .webring a:hover {
+    color: #a00000;
+}
+
 .blog-nav {
     display: flex;
     justify-content: space-between;
@@ -131,6 +148,10 @@ footer {
 .latex-dark footer {
     color: #666;
     border-top-color: #333;
+}
+
+.latex-dark footer .webring a:hover {
+    color: #e06060;
 }
 
 table {
