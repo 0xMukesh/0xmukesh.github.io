@@ -1,0 +1,31 @@
+[
+  {
+    "name": "mukesh",
+    "src": "./images/badges/mukesh.png",
+    "href": "https://0xmukesh.github.io"
+  },
+  {
+    "name": "namish",
+    "src": "./images/badges/namish.png",
+    "href": "https://namishh.com"
+  },
+  {
+    "name": "nithitsuki",
+    "src": "./images/badges/nithitsuki.png",
+    "href": "https://nithitsuki.com"
+  },
+  {
+    "name": "rv",
+    "src": "./images/badges/rv.png",
+    "href": "https://rohith.net"
+  },
+  {
+    "name": "meowcatsrule",
+    "src": "./images/badges/meowcatsrule.gif",
+    "href": ""
+  },
+  {
+    "name": "catscape",
+    "src": "./images/badges/catscape.gif"
+  }
+]

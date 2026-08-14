@@ -89,6 +89,19 @@ li strong,
     color: #555;
 }
 
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.badges img {
+    width: 88px;
+    height: 31px;
+    image-rendering: pixelated;
+}
+
 footer {
     margin-top: 3rem;
     font-size: 0.82rem;

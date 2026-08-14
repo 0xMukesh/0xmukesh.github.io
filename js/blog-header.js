@@ -1,13 +1,10 @@
 async function appendBlogHeader(jsonFilePath, goBackPath) {
-  const slug = window.location.pathname
-    .split("/")
-    .filter(Boolean)
-    .pop()
+  const slug = window.location.pathname.split("/").filter(Boolean).pop();
 
   const response = await fetch(jsonFilePath);
   const posts = await response.json();
 
-  const post = posts.find(p => p.url.endsWith(slug));
+  const post = posts.find((p) => p.url.endsWith(slug));
   if (!post) return;
 
   const nav = document.createElement("nav");
@@ -22,7 +19,7 @@ async function appendBlogHeader(jsonFilePath, goBackPath) {
   header.innerHTML = `
     <h1>${post.title}</h1>
     <p class="blog-meta">${post.date}</p>
-    ${(post.tags ?? []).map(tag => `<span class="tag">#${tag}</span>`).join("")}
+    ${(post.tags ?? []).map((tag) => `<span class="tag">#${tag}</span>`).join("")}
   `;
 
   document.body.prepend(header);
