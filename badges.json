@@ -2,7 +2,7 @@
   {
     "name": "mukesh",
     "src": "./images/badges/mukesh.png",
-    "href": "https://0xmukesh.github.io"
+    "href": "https://mukesh.0xc84.fyi"
   },
   {
     "name": "namish",
@@ -18,6 +18,11 @@
     "name": "rv",
     "src": "./images/badges/rv.png",
     "href": "https://rohith.net"
+  },
+  {
+    "name": "0xc84",
+    "src": "./images/badges/0xc84.png",
+    "href": "https://0xc84.fyi"
   },
   {
     "name": "meowcatsrule",
