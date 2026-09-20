@@ -1,5 +1,10 @@
 [
   {
+    "title": "gbrc",
+    "url": "https://github.com/boxmanllc/gbrc",
+    "description": "A LLVM-based static recompiler for Game Boy DMG-01"
+  },
+  {
     "title": "tiny.nes",
     "url": "https://github.com/0xmukesh/tiny.nes",
     "description": "A tiny NES emulator, which was my next emudev project after CHIP-8"
