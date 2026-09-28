@@ -199,28 +199,27 @@
         <h3>Implementation</h3>
 
         <pre><code class="language-python">class NST(nn.Module):
-        def __init__(self):
-            super().__init__()
+    def __init__(self):
+        super().__init__()
 
-            self.content_layers = ["21"] # conv4_2
-            self.style_layers = ["0", "5", "10", "19", "28"] # conv1_1, conv2_1, conv3_1, conv4_1, conv5_1
-            self.model = models.vgg19(weights="DEFAULT").features[:29] # type: ignore
+        self.content_layers = ["21"] # conv4_2
+        self.style_layers = ["0", "5", "10", "19", "28"] # conv1_1, conv2_1, conv3_1, conv4_1, conv5_1
+        self.model = models.vgg19(weights="DEFAULT").features[:29] # type: ignore
 
-        def forward(self, x):
-            content_features = []
-            style_features = []
+    def forward(self, x):
+        content_features = []
+        style_features = []
 
-            for i, layer in enumerate(self.model):
-                x = layer(x)
+        for i, layer in enumerate(self.model):
+            x = layer(x)
 
-                if (str(i) in self.content_layers):
-                    content_features.append(x)
+            if (str(i) in self.content_layers):
+                content_features.append(x)
 
-                if (str(i) in self.style_layers):
-                    style_features.append(x)
+            if (str(i) in self.style_layers):
+                style_features.append(x)
 
-            return content_features, style_features
-    </code></pre>
+        return content_features, style_features</code></pre>
 
         <p>
             Let’s write a small utility function that opens an image, that
@@ -229,10 +228,11 @@
         </p>
 
         <pre><code class="language-python">def load_image(path, device, transform):
-        img = Image.open(path)
-        img = transform(img).unsqueeze(0) # add batch dimension
-        img = img.to(device)
-        return img</code></pre>
+    img = Image.open(path)
+    img = transform(img).unsqueeze(0) # add batch dimension
+    img = img.to(device)
+
+    return img</code></pre>
 
         <p>
             The transform is quite simple — it just resizes the image into
@@ -243,17 +243,17 @@
         </p>
 
         <pre><code class="language-python">device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor()
-    ])
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor()
+])
 
-    content_img_path = "/content/images/content.jpg"
-    style_img_path = "/content/images/style.jpg"
+content_img_path = "/content/images/content.jpg"
+style_img_path = "/content/images/style.jpg"
 
-    content_img = load_image(content_img_path, device, transform)
-    style_img = load_image(style_img_path, device, transform)
-    generated_img = content_img.clone().requires_grad_(True)</code></pre>
+content_img = load_image(content_img_path, device, transform)
+style_img = load_image(style_img_path, device, transform)
+generated_img = content_img.clone().requires_grad_(True)</code></pre>
 
         <p>
             The model is set to be in evaluation mode as we are not updating the
@@ -265,12 +265,12 @@
         </p>
 
         <pre><code class="language-python">total_steps = 6000
-    learning_rate = 0.001
-    alpha = 1
-    beta = 0.01
+learning_rate = 0.001
+alpha = 1
+beta = 0.01
 
-    model = NST().to(device).eval()
-    optimizer = torch.optim.Adam([generated_img], learning_rate)</code></pre>
+model = NST().to(device).eval()
+optimizer = torch.optim.Adam([generated_img], learning_rate)</code></pre>
 
         <p>
             The content and style features are extracted from the content and
