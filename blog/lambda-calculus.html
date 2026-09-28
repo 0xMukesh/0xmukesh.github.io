@@ -8,19 +8,20 @@
         <link rel="stylesheet" href="../vendor/latex-css/style.css" />
         <link rel="stylesheet" href="../vendor/latex-css/prism/prism.css" />
         <link rel="stylesheet" href="../styles/global.css" />
+
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
-        <style>
-            figure {
-                counter-increment: example-counter;
-            }
-
-            figcaption::before {
-                content: "Example " counter(example-counter) ": ";
-            }
-        </style>
+        <script
+            id="MathJax-script"
+            async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></script>
+        <script src="../js/utils.js" defer></script>
     </head>
+
     <body>
+        <div data-component="blog-header" data-json="./blogs.json"></div>
+
         <p>
             Hey there! It's been a while since I've written a technical blog
             post. Last month, I came across
@@ -971,14 +972,4 @@ fib (succ (succ (succ zero)))</code></pre>
             </li>
         </ol>
     </body>
-
-    <script
-        id="MathJax-script"
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    ></script>
-    <script src="../js/blog-header.js"></script>
-    <script>
-        appendBlogHeader("./blogs.json", "/blog");
-    </script>
 </html>

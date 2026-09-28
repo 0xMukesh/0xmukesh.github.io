@@ -7,8 +7,12 @@
 
         <link rel="stylesheet" href="./vendor/latex-css/style.css" />
         <link rel="stylesheet" href="./styles/global.css" />
+        <script src="./js/utils.js" defer></script>
     </head>
+
     <body>
+        <header data-component="header"></header>
+
         <section id="about">
             <h2>About Me</h2>
 
@@ -89,20 +93,12 @@
             </p>
         </section>
 
-        <section id="blog">
+        <section data-component="list" data-json="./blog/blogs.json">
             <h2>Blog</h2>
         </section>
 
-        <section id="badges">
+        <section data-component="badges" data-json="./badges.json">
             <h2>Badges</h2>
         </section>
     </body>
-
-    <script src="./js/header.js"></script>
-    <script src="./js/list.js"></script>
-    <script src="./js/badges.js"></script>
-    <script>
-        appendList("blog", "blog", "./blog/blogs.json");
-        appendBadges("badges", "./badges.json");
-    </script>
 </html>

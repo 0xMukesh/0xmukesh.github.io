@@ -7,9 +7,12 @@
 
         <link rel="stylesheet" href="../vendor/latex-css/style.css" />
         <link rel="stylesheet" href="../styles/global.css" />
+        <script src="../js/utils.js" defer></script>
     </head>
     <body>
-        <section id="projects">
+        <header data-component="header"></header>
+
+        <section data-component="list" data-json="./projects.json">
             <h2>Projects</h2>
         </section>
 
@@ -17,10 +20,4 @@
             ...and more on my <a href="https://github.com/0xmukesh">GitHub</a>
         </p>
     </body>
-
-    <script src="../js/header.js"></script>
-    <script src="../js/list.js"></script>
-    <script>
-        appendList("projects", "projects", "./projects.json");
-    </script>
 </html>

@@ -8,10 +8,20 @@
         <link rel="stylesheet" href="../vendor/latex-css/style.css" />
         <link rel="stylesheet" href="../vendor/latex-css/prism/prism.css" />
         <link rel="stylesheet" href="../styles/global.css" />
+
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+        <script
+            id="MathJax-script"
+            async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></script>
+        <script src="../js/utils.js" defer></script>
     </head>
+
     <body>
+        <div data-component="blog-header" data-json="./blogs.json"></div>
+
         <p>
             CNNs are a special kind of neural networks that are specifically
             designed to process data with a grid-like topology, such as images
@@ -812,13 +822,4 @@
             blog post.
         </p>
     </body>
-    <script
-        id="MathJax-script"
-        async
-        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    ></script>
-    <script src="../js/blog-header.js"></script>
-    <script>
-        appendBlogHeader("./blogs.json", "/blog");
-    </script>
 </html>
