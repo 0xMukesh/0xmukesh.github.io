@@ -14,6 +14,7 @@ function renderHeader(el) {
     <h1>Mukesh</h1>
     <nav class="links">
         <a href="/index.html">home</a>
+        <a href="/work.html">work</a>
         <a href="/blog">blog</a>
         <a href="/projects">projects</a>
         <a href="/contact.html">contact</a>
