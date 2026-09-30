@@ -16,7 +16,7 @@ function renderHeader(el) {
         <a href="/index.html">home</a>
         <a href="/work.html">work</a>
         <a href="/blog">blog</a>
-        <a href="/projects">projects</a>
+        <a href="/projects.html">projects</a>
         <a href="/contact.html">contact</a>
     </nav>`;
 }
@@ -26,7 +26,6 @@ function renderHeader(el) {
 // usage: <section data-component="list" data-json="..."></section>
 async function renderList(el) {
   const jsonPath = el.dataset.json;
-  const base = new URL(jsonPath, window.location.href).href;
 
   const data = await loadJSON(jsonPath);
   const items = data
@@ -37,7 +36,6 @@ async function renderList(el) {
   ul.className = "list";
   ul.innerHTML = items
     .map((item) => {
-      const url = new URL(item.url, base).href;
       const date = item.date ? `<span class="date">${item.date}</span>` : "";
       const description = item.description
         ? `<span> - ${item.description}</span>`
@@ -48,7 +46,7 @@ async function renderList(el) {
 
       return `<li>
         ${date}
-        <a href="${url}">${item.title}</a> ${tags}${description}
+        <a href="${item.url}">${item.title}</a> ${tags}${description}
       </li>`;
     })
     .join("");

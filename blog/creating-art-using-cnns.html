@@ -20,7 +20,10 @@
     </head>
 
     <body>
-        <div data-component="blog-header" data-json="./blogs.json"></div>
+        <div
+            data-component="blog-header"
+            data-json="../public/data/blogs.json"
+        ></div>
 
         <p>
             Hey there! In this blog post, we will explore how to extract the art
@@ -35,7 +38,7 @@
         </p>
         <br />
         <img
-            src="../images/creating-art-using-cnns/001_overview.png"
+            src="../public/images/creating-art-using-cnns/001_overview.png"
             loading="lazy"
         />
         <p>
@@ -110,7 +113,9 @@
             <code>conv5_1</code> are used to extract the style features.
         </p>
         <br />
-        <img src="../images/creating-art-using-cnns/002_network_arch.png" />
+        <img
+            src="../public/images/creating-art-using-cnns/002_network_arch.png"
+        />
         <p>
             The network doesn’t perform backpropagation for the content and
             style image. We are not training the network, we are using CNN to

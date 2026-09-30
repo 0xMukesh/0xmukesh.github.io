@@ -19,7 +19,10 @@
     </head>
 
     <body>
-        <div data-component="blog-header" data-json="./blogs.json"></div>
+        <div
+            data-component="blog-header"
+            data-json="../public/data/blogs.json"
+        ></div>
 
         <p>
             Hey there! In this blog post we are going to explore different CNNs
@@ -104,7 +107,9 @@
         </ol>
 
         <h4>Architecture</h4>
-        <img src="../images/exploring-different-cnns/001_alexnet_arch.png" />
+        <img
+            src="../public/images/exploring-different-cnns/001_alexnet_arch.png"
+        />
         <p>
             The above image shows the complete end-to-end architecture of
             AlexNet, which contains 5 convolutional layers and 3 fully-connected
@@ -240,7 +245,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/002_vggnet_receptive_field.png"
+            src="../public/images/exploring-different-cnns/002_vggnet_receptive_field.png"
         />
         <p>
             Instead of using two convolutional layers each with 3x3 kernel, we
@@ -262,7 +267,9 @@
         </p>
 
         <h4>Architecture</h4>
-        <img src="../images/exploring-different-cnns/003_vggnet_arch.png" />
+        <img
+            src="../public/images/exploring-different-cnns/003_vggnet_arch.png"
+        />
         <p>
             The VGGNet paper had 6 different architectures/convnet
             configurations, which are just slight variations of the previous
@@ -305,14 +312,16 @@
             ReLU in between each and a max pooling layer at the end.
         </p>
         <br />
-        <img src="../images/exploring-different-cnns/004_vggnet_block.png" />
+        <img
+            src="../public/images/exploring-different-cnns/004_vggnet_block.png"
+        />
         <p>
             and the entire VGGNet could be represented as a series of these VGG
             blocks:
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/005_vggnet_arch_unwrapped.png"
+            src="../public/images/exploring-different-cnns/005_vggnet_arch_unwrapped.png"
         />
 
         <h4>Implementation</h4>
@@ -408,10 +417,12 @@
             number of feature maps for computational efficiency reasons.
         </p>
         <br />
-        <img src="../images/exploring-different-cnns/006_nin_mlpconv.png" />
+        <img
+            src="../public/images/exploring-different-cnns/006_nin_mlpconv.png"
+        />
         <br />
         <img
-            src="../images/exploring-different-cnns/007_nin_linear_vs_mlpconv.png"
+            src="../public/images/exploring-different-cnns/007_nin_linear_vs_mlpconv.png"
         />
         <p>
             <a href="https://arxiv.org/pdf/1302.4389">Maxout networks</a> is
@@ -452,7 +463,9 @@
             by two 1x1 convolutional layers.
         </p>
         <br />
-        <img src="../images/exploring-different-cnns/008_nin_block.png" />
+        <img
+            src="../public/images/exploring-different-cnns/008_nin_block.png"
+        />
         <p>
             and the architecture proposed in NiN’s paper can be represented as
             follows, instead of alternating convolutional and pooling layer, it
@@ -460,7 +473,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/009_nin_arch_unwrapped.png"
+            src="../public/images/exploring-different-cnns/009_nin_arch_unwrapped.png"
         />
 
         <h4>Implementation</h4>
@@ -532,7 +545,7 @@
 
         <h4>Inception v1</h4>
         <img
-            src="../images/exploring-different-cnns/010_inception_v1_normal_block.png"
+            src="../public/images/exploring-different-cnns/010_inception_v1_normal_block.png"
         />
         <p>
             Inception module is a “multi-branch” network which applies a bunch
@@ -553,7 +566,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/011_inception_v1_bottleneck_block.png"
+            src="../public/images/exploring-different-cnns/011_inception_v1_bottleneck_block.png"
         />
         <p>
             The above layer is similar to the previous one but the main
@@ -586,7 +599,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/012_inception_v3_conv_layer_split.png"
+            src="../public/images/exploring-different-cnns/012_inception_v3_conv_layer_split.png"
         />
         <p>
             Any NxN convolutional can be further broken down in smaller
@@ -606,7 +619,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/013_inception_v3_conv_first.png"
+            src="../public/images/exploring-different-cnns/013_inception_v3_conv_first.png"
         />
         <p>
             The above flow might look pretty from point-of-view of
@@ -618,7 +631,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/014_inception_v3_pool_first.png"
+            src="../public/images/exploring-different-cnns/014_inception_v3_pool_first.png"
         />
         <p>
             The above workflow is prone to representational bottleneck as the
@@ -631,7 +644,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/015_inception_v3_block.png"
+            src="../public/images/exploring-different-cnns/015_inception_v3_block.png"
         />
         <p>It has three branches which are processed in parallel.</p>
         <ol>
@@ -689,7 +702,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/016_inception_v1_arch_initial_layers.png"
+            src="../public/images/exploring-different-cnns/016_inception_v1_arch_initial_layers.png"
         />
         <p>
             The initial few layers are quite similar to that of the AlexNet — a
@@ -710,7 +723,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/017_inception_v1_arch_middle_one_layers.png"
+            src="../public/images/exploring-different-cnns/017_inception_v1_arch_middle_one_layers.png"
         />
         <p>
             The next series of layers are just three inception module blocks
@@ -719,7 +732,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/018_inception_v1_arch_middle_two_layers.png"
+            src="../public/images/exploring-different-cnns/018_inception_v1_arch_middle_two_layers.png"
         />
         <p>
             In the next series of layers, there is something interesting going
@@ -769,7 +782,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/019_inception_v1_arch_final_layers.png"
+            src="../public/images/exploring-different-cnns/019_inception_v1_arch_final_layers.png"
         />
         <p>
             At the end, there is one inception module block followed by an
@@ -904,7 +917,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/020_inception_v1_arch_overview.png"
+            src="../public/images/exploring-different-cnns/020_inception_v1_arch_overview.png"
         />
         <pre><code class="language-python">class GoogLeNet(nn.Module):
         def __init__(self, in_channels, classes):
@@ -1008,7 +1021,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/021_resnet_training_comp.png"
+            src="../public/images/exploring-different-cnns/021_resnet_training_comp.png"
         />
         <p>
             The issue of “not being able to train deep neural networks
@@ -1051,7 +1064,9 @@
         </p>
 
         <h4>Residual blocks</h4>
-        <img src="../images/exploring-different-cnns/022_resnet_block.png" />
+        <img
+            src="../public/images/exploring-different-cnns/022_resnet_block.png"
+        />
         <p>
             The above image is a basic representation of a residual block. It
             takes in \(x\) as in input and learns the residual mapping
@@ -1069,7 +1084,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/023_resnet_block_comp.png"
+            src="../public/images/exploring-different-cnns/023_resnet_block_comp.png"
         />
         <p>
             Within the bottleneck block, it has two 1x1 convolutional blocks
@@ -1085,7 +1100,9 @@
         </p>
 
         <h4>Architecture</h4>
-        <img src="../images/exploring-different-cnns/024_resnet_arch.png" />
+        <img
+            src="../public/images/exploring-different-cnns/024_resnet_arch.png"
+        />
         <p>
             The paper proposed quite a few different network designs. In this
             section, we will go through the architecture of ResNet50. The major
@@ -1229,7 +1246,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/025_inception_resnet_arch.png"
+            src="../public/images/exploring-different-cnns/025_inception_resnet_arch.png"
         />
         <p>
             The above image is entire network design of Inception-ResNet-v1. It
@@ -1239,7 +1256,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/026_inception_resnet_stem.png"
+            src="../public/images/exploring-different-cnns/026_inception_resnet_stem.png"
         />
         <p>
             Stem is basically the initial few layers of the network, it consists
@@ -1248,7 +1265,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/027_inception_resnet_block_a.png"
+            src="../public/images/exploring-different-cnns/027_inception_resnet_block_a.png"
         />
         <p>
             The Inception-ResNet-A block is quite similar to the plain Inception
@@ -1261,7 +1278,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/028_inception_resnet_reduction_a.png"
+            src="../public/images/exploring-different-cnns/028_inception_resnet_reduction_a.png"
         />
         <p>
             The reduction-A is multi-branch micro-network block which is used
@@ -1272,7 +1289,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/029_inception_resnet_block_b.png"
+            src="../public/images/exploring-different-cnns/029_inception_resnet_block_b.png"
         />
         <p>
             The Inception-ResNet-B block is pretty similar as Inception-ResNet-A
@@ -1283,7 +1300,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/030_inception_resnet_reduction_b.png"
+            src="../public/images/exploring-different-cnns/030_inception_resnet_reduction_b.png"
         />
         <p>
             The reduction-B block is another multi-branch micro-network block
@@ -1294,7 +1311,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/031_inception_resnet_block_c.png"
+            src="../public/images/exploring-different-cnns/031_inception_resnet_block_c.png"
         />
         <p>
             The reduction-B block is another multi-branch micro-network block
@@ -1499,7 +1516,9 @@
         </p>
 
         <h4>ResNeXt block</h4>
-        <img src="../images/exploring-different-cnns/032_resnext_block.png" />
+        <img
+            src="../public/images/exploring-different-cnns/032_resnext_block.png"
+        />
         <p>
             The above image shows the differences between the bottleneck block
             in ResNet and a basic ResNeXt block. The ResNeXt block has
@@ -1514,7 +1533,7 @@
         </p>
         <br />
         <img
-            src="../images/exploring-different-cnns/033_resnext_block_archs.png"
+            src="../public/images/exploring-different-cnns/033_resnext_block_archs.png"
         />
         <p>
             The paper proposed three block architectures which are
@@ -1549,10 +1568,12 @@
             cardinality while keeping the total complexity cost constant.
         </p>
         <br />
-        <img src="../images/exploring-different-cnns/034_resnext_archs.png" />
+        <img
+            src="../public/images/exploring-different-cnns/034_resnext_archs.png"
+        />
         <br />
         <img
-            src="../images/exploring-different-cnns/035_resnext_training_curves.png"
+            src="../public/images/exploring-different-cnns/035_resnext_training_curves.png"
         />
         <p>
             It is evident from the above table that as the cardinality
@@ -1601,7 +1622,9 @@
         </p>
 
         <h4>Architecture</h4>
-        <img src="../images/exploring-different-cnns/036_resnext_arch.png" />
+        <img
+            src="../public/images/exploring-different-cnns/036_resnext_arch.png"
+        />
         <p>
             The architecture of ResNeXt-50 is quite similar to the architecture
             of ResNet-50, except for the additional dimension which is

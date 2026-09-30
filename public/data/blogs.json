@@ -1,28 +1,28 @@
 [
   {
     "title": "A primer on lambda calculus",
-    "url": "./lambda-calculus.html",
+    "url": "/blog/lambda-calculus.html",
     "date": "June 06, 2026",
     "draft": false,
     "tags": ["functional-programming"]
   },
   {
     "title": "Creating art using CNNs",
-    "url": "./creating-art-using-cnns.html",
+    "url": "/blog/creating-art-using-cnns.html",
     "date": "June 13, 2025",
     "draft": false,
     "tags": ["deep-learning"]
   },
   {
     "title": "Exploring different CNNs",
-    "url": "./exploring-different-cnns.html",
+    "url": "/blog/exploring-different-cnns.html",
     "date": "June 04, 2025",
     "draft": false,
     "tags": ["deep-learning"]
   },
   {
     "title": "CNNs Explained",
-    "url": "./cnns-explained.html",
+    "url": "/blog/cnns-explained.html",
     "date": "May 12, 2025",
     "draft": false,
     "tags": ["deep-learning"]

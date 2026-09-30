@@ -1,36 +1,35 @@
 [
   {
     "name": "mukesh",
-    "src": "./images/badges/mukesh.png",
+    "src": "/public/images/badges/mukesh.png",
     "href": "https://mukesh.0xc84.fyi"
   },
   {
     "name": "namish",
-    "src": "./images/badges/namish.png",
+    "src": "/public/images/badges/namish.png",
     "href": "https://namishh.com"
   },
   {
     "name": "nithitsuki",
-    "src": "./images/badges/nithitsuki.png",
+    "src": "/public/images/badges/nithitsuki.png",
     "href": "https://nithitsuki.com"
   },
   {
     "name": "rv",
-    "src": "./images/badges/rv.png",
+    "src": "/public/images/badges/rv.png",
     "href": "https://rohith.net"
   },
   {
     "name": "0xc84",
-    "src": "./images/badges/0xc84.png",
+    "src": "/public/images/badges/0xc84.png",
     "href": "https://0xc84.fyi"
   },
   {
     "name": "meowcatsrule",
-    "src": "./images/badges/meowcatsrule.gif",
-    "href": ""
+    "src": "/public/images/badges/meowcatsrule.gif"
   },
   {
     "name": "catscape",
-    "src": "./images/badges/catscape.gif"
+    "src": "/public/images/badges/catscape.gif"
   }
 ]

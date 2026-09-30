@@ -20,7 +20,10 @@
     </head>
 
     <body>
-        <div data-component="blog-header" data-json="./blogs.json"></div>
+        <div
+            data-component="blog-header"
+            data-json="../public/data/blogs.json"
+        ></div>
 
         <p>
             CNNs are a special kind of neural networks that are specifically
@@ -62,7 +65,7 @@
             respectively.
         </p>
         <br />
-        <img src="../images/cnns-explained/001_conv_example1.png" />
+        <img src="../public/images/cnns-explained/001_conv_example1.png" />
         <p>
             <b>Note</b>: Over here <code>*</code> denotes convolution operator
             and not matrix multiplication
@@ -73,7 +76,7 @@
             reversal is a 180-degree rotation.
         </p>
         <br />
-        <img src="../images/cnns-explained/002_conv_example2.png" />
+        <img src="../public/images/cnns-explained/002_conv_example2.png" />
         <p>
             After the rotation, the second function is slid across the first
             function, and the overlap is measured. The matrix equivalent of this
@@ -81,7 +84,7 @@
             element-wise multiplication followed by a sum.
         </p>
         <br />
-        <img src="../images/cnns-explained/003_conv_example3.png" />
+        <img src="../public/images/cnns-explained/003_conv_example3.png" />
         <p>
             The overlapped elements are represented in color (red for the
             elements of the first matrix and blue for the elements of the second
@@ -91,7 +94,7 @@
             \[ (1 \cdot 4) + (2 \cdot 3) + (4 \cdot 2) + (5 \cdot 1) = 23 \]
         </div>
         <br />
-        <img src="../images/cnns-explained/004_conv_example4.png" />
+        <img src="../public/images/cnns-explained/004_conv_example4.png" />
         <p>
             The second matrix slides over all the elements of the first matrix,
             performing element-wise multiplication followed by a sum. This
@@ -102,7 +105,7 @@
             (2·4)+(3·3)+(5·2)+(6·1)&=33 \\ (4·4)+(5·3)+(7·2)+(8·1)&=53 \\
             (5·4)+(6·3)+(8·2)+(9·1)&=63 \\ \end{aligned} \]
         </div>
-        <img src="../images/cnns-explained/005_conv_example5.png" />
+        <img src="../public/images/cnns-explained/005_conv_example5.png" />
         <p>
             The first matrix is known as the <b>input</b>, second matrix is
             known as the <b>kernel/filter</b> and the output is known as the
@@ -115,7 +118,9 @@
             \[ \left( \begin{matrix} 0 & -1 & 0 \\ -1 & 4 & -1 \\ 0 & -1 & 0
             \end{matrix} \right) \]
         </div>
-        <img src="../images/cnns-explained/006_edge_detector_kernel.png" />
+        <img
+            src="../public/images/cnns-explained/006_edge_detector_kernel.png"
+        />
 
         <h3>Core Ideas of CNN</h3>
         <p>
@@ -142,7 +147,7 @@
         </p>
 
         <h3>Architecture of CNN</h3>
-        <img src="../images/cnns-explained/007_cnn_arch.png" />
+        <img src="../public/images/cnns-explained/007_cnn_arch.png" />
 
         <h4>Convolutional Layer</h4>
         <p>
@@ -379,7 +384,7 @@
             cross-correlation operation.
         </p>
         <br />
-        <img src="../images/cnns-explained/008_padding.png" />
+        <img src="../public/images/cnns-explained/008_padding.png" />
         <p>
             In PyTorch, a tensor could you padded by using
             <a
@@ -412,7 +417,7 @@
             element at once.
         </p>
         <br />
-        <img src="../images/cnns-explained/009_stride.png" />
+        <img src="../public/images/cnns-explained/009_stride.png" />
         <p>
             The above figure shows the movement of kernel on a input matrix of
             shape 3x3 with a padding of (1, 1, 1, 1) and stride equal to (2, 2).
@@ -454,7 +459,9 @@
             together to return a two-dimensional tensor as the output.
         </p>
         <br />
-        <img src="../images/cnns-explained/010_multiple_input_channels.png" />
+        <img
+            src="../public/images/cnns-explained/010_multiple_input_channels.png"
+        />
         <pre><code class="language-python">import torch
     from scipy import signal
 
@@ -530,7 +537,9 @@
             number of channels and of shape \(k_h \times k_w\).
         </p>
         <br />
-        <img src="../images/cnns-explained/011_multiple_output_channels.png" />
+        <img
+            src="../public/images/cnns-explained/011_multiple_output_channels.png"
+        />
         <pre><code class="language-python">import torch
     from scipy import signal
 
@@ -585,7 +594,7 @@
             that region.
         </p>
         <br />
-        <img src="../images/cnns-explained/012_avg_pooling.png" />
+        <img src="../public/images/cnns-explained/012_avg_pooling.png" />
         <p>
             In case of max pooling, the pooling window slides over the feature
             map, starting from the upper-left corner of the feature map, and
@@ -594,7 +603,7 @@
             noise but it is pretty sensitive to outliers.
         </p>
         <br />
-        <img src="../images/cnns-explained/013_max_pooling.png" />
+        <img src="../public/images/cnns-explained/013_max_pooling.png" />
         <pre><code class="language-python">import torch
 
     def pooling_layer(x: torch.Tensor, pool_size: int, mode: str) -> torch.Tensor:
@@ -626,7 +635,7 @@
             >.
         </p>
         <br />
-        <img src="../images/cnns-explained/014_lenet_arch.png" />
+        <img src="../public/images/cnns-explained/014_lenet_arch.png" />
         <p>
             LeNet-5 comprises of two parts - feature extractor which contains
             two convolutional blocks and a classifier which contains a dense

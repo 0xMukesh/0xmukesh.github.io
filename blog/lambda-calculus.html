@@ -20,7 +20,10 @@
     </head>
 
     <body>
-        <div data-component="blog-header" data-json="./blogs.json"></div>
+        <div
+            data-component="blog-header"
+            data-json="../public/data/blogs.json"
+        ></div>
 
         <p>
             Hey there! It's been a while since I've written a technical blog
@@ -413,7 +416,9 @@
         </p>
         <br />
         <figure>
-            <img src="../images/lambda-calculus/001_term_red_graph.png" />
+            <img
+                src="../public/images/lambda-calculus/001_term_red_graph.png"
+            />
             <figcaption>
                 Reduction graph for a terminating lambda expression
             </figcaption>
@@ -436,7 +441,9 @@
         </p>
         <br />
         <figure id="example-2">
-            <img src="../images/lambda-calculus/002_non_term_red_graph.png" />
+            <img
+                src="../public/images/lambda-calculus/002_non_term_red_graph.png"
+            />
             <figcaption>
                 Reduction graph for a non-terminating lambda expression
             </figcaption>
@@ -535,7 +542,9 @@
         </p>
         <br />
         <figure id="example-3">
-            <img src="../images/lambda-calculus/003_normal_order_01.png" />
+            <img
+                src="../public/images/lambda-calculus/003_normal_order_01.png"
+            />
             <figcaption>Reduction using normal order</figcaption>
         </figure>
 
@@ -546,7 +555,7 @@
         </p>
         <br />
         <figure>
-            <img src="../images/lambda-calculus/004_full_beta_01.png" />
+            <img src="../public/images/lambda-calculus/004_full_beta_01.png" />
             <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
         </figure>
 
@@ -556,12 +565,14 @@
         </p>
         <br />
         <figure>
-            <img src="../images/lambda-calculus/005_normal_order_02.png" />
+            <img
+                src="../public/images/lambda-calculus/005_normal_order_02.png"
+            />
             <figcaption>Reduction using normal order</figcaption>
         </figure>
         <br />
         <figure>
-            <img src="../images/lambda-calculus/006_full_beta_02.png" />
+            <img src="../public/images/lambda-calculus/006_full_beta_02.png" />
             <figcaption>Reduction using full-\(\beta\) reduction</figcaption>
         </figure>
 
@@ -590,7 +601,7 @@
         </p>
         <br />
         <figure>
-            <img src="../images/lambda-calculus/007_call_by_name.png" />
+            <img src="../public/images/lambda-calculus/007_call_by_name.png" />
             <figcaption>Reduction using call-by-name</figcaption>
         </figure>
 
@@ -939,7 +950,7 @@ yy = \f.(\x.f (x x)) (\x.f (x x))
 fib = yy (\f.\n.(is_zero n) zero ((is_zero (pred n)) (succ zero) (plus (f (pred n)) (f (pred (pred n))))))
 fib (succ (succ (succ zero)))</code></pre>
 
-        <img src="../images/lambda-calculus/008_interpreter_demo.png" />
+        <img src="../public/images/lambda-calculus/008_interpreter_demo.png" />
 
         <h3>Wrapping up</h3>
         <p>
