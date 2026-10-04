@@ -1,6 +1,7 @@
 [
   {
     "title": "A primer on lambda calculus",
+    "feed_description": "An introduction to untyped lambda calculus covering its syntax, semantics, different reduction strategies and Church encoding",
     "url": "/blog/lambda-calculus.html",
     "date": "June 06, 2026",
     "draft": false,
@@ -8,6 +9,7 @@
   },
   {
     "title": "Creating art using CNNs",
+    "feed_description": "Exploring the neural style transfer technique to generate art by apply style of one image onto the another",
     "url": "/blog/creating-art-using-cnns.html",
     "date": "June 13, 2025",
     "draft": false,
@@ -15,6 +17,7 @@
   },
   {
     "title": "Exploring different CNNs",
+    "feed_description": "An overview of how architecture of convolutional neural networks have evolved over time",
     "url": "/blog/exploring-different-cnns.html",
     "date": "June 04, 2025",
     "draft": false,
@@ -22,6 +25,7 @@
   },
   {
     "title": "CNNs Explained",
+    "feed_description": "An introduction to convolutional neural networks covering its fundamentals such as convolution, padding, stride and pooling",
     "url": "/blog/cnns-explained.html",
     "date": "May 12, 2025",
     "draft": false,

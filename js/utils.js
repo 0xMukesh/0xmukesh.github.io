@@ -18,6 +18,7 @@ function renderHeader(el) {
         <a href="/blog">blog</a>
         <a href="/projects.html">projects</a>
         <a href="/contact.html">contact</a>
+        <a href="/feed.xml">feed</a>
     </nav>`;
 }
 
