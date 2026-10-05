@@ -1,4 +1,6 @@
 import json
+from datetime import datetime, timezone
+from email.utils import format_datetime
 
 site = "https://mukesh.0xc84.fyi"
 feed_title = "Mukesh"
@@ -16,8 +18,11 @@ with open("./public/data/blogs.json", "r") as f:
         blog_description = blog[
             "feed_description"
         ]  # to avoid clashing with `description` which is used for `projects.json`
-        url = f"{site}/{blog['url']}"
-        published_at = blog["date"]
+        url = f"{site}{blog['url']}"  # `url` field already has a leading slash
+        published_at = format_datetime(  # RFC822 compliant date-times. ref: https://stackoverflow.com/a/22905935
+            datetime.strptime(blog["date"], "%B %d, %Y").replace(tzinfo=timezone.utc),
+            usegmt=True,
+        )
 
         items.append(
             f"""
