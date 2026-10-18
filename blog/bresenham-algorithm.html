@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en" class="latex-dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>A look into Bresenham's Algorithm | Mukesh</title>
+
+        <link rel="stylesheet" href="../vendor/latex-css/style.css" />
+        <link rel="stylesheet" href="../vendor/latex-css/prism/prism.css" />
+        <link rel="stylesheet" href="../styles/global.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-ocaml.min.js"></script>
+        <script
+            id="MathJax-script"
+            async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></script>
+        <script src="../js/utils.js" defer></script>
+    </head>
+
+    <body>
+        <div
+            data-component="blog-header"
+            data-json="../public/data/blogs.json"
+        ></div>
+
+        <p>
+            Hey there! Since my last blog post on
+            <a href="./lambda-calculus.html">lambda calculus</a>, I've been
+            tinkering with OCaml, and I recently started working on a
+            <a href="https://www.lexaloffle.com/pico-8.php">PICO-8</a>-like
+            fantasy console<label
+                for="sn-1"
+                class="sidenote-toggle sidenote-number"
+            ></label>
+            <input type="checkbox" id="sn-1" class="sidenote-toggle" />
+            <span class="sidenote"
+                >Besides adding support for Lua as a scripting language, I'm
+                thinking of adding support for Common Lisp as well, because why
+                not? </span
+            >. While working on it, I came across some interesting algorithms,
+            mainly related to computer graphics, and one of them is Bresenham's
+            line algorithm.
+        </p>
+
+        <p>
+            Bresenham's line algorithm is a computer graphics algorithm that
+            determines the set of pixels that should be selected to form the
+            closest approximation of a straight line passing through two points,
+            using only integer arithmetic. The core idea of this algorithm is
+            later applied to other shapes, like circles, in
+            <a href="https://en.wikipedia.org/wiki/Midpoint_circle_algorithm"
+                >Midpoint circle algorithm</a
+            >, and Bézier curves as well.
+        </p>
+
+        <p>
+            In this blog post, we'll take a look at how Bresenham's algorithm
+            works under the hood and also a short implementation of it in OCaml
+            and Raylib.
+        </p>
+
+        <h3>Naive line-drawing algorithm</h3>
+
+        <p>
+            Given two points, \((x_0, y_0)\) and \((x_1, y_1)\), the slope of
+            the line through them is:
+        </p>
+
+        \[m = \frac{y_1 - y_0}{x_1 - x_0}\]
+
+        <p>Using the point-slope form, the equation of the line is:</p>
+
+        \[y = y_0 + m(x - x_0)\]
+
+        <p>
+            To draw the line on a screen, which is basically a grid of pixels,
+            we can step through each integer \(x\)-coordinate from \(x_0\) to
+            \(x_1\), calculate the corresponding \(y\)-coordinate using the
+            equation above, and round it to the nearest pixel.
+        </p>
+
+        <p>
+            Let's understand what that process looks like using an example.
+            Consider a line passing through \((0, 0)\) and \((5, 2)\). In the
+            context of computer graphics, the \(y\)-axis is generally inverted.
+        </p>
+
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>\(x\)</th>
+                    <th>\(y = 0.4 \cdot x\)</th>
+                    <th>\(\text{round}(y)\)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>0</th>
+                    <th>0.0</th>
+                    <th>0</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <th>0.4</th>
+                    <th>0</th>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <th>0.8</th>
+                    <th>1</th>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <th>1.2</th>
+                    <th>1</th>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <th>1.6</th>
+                    <th>2</th>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <th>2.0</th>
+                    <th>2</th>
+                </tr>
+            </tbody>
+        </table>
+
+        <br />
+
+        <figure>
+            <img src="../public/images/bresenham/001_graph-01.png" />
+            <figcaption>[TODO]</figcaption>
+        </figure>
+
+        <p>
+            Simple enough, right? There is a slight issue with our current
+            approach. We can't always iterate over the \(x\)-axis. This works
+            for the example above because \(|dx| \geq |dy|\). For each every one
+            pixel step along the \(x\)-axis, the corresponding change in \(y\)
+            is at most one pixel, so rounding \(y\) doesn't end up skipping any
+            row while rasterizing the line.
+        </p>
+
+        <p>Now consider a line passing through \((0, 0)\) and \((2, 5)\).</p>
+
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>\(x\)</th>
+                    <th>\(y = 2.5 \cdot x\)</th>
+                    <th>\(\text{round}(y)\)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>0</th>
+                    <th>0</th>
+                    <th>0</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <th>2.5</th>
+                    <th>3</th>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <th>5</th>
+                    <th>5</th>
+                </tr>
+            </tbody>
+        </table>
+
+        <br />
+
+        <figure>
+            <img src="../public/images/bresenham/002_graph-02.png" />
+            <figcaption>[TODO]</figcaption>
+        </figure>
+
+        <p>
+            As you can see above, some of the rows have been skipped, due to
+            which there are gaps in the rasterized line. To fix this, instead of
+            always iterating over \(x\)-axis, we can iterate over \(y\)-axis
+            when \(|dy| \gt |dx|\).
+        </p>
+
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>\(y\)</th>
+                    <th>\(x = 0.4 \cdot y\)</th>
+                    <th>\(\text{round}(x)\)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>0</th>
+                    <th>0</th>
+                    <th>0</th>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <th>0.4</th>
+                    <th>0</th>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <th>0.8</th>
+                    <th>1</th>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <th>1.2</th>
+                    <th>1</th>
+                </tr>
+                <tr>
+                    <th>4</th>
+                    <th>1.6</th>
+                    <th>2</th>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <th>2.0</th>
+                    <th>2</th>
+                </tr>
+            </tbody>
+        </table>
+
+        <br />
+
+        <figure>
+            <img src="../public/images/bresenham/003_graph-03.png" />
+            <figcaption>[TODO]</figcaption>
+        </figure>
+
+        \[ \text{Line} = \begin{cases} \text{Iterate over} \; x \; \text{and} \;
+        y = y_0 + m(x - x_0); \; |dx| \geq |dy| \\ \text{Iterate over} \; y \;
+        \text{and} \; x = x_0 + \frac{1}{m}(y - y_0); \; |dy| \lt |dx|
+        \end{cases} \]
+
+        <p>
+            Now that we've got a rough idea of how the algorithm works, we can
+            take a look at the OCaml implementation. Over here,
+            <code>set</code> function writes to a framebuffer, which is then
+            used by the graphics library, which is Raylib in this case, to
+            render the scene.
+        </p>
+
+        <pre><code class="language-ocaml">let round f = int_of_float (Float.round f)
+
+let naive_line_drawing x0 y0 x1 y1 c =
+  let dx = (x1 - x0) in
+  let dy = (y1 - y0) in
+  if abs dx >= abs dy then begin
+    let m = if dx = 0 then 0.0 else float dy /. float dx in
+    for x = min x0 x1 to max x0 x1 do
+      let y = float y0 +. m *. float (x - x0) |> round in
+      set x y c
+    done
+  end else begin
+    let m = float dx /. float dy in
+    for y = min y0 y1 to max y0 y1 do
+      let x = float x0 +. m *. float (y - y0) |> round in
+      set x y c
+    done
+  end</code></pre>
+
+        <details>
+            <summary>
+                Click here for the complete implementation using Raylib
+            </summary>
+            <pre><code class="language-ocaml">open Raylib
+
+let width = 600
+let height = 600
+let pixels = CArray.make Color.t (width * height)
+
+let set x y c =
+  if x >= 0 && x < width && y >= 0 && y < height
+  then CArray.set pixels (y * width + x) c
+
+let round f = int_of_float (Float.round f)
+
+let naive_line_drawing x0 y0 x1 y1 c =
+  let dx = (x1 - x0) in
+  let dy = (y1 - y0) in
+  if abs dx >= abs dy then begin
+    let m = if dx = 0 then 0.0 else float dy /. float dx in
+    for x = min x0 x1 to max x0 x1 do
+      let y = float y0 +. m *. float (x - x0) |> round in
+      set x y c
+    done
+  end else begin
+    let m = float dx /. float dy in
+    for y = min y0 y1 to max y0 y1 do
+      let x = float x0 +. m *. float (y - y0) |> round in
+      set x y c
+    done
+  end
+
+let () =
+  init_window width height "bresenham";
+  set_target_fps 60;
+
+  let image = gen_image_color width height Color.black in
+  let texture = load_texture_from_image image in
+  unload_image image;
+  set_texture_filter texture TextureFilter.Point;
+
+  naive_line_drawing 20 20 100 150 Color.blue;
+  update_texture texture (Ctypes.to_voidp (CArray.start pixels));
+
+  while not (window_should_close ()) do
+    begin_drawing ();
+    clear_background Color.black;
+    draw_texture_ex texture (Vector2.create 0. 0.) 0. 1.0 Color.white;
+    end_drawing ();
+  done;
+
+  unload_texture texture;
+;;
+</code></pre>
+        </details>
+
+        <h3>Bresenham's line-drawing algorithm</h3>
+
+        <p></p>
+
+        <h3>References</h3>
+        <ol>
+            <li>
+                <a href="https://zingl.github.io/Bresenham.pdf"
+                    >A Rasterizing Algorithm for Drawing Curves</a
+                >
+            </li>
+        </ol>
+    </body>
+</html>

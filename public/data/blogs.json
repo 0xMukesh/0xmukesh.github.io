@@ -1,6 +1,14 @@
 [
   {
-    "title": "A primer on lambda calculus",
+    "title": "A look into Bresenham's Algorithm",
+    "feed_description": "A look into how shapes like a straight line and circle are rendered on screen only using integer arithemic",
+    "url": "/blog/bresenham-algorithm.html",
+    "date": "October 15, 2026",
+    "draft": true,
+    "tags": ["computer-graphics"]
+  },
+  {
+    "title": "A primer on Lambda Calculus",
     "feed_description": "An introduction to untyped lambda calculus covering its syntax, semantics, different reduction strategies and Church encoding",
     "url": "/blog/lambda-calculus.html",
     "date": "June 06, 2026",
