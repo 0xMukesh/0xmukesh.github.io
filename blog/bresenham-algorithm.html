@@ -28,7 +28,7 @@
         <p>
             Hey there! Since my last blog post on
             <a href="./lambda-calculus.html">lambda calculus</a>, I've been
-            tinkering with OCaml, and I recently started working on a
+            playing around with OCaml, and I recently started working on a
             <a href="https://www.lexaloffle.com/pico-8.php">PICO-8</a>-like
             fantasy console<label
                 for="sn-1"
@@ -57,11 +57,20 @@
 
         <p>
             In this blog post, we'll take a look at how Bresenham's algorithm
-            works under the hood and also a short implementation of it in OCaml
-            and Raylib.
+            works under the hood along with a short implementation of it in
+            OCaml.
         </p>
 
-        <h3>Naive line-drawing algorithm</h3>
+        <p>
+            <b>NOTE</b>: Throughout this entire blog post, in the graphs, the
+            \(y\)-axis is inverted, and a pixel is a unit cell with integer
+            indices \((x, y)\) whereas a point is a real-valued position \((u,
+            v)\). A pixel \((x, y)\) is centered at point \((x, y)\) i.e. it is
+            a square whose top-left corner is \((x - 0.5, y - 0.5)\) and
+            bottom-right corner is \((x + 0.5, y + 0.5)\).
+        </p>
+
+        <h3>Naïve line-drawing algorithm</h3>
 
         <p>
             Given two points, \((x_0, y_0)\) and \((x_1, y_1)\), the slope of
@@ -83,8 +92,7 @@
 
         <p>
             Let's understand what that process looks like using an example.
-            Consider a line passing through \((0, 0)\) and \((5, 2)\). In the
-            context of computer graphics, the \(y\)-axis is generally inverted.
+            Consider a line passing through \((0, 0)\) and \((5, 2)\) points.
         </p>
 
         <br />
@@ -131,23 +139,27 @@
             </tbody>
         </table>
 
-        <br />
-
         <figure>
-            <img src="../public/images/bresenham/001_graph-01.png" />
-            <figcaption>[TODO]</figcaption>
+            <img src="../public/images/bresenham/001_graph_01.png" />
+            <figcaption>
+                Rasterization of \(y = 0.4x\) line while iterating over
+                \(x\)-axis
+            </figcaption>
         </figure>
 
         <p>
             Simple enough, right? There is a slight issue with our current
             approach. We can't always iterate over the \(x\)-axis. This works
-            for the example above because \(|dx| \geq |dy|\). For each every one
+            for the example above because \(|dx| \geq |dy|\). For every unit
             pixel step along the \(x\)-axis, the corresponding change in \(y\)
             is at most one pixel, so rounding \(y\) doesn't end up skipping any
             row while rasterizing the line.
         </p>
 
-        <p>Now consider a line passing through \((0, 0)\) and \((2, 5)\).</p>
+        <p>
+            Now consider a line passing through \((0, 0)\) and \((2, 5)\)
+            points.
+        </p>
 
         <br />
 
@@ -178,11 +190,11 @@
             </tbody>
         </table>
 
-        <br />
-
         <figure>
-            <img src="../public/images/bresenham/002_graph-02.png" />
-            <figcaption>[TODO]</figcaption>
+            <img src="../public/images/bresenham/002_graph_02.png" />
+            <figcaption>
+                Rasterization of \(y = 2.5x\) while iterating over \(x\)-axis
+            </figcaption>
         </figure>
 
         <p>
@@ -236,11 +248,11 @@
             </tbody>
         </table>
 
-        <br />
-
         <figure>
-            <img src="../public/images/bresenham/003_graph-03.png" />
-            <figcaption>[TODO]</figcaption>
+            <img src="../public/images/bresenham/003_graph_03.png" />
+            <figcaption>
+                Rasterization of \(y = 2.5x\) while iterating over \(y\)-axis
+            </figcaption>
         </figure>
 
         \[ \text{Line} = \begin{cases} \text{Iterate over} \; x \; \text{and} \;
@@ -259,21 +271,25 @@
         <pre><code class="language-ocaml">let round f = int_of_float (Float.round f)
 
 let naive_line_drawing x0 y0 x1 y1 c =
-  let dx = (x1 - x0) in
-  let dy = (y1 - y0) in
-  if abs dx >= abs dy then begin
+  let dx = x1 - x0 in
+  let dy = y1 - y0 in
+  if abs dx >= abs dy
+  then (
+    (* guard for the case where both the deltas are zero i.e. a single point *)
     let m = if dx = 0 then 0.0 else float dy /. float dx in
     for x = min x0 x1 to max x0 x1 do
-      let y = float y0 +. m *. float (x - x0) |> round in
+      let y = float y0 +. (m *. float (x - x0)) |> round in
       set x y c
     done
-  end else begin
+  )
+  else (
     let m = float dx /. float dy in
     for y = min y0 y1 to max y0 y1 do
-      let x = float x0 +. m *. float (y - y0) |> round in
+      let x = float x0 +. (m *. float (y - y0)) |> round in
       set x y c
     done
-  end</code></pre>
+  )
+;;</code></pre>
 
         <details>
             <summary>
@@ -287,26 +303,31 @@ let pixels = CArray.make Color.t (width * height)
 
 let set x y c =
   if x >= 0 && x < width && y >= 0 && y < height
-  then CArray.set pixels (y * width + x) c
+  then CArray.set pixels ((y * width) + x) c
+;;
 
 let round f = int_of_float (Float.round f)
 
 let naive_line_drawing x0 y0 x1 y1 c =
-  let dx = (x1 - x0) in
-  let dy = (y1 - y0) in
-  if abs dx >= abs dy then begin
+  let dx = x1 - x0 in
+  let dy = y1 - y0 in
+  if abs dx >= abs dy
+  then (
+    (* guard for the case where both the deltas are zero i.e. a single point *)
     let m = if dx = 0 then 0.0 else float dy /. float dx in
     for x = min x0 x1 to max x0 x1 do
-      let y = float y0 +. m *. float (x - x0) |> round in
+      let y = float y0 +. (m *. float (x - x0)) |> round in
       set x y c
     done
-  end else begin
+  )
+  else (
     let m = float dx /. float dy in
     for y = min y0 y1 to max y0 y1 do
-      let x = float x0 +. m *. float (y - y0) |> round in
+      let x = float x0 +. (m *. float (y - y0)) |> round in
       set x y c
     done
-  end
+  )
+;;
 
 let () =
   init_window width height "bresenham";
@@ -317,24 +338,325 @@ let () =
   unload_image image;
   set_texture_filter texture TextureFilter.Point;
 
-  naive_line_drawing 20 20 100 150 Color.blue;
+  naive_line_drawing 20 20 150 150 Color.blue;
   update_texture texture (Ctypes.to_voidp (CArray.start pixels));
 
   while not (window_should_close ()) do
     begin_drawing ();
     clear_background Color.black;
     draw_texture_ex texture (Vector2.create 0. 0.) 0. 1.0 Color.white;
-    end_drawing ();
+    end_drawing ()
   done;
 
-  unload_texture texture;
-;;
-</code></pre>
+  unload_texture texture
+;;</code></pre>
         </details>
 
         <h3>Bresenham's line-drawing algorithm</h3>
 
-        <p></p>
+        <p>
+            J. E. Bresenham developed his line-drawing algorithm while working
+            at IBM's San Jose development lab. By summer 1962, it was being used
+            by digital plotters such as
+            <a href="https://en.wikipedia.org/wiki/Calcomp_plotter"
+                >Calcomp plotters</a
+            >
+            which was attached to
+            <a href="https://en.wikipedia.org/wiki/IBM_1401">IBM 1401</a> which
+            ran the program that calculated a sequence of small movements for
+            the plotter. The plotter then followed those instructions to draw
+            the line.
+        </p>
+
+        <p>
+            The interesting part is that at that time, the processors didn't
+            have instructions for either multiplication, division, or floating
+            point arithmetic. Bresenham's line-drawing algorithm only uses
+            operations related to integer arithmetic.
+        </p>
+
+        <p>
+            In the naïve line-drawing algorithm, we used integer-to-float
+            conversions, float multiplication and float division in every single
+            step of the loop. The per-pixel cost of this adds up very quickly in
+            tight loops or very complicated rasters.
+        </p>
+
+        <p>
+            Apart from the performance aspect, Bresenham's line-drawing
+            algorithm is also very deterministic and portable, as it only
+            depends on integer arithmetic.
+        </p>
+
+        <p>
+            The initial version of Bresenham's algorithm is only applicable to
+            line segments present in the first octant, where \(x_0 \leq x_1\)
+            and \(y_0 \leq y_1\) and the slope \(m\) is in between 0 to 1 i.e.
+            \(x_1 - x_0 \geq y_1 - y_0\).
+        </p>
+
+        <h4>Using midpoint to find next pixel location</h4>
+
+        <p>
+            While iterating over the \(x\)-axis in the first octant, the
+            increment in the \(y\)-axis would be at most 1, i.e., the next pixel
+            would either be in the same row or the very next row. To figure out
+            where the next pixel should be placed, Bresenham's line-drawing uses
+            the difference in signs of the function value of points present
+            across the line.
+        </p>
+
+        <figure>
+            <img src="../public/images/bresenham/004_line_half_planes.png" />
+            <figcaption>
+                Positive (in green) and Negative (in orange) half-planes
+            </figcaption>
+        </figure>
+
+        <p>
+            In the example above, the line is \(y = 0.5x\). It can also be
+            expressed in implicit form as \(f(x, y) = y - 0.5x\).
+        </p>
+
+        <ul>
+            <li>
+                For every point \((x, y)\) which lies on the line, \(f(x, y)\)
+                is equal to 0.
+            </li>
+            <li>
+                For every point \((x, y)\) which lies above the line, \(f(x,
+                y)\) is greater than 0.
+            </li>
+            <li>
+                For every point \((x, y)\) which lies below the line, \(f(x,
+                y)\) is less than 0.
+            </li>
+        </ul>
+
+        <p>
+            In the above example, the purple point is (0, 1) and the blue point
+            is (4, 0).
+        </p>
+
+        <ul>
+            <li>
+                The value of \(f(0, 1)\) is \(1 - (0.5 \times 0) \gt 0\), as it
+                lies above the line.
+            </li>
+            <li>
+                The value of \(f(4, 0)\) is \(0 - (0.5 \times 4) \lt 0\), as it
+                lies below the line.
+            </li>
+        </ul>
+
+        <p>
+            Say the starting point is \((x_0, y_0)\), so the first pixel would
+            be the one centered at \((x_0, y_0)\), we have to then figure out
+            where the next pixel would land, whether it'll be in the same row at
+            \((x_0 + 1, y_0)\) or the next row at \((x_0 + 1, y_0 + 1)\).
+        </p>
+
+        <p>
+            The trick to figure that out is to check the sign of the function
+            value at the midpoint, i.e., \(f(x_0 + 1, y_0 + 0.5)\).
+        </p>
+
+        <p>
+            In the next two graphs, the pink point indicates the integer index
+            of the current pixel, and the blue points indicate the possible
+            locations for the next pixel, and the green point is the midpoint
+            between the two blue points.
+        </p>
+
+        <ul>
+            <li>
+                <p>
+                    If \(f(x_0 + 1, y_0 + 0.5)\) is positive, that means that
+                    the midpoint is above the line. Inversely, this also means
+                    that the line is below the midpoint, hence it is closer to
+                    \((x_0 + 1, y_0 + 1)\). So, the next pixel would appear on
+                    the next row.
+                </p>
+
+                <figure>
+                    <img
+                        src="../public/images/bresenham/005_midpoint_positive.png"
+                    />
+                    <figcaption>
+                        Case where \(f(x_0 + 1, y_0 + 0.5)\) is positive
+                    </figcaption>
+                </figure>
+            </li>
+
+            <li>
+                <p>
+                    If \(f(x_0 + 1, y_0 + 0.5)\) is negative, that means that
+                    the midpoint is below the line. Inversely, this also means
+                    that the line is above the midpoint, hence it is closer to
+                    \((x_0 + 1, y_0)\). So, the next pixel would appear on the
+                    same row.
+                </p>
+
+                <figure>
+                    <img
+                        src="../public/images/bresenham/006_midpoint_negative.png"
+                    />
+                    <figcaption>
+                        Case where \(f(x_0 + 1, y_0 + 0.5)\) is negative
+                    </figcaption>
+                </figure>
+            </li>
+        </ul>
+
+        <h4>Using only integer arithmetic</h4>
+
+        <p>
+            We know that the equation of a line passing through \((x_0, y_0)\)
+            and \((x_1, y_1)\) points in explict form is:
+        </p>
+
+        \[ y = y_0 + m(x - x_0), \; \text{where} \; m = \frac{y_1 - y_0}{x_1 -
+        x_0} = \frac{\Delta y}{\Delta x} \] \[ y = y_0 + \left(\frac{\Delta
+        y}{\Delta x} \right)(x - x_0) \]
+
+        <p>This can be converted into implict form of \(f(x, y)\)</p>
+
+        \[ \Delta x (y - y_0) = \Delta y (x - x_0)\] \[f(x, y) = \Delta y (x -
+        x_0) - \Delta x (y - y_0)\]
+
+        <p>
+            If the starting pixel is located at \((x_0, y_0)\), then to find the
+            location of the next pixel, we need to compute the sign of \(f(x_0 +
+            1, y_0 + 0.5)\). As we only care about the sign and not about the
+            magnitude, we can find a generalized expression and then scale it by
+            a certain factor to avoid floating-point operations.
+        </p>
+
+        \[ \begin{align} f(x_0 + 1, y_0 + 0.5) &= \Delta y (x_0 + 1 - x_0) -
+        \Delta x (y_0 + 0.5 - y_0) \\ &= \Delta y - 0.5 \Delta x \end{align} \]
+
+        <p>
+            We can multiply the above expression by 2 on both sides to avoid a
+            floating-point multiplication operation. Let's call the value of the
+            first midpoint \(D\).
+        </p>
+
+        \[D = 2 \Delta y - \Delta x\]
+
+        <p>So now the rule becomes as follows:</p>
+
+        <ul>
+            <li>
+                If D \(\gt\) 0, pick the pixel on the next row, i.e., \((x_0 +
+                1, y_0 + 1)\).
+            </li>
+            <li>
+                If D \(\lt\) 0, pick the pixel on the same row, i.e., \((x_0 +
+                1, y_0)\).
+            </li>
+            <li>
+                If D = 0, choose a particular convention and follow it
+                throughout the algorithm. For the case of this blog post, we'll
+                go with picking the pixel on the same row, i.e., \((x_0 + 1,
+                y_0)\).
+            </li>
+        </ul>
+
+        <p>
+            But over here, we have eliminated the floating-point arithmetic only
+            from the calculation of the first midpoint. We need to calculate the
+            function value for the subsequent midpoints, and it wouldn't be a
+            great idea to find the "generalized" expression for all such
+            possible midpoint values. Instead, we can use incremental updates to
+            update the value of \(D\) as \(f\) is a linear function.
+        </p>
+
+        <p>
+            To simplify things a bit, let us derive a short expression which
+            would help us out in the next section: \(f(x + a, y + b) - f(x, y)\)
+            i.e., how much does the value of the function change by moving \((a,
+            b)\)
+        </p>
+
+        \[ \begin{align} f(x + a, y + b) - f(x, y) &= \Delta y (x + a - x_0) -
+        \Delta x (y + b - y_0) - \Delta y (x - x_0) + \Delta x (y - y_0) \\ &=
+        \Delta y a - \Delta x b \end{align} \]
+
+        <p>
+            We know that \(f(x_0 + 1, y_0 + 0.5)\) is equal to \(\Delta y - 0.5
+            \Delta x\). Let us analyze what would be the subsequent midpoint
+            function values in both possible paths:
+        </p>
+
+        <ul>
+            <li>
+                <p>
+                    If the pixel at \((x_0 + 1, y_0)\) is chosen next then the
+                    next midpoint would be at \((x_0 + 2, y_0 + 0.5)\).Its
+                    function value \(f(x_0 + 2, y_0 + 0.5)\) would be equal to
+                    \(f(x_0 + 1, y_0 + 0.5) + \Delta y = 2 \Delta y - 0.5 \Delta
+                    x\)
+                </p>
+
+                <p>
+                    The change in midpoint function value in this case is
+                    \(\Delta y\).
+                </p>
+            </li>
+            <li>
+                <p>
+                    If the pixel at \((x_0 + 1, y_0 + 1)\) is chosen next then
+                    the next midpoint would be at \((x_0 + 2, y_0 + 1.5)\) and
+                    its function value \(f(x_0 + 2, y_0 + 1.5)\) would be equal
+                    to \(f(x_0 + 1, y_0 + 0.5) + \Delta y - \Delta x = 2 \Delta
+                    y - 1.5 \Delta x\).
+                </p>
+
+                <p>
+                    The change in midpoint function value in this case is
+                    \(\Delta y - \Delta x\).
+                </p>
+            </li>
+        </ul>
+
+        <p>
+            So the incremental update of \(D\) looks as follows, considering
+            current pixel is \((x, y)\)
+        </p>
+
+        <ul>
+            <li>
+                If pixel \((x + 1, y + 1)\) is picked, then increment \(D\) by
+                \(2 (\Delta y - \Delta x)\).
+            </li>
+
+            <li>
+                If pixel \((x + 1, y)\) is picked, then increment \(D\) by \(2
+                \Delta y\).
+            </li>
+        </ul>
+
+        <p>
+            Phew! That was a bit of a long explanation. Here's a short
+            implementation of Bresenham's line-drawing algorithm in the first
+            octant in OCaml to summarize all the above sections in code:
+        </p>
+
+        <pre><code class="language-ocaml">let bresenham_first_octant x0 y0 x1 y1 c =
+  let dx = x1 - x0 in
+  let dy = y1 - y0 in
+  if not (dx >= 0 && dy >= 0 && dy <= dx)
+  then invalid_arg "line segment must be in first octant";
+  let rec loop x y d =
+    set x y c;
+    if x = x1
+    then ()
+    else if d > 0
+    then loop (x + 1) (y + 1) (d + (2 * (dy - dx)))
+    else loop (x + 1) y (d + (2 * dy))
+  in
+  loop x0 y0 ((2 * dy) - dx)
+;;</code></pre>
 
         <h3>References</h3>
         <ol>
