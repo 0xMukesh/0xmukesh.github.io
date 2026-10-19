@@ -649,14 +649,64 @@ let () =
   then invalid_arg "line segment must be in first octant";
   let rec loop x y d =
     set x y c;
-    if x = x1
-    then ()
-    else if d > 0
-    then loop (x + 1) (y + 1) (d + (2 * (dy - dx)))
-    else loop (x + 1) y (d + (2 * dy))
+    if x < x1
+    then
+      if d > 0
+      then loop (x + 1) (y + 1) (d + (2 * (dy - dx)))
+      else loop (x + 1) y (d + (2 * dy))
   in
   loop x0 y0 ((2 * dy) - dx)
 ;;</code></pre>
+
+        <h4>Generalization</h4>
+
+        <p>
+            Bresenham's line-drawing algorithm without any kind of additional
+            generalization considers the following assumptions, which are
+            followed in first octant specifically:
+        </p>
+
+        <ul>
+            <li>
+                The lines goes from left to right. The values increase along
+                \(x\)-axis i.e. \(x_0 \leq x_1\).
+            </li>
+            <li>
+                The lines goes from bottom to top. The values increase along
+                \(y\)-axis i.e. \(y_0 \leq y_1\).
+            </li>
+            <li>
+                \(x\)-axis is considered to be the major axis i.e. \(dy \leq
+                dx\).
+            </li>
+        </ul>
+
+        <pre><code class="language-ocaml">let bresenham_generalized x0 y0 x1 y1 c =
+  let dx = abs (x1 - x0) in
+  let dy = abs (y1 - y0) in
+  let sx = if x1 >= x0 then 1 else -1 in
+  let sy = if y1 >= y0 then 1 else -1 in
+  let steep = dy > dx in
+  let major, minor = if steep then (dy, dx) else (dx, dy) in
+  let plot i j =
+    if steep
+    then set (x0 + (sx * j)) (y0 + (sy * j)) c
+    else set (x0 + (sx * i)) (y0 + (sy * i)) c
+  in
+  let rec loop i j d =
+    plot i j;
+    if i < major
+    then
+      if d > 0
+      then loop (i + 1) (i + 1) (d + (2 * (major - minor)))
+      else loop (i + 1) j (d + (2 * major))
+  in
+  loop 0 0 ((2 * major) - minor)
+;;</code></pre>
+
+        <h3>Drawing circles</h3>
+
+        <h3>Drawing ellipses</h3>
 
         <h3>References</h3>
         <ol>
@@ -664,6 +714,28 @@ let () =
                 <a href="https://zingl.github.io/Bresenham.pdf"
                     >A Rasterizing Algorithm for Drawing Curves</a
                 >
+                - Alois Zingl
+            </li>
+            <li>
+                <a
+                    href="https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm"
+                    >Bresenham's line algorithm</a
+                >
+                - Wikipedia
+            </li>
+            <li>
+                <a
+                    href="https://csustan.csustan.edu/~tom/Lecture-Notes/Graphics/Bresenham-Line.pdf"
+                    >The Bresenham Line Algorithm</a
+                >
+                - Prof. Tom Carter (2014)
+            </li>
+            <li>
+                <a
+                    href="https://en.wikipedia.org/wiki/Midpoint_circle_algorithm"
+                    >Midpoint circle algorithm</a
+                >
+                - Wikipedia
             </li>
         </ol>
     </body>
