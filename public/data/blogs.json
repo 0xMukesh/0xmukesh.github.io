@@ -4,7 +4,7 @@
     "feed_description": "A look into how shapes like a straight line and circle are rendered on screen only using integer arithemic",
     "url": "/blog/bresenham-algorithm.html",
     "date": "October 20, 2026",
-    "draft": true,
+    "draft": false,
     "tags": ["computer-graphics"]
   },
   {
