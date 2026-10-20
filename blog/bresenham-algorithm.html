@@ -101,7 +101,7 @@
             <thead>
                 <tr>
                     <th>\(x\)</th>
-                    <th>\(y = 0.4 \cdot x\)</th>
+                    <th>\(y = 0.4x\)</th>
                     <th>\(\text{round}(y)\)</th>
                 </tr>
             </thead>
@@ -167,7 +167,7 @@
             <thead>
                 <tr>
                     <th>\(x\)</th>
-                    <th>\(y = 2.5 \cdot x\)</th>
+                    <th>\(y = 2.5x\)</th>
                     <th>\(\text{round}(y)\)</th>
                 </tr>
             </thead>
@@ -210,7 +210,7 @@
             <thead>
                 <tr>
                     <th>\(y\)</th>
-                    <th>\(x = 0.4 \cdot y\)</th>
+                    <th>\(x = 0.4y\)</th>
                     <th>\(\text{round}(x)\)</th>
                 </tr>
             </thead>
@@ -255,10 +255,14 @@
             </figcaption>
         </figure>
 
-        \[ \text{Line} = \begin{cases} \text{Iterate over} \; x \; \text{and} \;
-        y = y_0 + m(x - x_0); \; |dx| \geq |dy| \\ \text{Iterate over} \; y \;
-        \text{and} \; x = x_0 + \frac{1}{m}(y - y_0); \; |dy| \lt |dx|
-        \end{cases} \]
+        <p>The algorithm can be now expressed as:</p>
+
+        <div class="scroll-wrapper">
+            \[ \begin{cases} \text{iterate over } x, \text{ with } y = y_0 + m(x
+            - x_0) & \text{if } |dx| \geq |dy| \\[4pt] \text{iterate over } y,
+            \text{ with } x = x_0 + \dfrac{1}{m}(y - y_0) & \text{if } |dy| >
+            |dx| \end{cases} \]
+        </div>
 
         <p>
             Now that we've got a rough idea of how the algorithm works, we can
@@ -515,9 +519,11 @@ let () =
             and \((x_1, y_1)\) points in explict form is:
         </p>
 
-        \[ y = y_0 + m(x - x_0), \; \text{where} \; m = \frac{y_1 - y_0}{x_1 -
-        x_0} = \frac{\Delta y}{\Delta x} \] \[ y = y_0 + \left(\frac{\Delta
-        y}{\Delta x} \right)(x - x_0) \]
+        <div class="scroll-wrapper">
+            \[ y = y_0 + m(x - x_0), \; \text{where} \; m = \frac{y_1 - y_0}{x_1
+            - x_0} = \frac{\Delta y}{\Delta x} \] \[ y = y_0 +
+            \left(\frac{\Delta y}{\Delta x} \right)(x - x_0) \]
+        </div>
 
         <p>This can be converted into implict form of \(f(x, y)\)</p>
 
@@ -532,8 +538,11 @@ let () =
             a certain factor to avoid floating-point operations.
         </p>
 
-        \[ \begin{align} f(x_0 + 1, y_0 + 0.5) &= \Delta y (x_0 + 1 - x_0) -
-        \Delta x (y_0 + 0.5 - y_0) \\ &= \Delta y - 0.5 \Delta x \end{align} \]
+        <div class="scroll-wrapper">
+            \[ \begin{align} f(x_0 + 1, y_0 + 0.5) &= \Delta y (x_0 + 1 - x_0) -
+            \Delta x (y_0 + 0.5 - y_0) \\ &= \Delta y - 0.5 \Delta x \end{align}
+            \]
+        </div>
 
         <p>
             We can multiply the above expression by 2 on both sides to avoid a
@@ -578,9 +587,11 @@ let () =
             b)\)
         </p>
 
-        \[ \begin{align} f(x + a, y + b) - f(x, y) &= \Delta y (x + a - x_0) -
-        \Delta x (y + b - y_0) - \Delta y (x - x_0) + \Delta x (y - y_0) \\ &=
-        \Delta y a - \Delta x b \end{align} \]
+        <div class="scroll-wrapper">
+            \[ \begin{align} f(x + a, y + b) - f(x, y) &= \Delta y (x + a - x_0)
+            - \Delta x (y + b - y_0) - \Delta y (x - x_0) + \Delta x (y - y_0)
+            \\ &= \Delta y a - \Delta x b \end{align} \]
+        </div>
 
         <p>
             We know that \(f(x_0 + 1, y_0 + 0.5)\) is equal to \(\Delta y - 0.5
@@ -592,11 +603,16 @@ let () =
             <li>
                 <p>
                     If the pixel at \((x_0 + 1, y_0)\) is chosen next then the
-                    next midpoint would be at \((x_0 + 2, y_0 + 0.5)\).Its
-                    function value \(f(x_0 + 2, y_0 + 0.5)\) would be equal to
-                    \(f(x_0 + 1, y_0 + 0.5) + \Delta y = 2 \Delta y - 0.5 \Delta
-                    x\)
+                    next midpoint would be at \((x_0 + 2, y_0 + 0.5)\).
                 </p>
+
+                <p>
+                    Its function value \(f(x_0 + 2, y_0 + 0.5)\) would be equal
+                    to
+                </p>
+
+                \[ f(x_0 + 1, y_0 + 0.5) + \Delta y = 2 \Delta y - 0.5 \Delta x
+                \]
 
                 <p>
                     The change in midpoint function value in this case is
@@ -606,11 +622,16 @@ let () =
             <li>
                 <p>
                     If the pixel at \((x_0 + 1, y_0 + 1)\) is chosen next then
-                    the next midpoint would be at \((x_0 + 2, y_0 + 1.5)\) and
-                    its function value \(f(x_0 + 2, y_0 + 1.5)\) would be equal
-                    to \(f(x_0 + 1, y_0 + 0.5) + \Delta y - \Delta x = 2 \Delta
-                    y - 1.5 \Delta x\).
+                    the next midpoint would be at \((x_0 + 2, y_0 + 1.5)\).
                 </p>
+
+                <p>
+                    Its function value \(f(x_0 + 2, y_0 + 1.5)\) would be equal
+                    to
+                </p>
+
+                \[ f(x_0 + 1, y_0 + 0.5) + \Delta y - \Delta x = 2 \Delta y -
+                1.5 \Delta x \]
 
                 <p>
                     The change in midpoint function value in this case is
@@ -661,23 +682,84 @@ let () =
         <h4>Generalization</h4>
 
         <p>
-            Bresenham's line-drawing algorithm without any kind of additional
-            generalization considers the following assumptions, which are
-            followed in first octant specifically:
+            The version of Bresenham's line-drawing algorithm we've seen so far
+            makes three assumptions, all of which hold in the first octant:
         </p>
 
         <ul>
             <li>
-                The lines goes from left to right. The values increase along
-                \(x\)-axis i.e. \(x_0 \leq x_1\).
+                The line goes from left to right. The values increase along the
+                \(x\)-axis, i.e. \(x_0 \leq x_1\).
             </li>
             <li>
-                The lines goes from bottom to top. The values increase along
-                \(y\)-axis i.e. \(y_0 \leq y_1\).
+                The values also increase along the \(y\)-axis, i.e. \(y_0 \leq
+                y_1\).
+            </li>
+            <li>The \(x\)-axis is the major axis, i.e. \(dy \leq dx\).</li>
+        </ul>
+
+        <p>
+            Every octant is a mirror image of the first octant, either across an
+            axis or across the diagonal. So, instead of writing 8 different
+            loops, we can transform the line into a first-octant line, run the
+            same loop, and then convert the pixels back into the desired octant
+            using offsets.
+        </p>
+
+        <p>
+            The first two assumptions can be generalized by using the absolute
+            values of <code>dx</code> and <code>dy</code>, and also storing the
+            step values (<code>sx</code> and <code>sy</code>), which are either
+            +1 or -1 depending on whether the value is increasing or decreasing
+            along that axis.
+        </p>
+
+        <p>
+            The third assumption can be handled by swapping the roles of the
+            axes depending on whether the line is steep or not. If the line is
+            steep, i.e. \(dy \gt dx\), we use the \(y\)-axis as the major axis.
+            The major axis is the axis along which we advance by exactly 1 pixel
+            on every step, and the minor axis is the axis along which we advance
+            by either 0 or 1 pixel on each step. In the first octant, the
+            \(x\)-axis was the major axis and the \(y\)-axis was the minor axis.
+            We can now state the rules in terms of the major axis (\(M\)) and
+            the minor axis (\(m\)), where \(\Delta M\) and \(\Delta m\) are the
+            absolute differences along them.
+        </p>
+
+        <p>
+            The value of \(D\) starts at \(2 \Delta m - \Delta M\), and on every
+            step along the major axis:
+        </p>
+
+        <ul>
+            <li>
+                If \(D \gt 0\), the minor axis advances as well, and \(D\) is
+                incremented by \(2 (\Delta m - \Delta M)\).
             </li>
             <li>
-                \(x\)-axis is considered to be the major axis i.e. \(dy \leq
-                dx\).
+                If \(D \leq 0\), the minor axis stays where it is, and \(D\) is
+                incremented by \(2 \Delta m\).
+            </li>
+        </ul>
+
+        <p>
+            Apart from that, the loop doesn't operate on real coordinates. It
+            operates on the offsets <code>i</code> and <code>j</code>, which are
+            the number of steps taken along the major and minor axes
+            respectively. The pixel to plot is then:
+        </p>
+
+        <ul>
+            <li>
+                If the line is shallow, the major axis is the \(x\)-axis, so the
+                pixel is \[ \left( x_0 + (s_x \times i), \; y_0 + (s_y \times j)
+                \right) \]
+            </li>
+            <li>
+                If the line is steep, the major axis is the \(y\)-axis, so the
+                pixel is \[\left( x_0 + (s_x \times j), \; y_0 + (s_y \times i)
+                \right)\]
             </li>
         </ul>
 
@@ -690,18 +772,18 @@ let () =
   let major, minor = if steep then (dy, dx) else (dx, dy) in
   let plot i j =
     if steep
-    then set (x0 + (sx * j)) (y0 + (sy * j)) c
-    else set (x0 + (sx * i)) (y0 + (sy * i)) c
+    then set (x0 + (sx * j)) (y0 + (sy * i)) c
+    else set (x0 + (sx * i)) (y0 + (sy * j)) c
   in
   let rec loop i j d =
     plot i j;
     if i < major
     then
       if d > 0
-      then loop (i + 1) (i + 1) (d + (2 * (major - minor)))
-      else loop (i + 1) j (d + (2 * major))
+      then loop (i + 1) (j + 1) (d + (2 * (minor - major)))
+      else loop (i + 1) j (d + (2 * minor))
   in
-  loop 0 0 ((2 * major) - minor)
+  loop 0 0 ((2 * minor) - major)
 ;;</code></pre>
 
         <h3>Drawing circles</h3>
