@@ -84,11 +84,12 @@
         </p>
         <p>
             In computer science, there are two major mathematical models of
-            computation - turing machines and lambda calculus. Both are very
-            primitive machines capable of executing any computer algorithm.
+            computation - Turing machines and lambda calculus. Both are very
+            primitive models of computation capable of expressing any computable
+            function.
         </p>
         <p>
-            In the case of turing machines, it involves an infinite memory tape
+            In the case of Turing machines, it involves an infinite memory tape
             which is divided into cells that hold a symbol and a pointer that
             points to one of those cells. At each step, the pointer reads the
             symbol from the cell, performs some execution based on it, like
@@ -100,8 +101,8 @@
             In the case of lambda calculus, all you have are functions. Yep,
             just using functions and function calls, it is possible to build a
             universal machine.
-            <label for="sn-1" class="sidenote-toggle sidenote-number"></label>
-            <input type="checkbox" id="sn-1" class="sidenote-toggle" />
+            <label for="sn-2" class="sidenote-toggle sidenote-number"></label>
+            <input type="checkbox" id="sn-2" class="sidenote-toggle" />
             <span class="sidenote"
                 ><s>Attention</s> Functions are all you need! Specifically
                 higher-order functions</span
@@ -117,8 +118,8 @@
                 parameter and \(M\) is the function body
             </li>
             <li>
-                Application: \((\lambda x.M)\, N\), where \(N\) is the argument
-                passed to the function
+                Application: \(M \; N\), where \(M\) is the function being
+                applied and \(N\) is the argument passed to it
             </li>
         </ul>
 
@@ -128,13 +129,13 @@
             where \(\lambda\) is used to indicate the start of a function which
             is then followed by a variable (in this case \(x\)) and . (dot) is
             used as a divider between the function argument and body. It is very
-            similar to how you define annoymous functions in modern-day
+            similar to how you define anonymous functions in modern-day
             programming languages. \(\lambda x.x\) is equivalent to
             <code class="language-py">lambda x: x</code> in Python.
         </p>
 
         <p>This is how you execute the functions:</p>
-        \[(\lambda x.M) \; y = M[x := y]\]
+        \[(\lambda x.M) \; y \rightarrow M[x := y]\]
         <p>
             The above operation would replace all the mentions of \(x\) in \(M\)
             with \(y\). This isn't <i>fully</i> true, and I'm gonna cover how
@@ -142,19 +143,19 @@
             substitutions section.
         </p>
         <p>
-            Even though both turing machines and lambda calculus refer to the
-            same thing, i.e., a universal machine, both of them are adopted by
-            different communities within the field of computer science research.
-            The design of turing machines is much more low-level/bare bones, and
+            Even though both Turing machines and lambda calculus are equivalent
+            models of computation, both of them are adopted by different
+            communities within the field of computer science research. The
+            design of Turing machines is much more low-level/bare bones, and
             hence it is used by researchers working on computer algorithms,
             whereas lambda calculus is used by programming language researchers.
             Lambda calculus focuses more on the <i>structure</i> of your
             program, i.e., how you organize your program.
         </p>
         <p>
-            Lambda calculus is the most minimal turing complete language as it
-            just consists of three different production states. Here is the
-            entire BNF grammar of lambda calculus:
+            Lambda calculus is one of the most minimal Turing-complete
+            languages, as it just consists of three different production rules.
+            Here is the entire BNF grammar of lambda calculus:
         </p>
 
         <div class="scroll-wrapper">
@@ -163,9 +164,15 @@
             &(\text{Application}) \end{align} \]
         </div>
 
+        <p>
+            By convention, application is left-associative, so \(f \; g \; x\)
+            parses as \((f \; g) \; x\). Application also binds tighter than
+            abstraction, so \(\lambda x.f \; x\) means \(\lambda x.(f \; x)\).
+        </p>
+
         <h2>Semantic verse of lambda calculus</h2>
         <p>
-            Semantically, it consists of majorly two things -
+            Semantically, it consists mainly of two things -
             \(\alpha\)-conversion and \(\beta\)-reduction. Before jumping into
             them, I would like to go over a couple of other topics, as they are
             utilized to formally define the aforementioned semantic rules. There
@@ -224,37 +231,38 @@
             <li>\(FV(x) = \{x\}\)</li>
             <li>\(FV(t_1 \; t_2) = FV(t_1) \cup FV(t_2)\)</li>
             <li>
-                \(FV(\lambda x.t_1) = FV(t_1) \setminus \ \{x\}\) i.e. from all
+                \(FV(\lambda x.t_1) = FV(t_1) \setminus \{x\}\) i.e. from all
                 the free variables of \(t_1\), remove \(x\) from it as \(x\)
-                becomes a bounded variable due to \(\lambda x\) term.
+                becomes a bound variable due to the \(\lambda x\) term.
             </li>
             <li>
-                \(FV(t) = \emptyset\), then \(t\) is said to be a closed term.
+                If \(FV(t) = \emptyset\), then \(t\) is said to be a closed
+                term.
             </li>
         </ul>
 
         <h3>Substitution</h3>
         <p>
             Substitution is a mechanism by which free occurrences of a variable
-            are replaced with another lambda term. it is generally represented
+            are replaced with another lambda term. It is generally represented
             as \(M[x := N]\), which means “replace all the free occurrences of
             \(x\) in \(M\) with another lambda term \(N\)”. It is very important
-            to note that replacing of variables via substitution is only done
-            for free variables, because replacing bounded variables completely
-            alters the meaning of the lambda function.
+            to note that replacing variables via substitution is only done for
+            free variables, because replacing bound variables completely alters
+            the meaning of the lambda function.
         </p>
 
         <p>
-            If \(x := y\) substitution rule was applied on \(\lambda x.x\) which
-            is then identity function then it changes into a constant function:
+            If the \(x := y\) substitution were (incorrectly) applied to the
+            bound occurrence in \(\lambda x.x\), the identity function would
+            change into a constant function:
         </p>
 
-        \[ \lambda x.x[x := y] = \lambda x.y \]
+        \[ \lambda x.x \;\longrightarrow\; \lambda x.y \]
 
         <p>
-            If you see the identity function has been changed into a constant
-            function, i.e., the lambda function's meaning has been completely
-            changed.
+            The identity function has been changed into a constant function,
+            i.e., the lambda function's meaning has been completely changed.
         </p>
 
         <h4>Variable capture</h4>
@@ -265,12 +273,14 @@
             >”. Consider the following example
         </p>
 
-        <p>If \(y := x\) substitution rule is applied on \(\lambda x.y\):</p>
+        <p>
+            If the \(y := x\) substitution rule is applied to \(\lambda x.y\):
+        </p>
 
-        \[ \lambda x.y[y := x] = \lambda x.x \]
+        \[ (\lambda x.y)[y := x] = \lambda x.x \]
 
         <p>
-            In the above reduction, we replaced all the free occurrences of
+            In the above substitution, we replaced all the free occurrences of
             variable \(y\) in the lambda function with \(x\), but still, it
             changed the meaning of the function. The reason behind this is that
             the binder \(x\) and the \(x\) with which we have to replace both of
@@ -281,34 +291,35 @@
         <p>
             One way to resolve this issue is via using a technique called
             \(\alpha\)-renaming, where the bound variables of a lambda function
-            are renamed in a consistent manner such that the meaning is quite
+            are renamed in a consistent manner such that the meaning is
             preserved i.e. \(\lambda x.x\), \(\lambda y.y\) and \(\lambda z.z\)
             all refer to the exact same function even though the binders have
             different names.
         </p>
 
         <p>
-            So, considering a bit more generalized version of the above example:
-            \((\lambda x.y)[y := N]\). Over here, first it needs to be checked
-            whether \(x\) belongs to the set of free variables of \(N\). If yes,
-            then \(\alpha\)-rename must be done. The binder \(x\) needs to be
-            renamed into a different binder \(z\) such that \(z \notin FV(N)\).
+            So, considering a slightly more general version of the above
+            example: \((\lambda x.y)[y := N]\). Over here, first it needs to be
+            checked whether \(x\) belongs to the set of free variables of \(N\).
+            If yes, then \(\alpha\)-rename must be done. The binder \(x\) needs
+            to be renamed into a different binder \(z\) such that \(z \notin
+            FV(N)\). For the concrete case where \(N = x\), this gives:
         </p>
 
-        \[ \lambda x.y[y := x] = \lambda z.y[y := x] = \lambda z.x \]
+        \[ (\lambda x.y)[y := x] = (\lambda z.y)[y := x] = \lambda z.x \]
 
         <p>Mathematically, substitution can be defined as follows:</p>
         <ul class="scroll-wrapper">
             <li>\(x[x := s] = s\)</li>
             <li>\(y[x := s] = y, \text{where} \;x \neq y\)</li>
             <li>\((t_1 \; t_2)[x := s] = (t_1[x := s] \; t_2[x := s])\)</li>
-            <li>\(\lambda x.M[x := s] = \lambda x.M\)</li>
+            <li>\((\lambda x.M)[x := s] = \lambda x.M\)</li>
             <li>
-                \(\lambda y.M[x := s] = \lambda y.M[x := s], \text{where} \;x
-                \neq y \; \text{and} \; y \notin FV(s)\)
+                \((\lambda y.M)[x := s] = \lambda y.(M[x := s]), \text{where}
+                \;x \neq y \; \text{and} \; y \notin FV(s)\)
             </li>
             <li>
-                \(\lambda y.M[x := s] = \lambda w.M[y := w][w := s],
+                \((\lambda y.M)[x := s] = \lambda w.((M[y := w])[x := s]),
                 \text{where} \;x \neq y \; \text{and} \; y \in FV(s)\)
             </li>
         </ul>
@@ -387,13 +398,13 @@
             \(\beta\)-reduction is all about how to evaluate the applications.
             As lambda calculus consists of variables, functions, and function
             calls, the only way a program can be built is via executing the
-            functions, i.e., layers of applications. An application is generally
-            represented as \((\lambda x.M) N\) and an unapplied application is
-            often referred to as “<i>redex</i>”. The way \((\lambda x.M) N\) is
-            evaluated is using substitutions:
+            functions, i.e., layers of applications. An application of the form
+            \((\lambda x.M) N\), whose left-hand side is an abstraction, is
+            called a “<i>redex</i>” (short for reducible expression). The way
+            \((\lambda x.M) N\) is evaluated is using substitutions:
         </p>
 
-        \[ (\lambda x.M) N = M[x := N] \]
+        \[ (\lambda x.M) N \rightarrow_{\beta} M[x := N] \]
 
         <p>
             While applying \(\beta\)-reduction to a lambda function, one would
@@ -431,8 +442,8 @@
             reduction graph, the inner redex is first evaluated, as compared to
             evaluating the outer redex in the left branch. Over here, it didn't
             matter which path was chosen as all of them led to the same answer,
-            but there are cases where, depending on the evaluation method, the
-            result changes.
+            but there are cases where, depending on the evaluation method, one
+            path terminates while another diverges.
         </p>
 
         <p>
@@ -445,7 +456,8 @@
                 src="../public/images/lambda-calculus/002_non_term_red_graph.png"
             />
             <figcaption>
-                Reduction graph for a non-terminating lambda expression
+                Reduction graph for a lambda expression with a non-terminating
+                reduction path
             </figcaption>
         </figure>
 
@@ -457,18 +469,18 @@
         </p>
 
         <p>
-            If you notice, the naïve \(\beta\)-reduction (aka
-            \(\beta\)-reduction) is very non-deterministic. To make it a bit
-            clearer, here is how \(\beta\)-reduction can be described formally
-            using inference rules:
+            If you notice, the naïve \(\beta\)-reduction (aka full-\(\beta\)
+            reduction) is very non-deterministic. To make it a bit clearer, here
+            is how \(\beta\)-reduction can be described formally using inference
+            rules:
         </p>
 
         <div class="scroll-wrapper">
-            \[ \frac{}{(\lambda x.M) N \rightarrow_{\beta} \lambda x.M[x := N]}
-            \qquad \frac{M \rightarrow_{\beta} M'}{\lambda x.M
-            \rightarrow_{\beta} \lambda x.M'} \] \[ \frac{M \rightarrow_{\beta}
-            M'}{M N \rightarrow_{\beta} M' N} \qquad \frac{N \rightarrow_{\beta}
-            N'}{M N \rightarrow_{\beta} M N'} \]
+            \[ \frac{}{(\lambda x.M) N \rightarrow_{\beta} M[x := N]} \qquad
+            \frac{M \rightarrow_{\beta} M'}{\lambda x.M \rightarrow_{\beta}
+            \lambda x.M'} \] \[ \frac{M \rightarrow_{\beta} M'}{M N
+            \rightarrow_{\beta} M' N} \qquad \frac{N \rightarrow_{\beta} N'}{M N
+            \rightarrow_{\beta} M N'} \]
         </div>
 
         <p>
@@ -482,8 +494,8 @@
         <ul>
             <li>
                 If \((\lambda x.M) N\) is \(\beta\)-reduced then it will always
-                be equal to \(\lambda x.M[x := N]\). The empty premise means
-                that it is always true.
+                be equal to \(M[x := N]\). The empty premise means that it is
+                always true.
             </li>
             <li>
                 In regular programming languages, the body of a function is not
@@ -526,7 +538,10 @@
             The core idea of normal order is to reduce the leftmost, outermost
             redex first. The most important property of normal order is that if
             a term has a normal form, then normal order reduction will find it.
-            This is what the "Church-Rosser" theorem is all about. I wouldn't be
+            This is known as the standardization (or normalization) theorem. The
+            "Church-Rosser" theorem is a related but different result: it says
+            that \(\beta\)-reduction is confluent, so if a term can be reduced
+            to two normal forms, those normal forms are identical. I wouldn't be
             going too deep into that theorem within this blog, but if you are
             interested in reading more about it, I would suggest reading this
             paper titled "<a
@@ -549,9 +564,8 @@
         </figure>
 
         <p>
-            Here is the \(\beta\)-reduction of the same lambda expression but
-            using full-\(\beta\) reduction. Over here, the innermost redex is
-            reduced first.
+            Here is one possible full-\(\beta\) reduction path for the same
+            lambda expression. Over here, the innermost redex is chosen first.
         </p>
         <br />
         <figure>
@@ -560,8 +574,8 @@
         </figure>
 
         <p>
-            Let's take another example where full-\(\beta\) reduction fails due
-            to its nature of evaluating the innermost redexes first.
+            Let's take another example where a full-\(\beta\) reduction path
+            that always picks the innermost redex first fails to terminate.
         </p>
         <br />
         <figure>
@@ -578,12 +592,12 @@
 
         <p>
             In the above example, consider the recursive lambda term \((\lambda
-            z.z \; z) (\lambda z.z \; z)\) as \(\Omega\).In case of normal
-            order, it evaluated the outermost redex right and as there were no
+            z.z \; z) (\lambda z.z \; z)\) as \(\Omega\). In case of normal
+            order, it evaluated the outermost redex first and as there were no
             free \(x\) in \(\lambda y.y\), the evaluated output was \(\lambda
-            y.y\). In case of full-\(\beta\) reduction, the inner redex was
-            attempted to be evaluated first, and as the inner redex was a
-            recursive lambda term, the evaluation got stuck in a loop.
+            y.y\). In the full-\(\beta\) reduction path shown, the inner redex
+            was chosen first, and as it was the recursive \(\Omega\) term, the
+            evaluation got stuck in a loop.
         </p>
 
         <h4>Call-by-name</h4>
@@ -650,12 +664,12 @@
             have any data structures, i.e., there are no booleans, numbers,
             floats, lists, tuples, etc. It only has functions. To
             <i> mimic</i> the behaviour of actual data structures in lambda
-            calculus, church encodings are used. The list of all possible
-            encodings is very huge, so instead of this blog, we'll mainly blog
-            on the church encodings of booleans, numbers, logical operators
-            (AND, OR, NOT), arithmetic operators (successor, addition, and
-            multiplication), and pairs. I've tried to restrict the number of
-            encodings so that the blog doesn't end up being about church
+            calculus, Church encodings are used. The list of all possible
+            encodings is very huge, so instead of covering all of them, we'll
+            mainly focus on the Church encodings of booleans, numbers, logical
+            operators (AND, OR, NOT), arithmetic operators (successor, addition,
+            and multiplication), and pairs. I've tried to restrict the number of
+            encodings so that the blog doesn't end up being about Church
             encodings rather than being a primer about untyped lambda calculus.
         </p>
 
@@ -693,7 +707,7 @@
 
         <h4>Logical operators</h4>
         <p>
-            After understanding how boolean church encoding works, the encoding
+            After understanding how boolean Church encoding works, the encoding
             for logical operators would look much more intuitive. Let's try to
             walk through the process of creating an encoding for the
             <code>AND</code> logical operator.
@@ -792,7 +806,7 @@
             the other argument.
         </p>
 
-        \[ \text{Or} = \lambda b.\lambda c.\lambda b \; \text{True} \; c \]
+        \[ \text{Or} = \lambda b.\lambda c.b \; \text{True} \; c \]
 
         <p>And finally for <code>NOT</code> operator</p>
         <br />
@@ -826,25 +840,32 @@
 
         <h4>Numbers</h4>
         <p>
-            The way numbers are defined in church encoding is very interesting.
+            The way numbers are defined in Church encoding is very interesting.
             A number is defined as a function that takes in two arguments -
-            \(x\), which is a starting point for all the numbers, and \(f\),
-            which is a function that returns the successor of any number.
+            \(f\), which is a function that returns the successor of any number,
+            and \(x\), which is a starting point for all the numbers.
         </p>
 
         <div class="scroll-wrapper">
             \[ \begin{aligned} n &= \lambda f.\lambda x.f^{n}(x) \\ \text{succ}
-            &= \lambda n.\lambda f.\lambda x.f \; n \; f \; x \end{aligned} \]
-        </div>
-
-        <div class="scroll-wrapper">
-            \[ \begin{aligned} 0 &= \lambda f.\lambda x.x \\ 1 &= \lambda
-            f.\lambda x.f \; x \\ 2 &= \lambda f.\lambda x.f \; f \; x \\ 3 &=
-            \lambda f.\lambda x.f \; f \; f \; x \end{aligned} \]
+            &= \lambda n.\lambda f.\lambda x.f \; (n \; f \; x) \end{aligned} \]
         </div>
 
         <p>
-            The definition of a number and the successor function in church
+            Here \(f^{n}(x)\) means \(f\) applied to \(x\) exactly \(n\) times
+            (for example, \(f^{2}(x) = f \; (f \; x)\)).
+        </p>
+
+        <!--λf.λx. f (f x)-->
+
+        <div class="scroll-wrapper">
+            \[ \begin{aligned} 0 &= \lambda f.\lambda x.x \\ 1 &= \lambda
+            f.\lambda x.f \; x \\ 2 &= \lambda f.\lambda x.f \; (f \; x) \\ 3 &=
+            \lambda f.\lambda x.f \; (f \; (f \; x)) \end{aligned} \]
+        </div>
+
+        <p>
+            The definition of a number and the successor function in Church
             encoding are kind of intertwined with each other. Let's try to get a
             better intuitive understanding by trying to evaluate
             <code>succ one</code>:
@@ -852,10 +873,10 @@
 
         <div class="scroll-wrapper">
             \[ \begin{aligned} \text{succ one} &= (\lambda n.\lambda f.\lambda
-            x.f \; n \; f \; x) \; \text{one} \\ &= \lambda f.\lambda x.f \;
-            \text{one} \; f \; x \\ \text{one} \; f \; x &= (\lambda f.\lambda
-            x.f \; x) \; (f \; x) = f \; x \\ \text{succ one} &= \lambda
-            f.\lambda x.f \; f \; x = \text{two} \\ \end{aligned} \]
+            x.f \; (n \; f \; x)) \; \text{one} \\ &= \lambda f.\lambda x.f \;
+            (\text{one} \; f \; x) \\ \text{one} \; f \; x &= (\lambda f.\lambda
+            x.f \; x) \; f \; x = f \; x \\ \text{succ one} &= \lambda f.\lambda
+            x.f \; (f \; x) = \text{two} \\ \end{aligned} \]
         </div>
 
         <p>
@@ -875,13 +896,13 @@
 
         <div class="scroll-wrapper">
             \[ \begin{aligned} 1 &= \lambda f.\lambda x.f \; x \\ 2 &= \lambda
-            f.\lambda x.f \; f \; x \\ 1 + 2 &= 3 = \lambda f.\lambda x.f \; f
-            \; f \; x = \lambda f.\lambda x.f \; (f \; f \; x) \end{aligned} \]
+            f.\lambda x.f \; (f \; x) \\ 1 + 2 &= 3 = \lambda f.\lambda x.f \;
+            (f \; (f \; x)) \end{aligned} \]
         </div>
 
         <p>
-            So performing \(m\) + \(n\) is equivalent to equivalent \(x\) in
-            \(m\) with \(n \; f \; x\)
+            So performing \(m\) + \(n\) is equivalent to replacing \(x\) in
+            \(m\) with \(n \; f \; x\).
         </p>
 
         \[ \text{Add} = \lambda m.\lambda n.\lambda f.\lambda x.m \; f\; (n \; f
@@ -890,10 +911,10 @@
         <p>If you wanted to perform 2 * 3 in lambda calculus</p>
 
         <div class="scroll-wrapper">
-            \[ \begin{aligned} 2 &= \lambda f.\lambda x.f \; f \; x \\ 3 &=
-            \lambda f.\lambda x.f \; f \; f \; x \\ 2 \times 3 &= 6 = \lambda
-            f.\lambda x.f \; f \; f \; f \; f \; f \; x = \lambda f.\lambda x.(f
-            \; f \; f) \; (f \; f \; f) \; x \end{aligned} \]
+            \[ \begin{aligned} 2 &= \lambda f.\lambda x.f \; (f \; x) \\ 3 &=
+            \lambda f.\lambda x.f \; (f \; (f \; x)) \\ 2 \times 3 &= 6 =
+            \lambda f.\lambda x.f \; (f \; (f \; (f \; (f \; (f \; x)))))
+            \end{aligned} \]
         </div>
 
         <p>
@@ -929,11 +950,10 @@
         <h3>Demo</h3>
         <p>
             Here's a small demo of my untyped lambda calculus interpreter
-            computing \(\text{fib}(n=3)\) (3rd term in fibonacci sequence) which
-            is 2 (or) \(\lambda f.\lambda x.f \; f \; x\) in church encoding.
-            Over here <code>=</code> is an assignment operator for defining
-            macros, which are just short snippets of reusable lambda
-            expressions.
+            computing \(\text{fib}(3)\) which is 2 (or) \(\lambda f.\lambda x.f
+            \; (f \; x)\) in Church encoding. Over here <code>=</code> is an
+            assignment operator for defining macros, which are just short
+            snippets of reusable lambda expressions.
         </p>
 
         <pre><code>true = \a.\b.a
@@ -957,7 +977,7 @@ fib (succ (succ (succ zero)))</code></pre>
             Phew! This ended up being a bit too long, but I have enjoyed every
             single part while researching and studying about lambda calculus,
             and also while building the interpreter for it. It was such a fun
-            rabbit hole, especially the church encoding part, it sorta
+            rabbit hole, especially the Church encoding part, it sorta
             introducted me to this new methodology on <i>how to think</i> about
             writing programs.
         </p>
