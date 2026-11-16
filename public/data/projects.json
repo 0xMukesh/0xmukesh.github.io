@@ -20,6 +20,11 @@
     "description": "A minimal X11 tabbed-layout window manager, written in Go"
   },
   {
+    "title": "marmot",
+    "url": "https://github.com/0xMukesh/marmot",
+    "description": "An emulator for Uxn, written in OCaml"
+  },
+  {
     "title": "coco",
     "url": "https://github.com/0xmukesh/coco",
     "description": "A statically typed compiled programming language which I made to learn more about LLVM in general"
